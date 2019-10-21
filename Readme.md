@@ -12,7 +12,7 @@
 # Ideen
 
 ### Allergieapp
- * Vorbereitung auf Allergiewellen (Pollen)
+ * Vorbereitung auf Allergiewellen (Pollen) -> BreezoMeter (https://docs.breezometer.com/api-documentation/heatmap-tile-overlay/v1/#pollen)
  * Barcodescanner für Lebensmittelallergien  
 
 ### Immunsystemapp
