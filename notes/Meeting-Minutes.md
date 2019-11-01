@@ -37,6 +37,16 @@
   Statistiken u.A. zu Selbstreparatur, Kostenfaktor,
   Trinkwasserversorgung/Wetterabhängigkeit
 
+----
+
+### ToDos bis nächste Woche:
+
+* Florian: NGOs
+* Elsa: Betreffende Region(en)
+* Max: Welche Trinkwasserprobleme
+* Jeffrey: Brunnenwartung
+* Martin: Wetterprobleme, Allgemein, Brunnenwartung, NGOs, Wiki
+
 ### Regelmäßiger Termin
 
-Montags 11:15 Uhr
+Montags 11:15 Uhr Raum 639
