@@ -11,8 +11,10 @@
 
 # Ideen
 
-### Allergieapp
- * Vorbereitung auf Allergiewellen (Pollen)
+### Allergieapp - Pollenflug
+ * Vorbereitung auf Allergiewellen (Pollen) -> BreezoMeter Heatmap (https://docs.breezometer.com/api-documentation/heatmap-tile-overlay/v1/#pollen)
+ 
+ ### Allergieapp - Nahrung
  * Barcodescanner für Lebensmittelallergien  
 
 ### Immunsystemapp
@@ -20,8 +22,11 @@
  * Besonders in ärmeren Regionen zur Vermeidung verhinderbarer Krankheiten
  * Information zu Verhaltensweisen bei Krankheit oder Krankheitswelle
  * ML-Anteil: Voraussage von Krankheiten anhand von Wetterdaten o.Ä.
+ * Was können die Leute Vorort zur Gesundheitsprävention tun -> in die App einbinden als Motivitaion-Aspekt
+ * Unwissenheit aufklären, kleine paraktische Anwendungen einbinden 
+ * Was hilft den Nutzer diese Informationen (Vorteile)?
 
-### Ernährungspp:
+### Ernährungsapp:
  * Abnehmen gegen Jojo-Effekt: kleine Mahlzeiten
  * Fotoanwendung mit Bilderkennung der Mahlzeit für Tracking/Bewertung der
    Mahlzeit und/oder Portionsgröße (User muss zwingend ein neues Foto machen -
@@ -29,3 +34,6 @@
  * Kochrezepte, Material für Zubereitung
  * Eventuell nur für Obst und Gemüse
 - private Vermarktung, Krankenkassen (Bonusprogramme, Tarifsenkung)
+ * Start umkämpfter Markt -> Was ist bei unserer App besser als bei den anderen?
+ * schwierige Erkennung von anderen Lebensmitteln, durch Bilderkennung
+ 
