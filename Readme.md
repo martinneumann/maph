@@ -9,4 +9,15 @@
 | Max Karl           | s0554876@htw-berlin.de               |
 | Maximilian Schmidt | s0551447@htw-berlin.de               |
 
-# Brunnenapp
+# Well Application
+
+A mobile application that helps disadvantaged communities take care of their water wells.
+
+# Features
+
+* Map widget showing nearby wells
+* Well maintenance tracking
+* Financial and technical information
+* Maintenance DIY help
+* Community transparency features about funding, donations and water sales
+
