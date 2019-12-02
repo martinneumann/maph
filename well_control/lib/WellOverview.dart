@@ -17,53 +17,26 @@ class _WellOverviewState extends State<WellOverview> {
 
   static const List<String> menuChoices = <String>[settings, wellMap];
 
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          PopupMenuButton<String>(
-            onSelected: choiceAction,
-            itemBuilder: (BuildContext context) {
-              return menuChoices.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
-            },
-          )
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: choiceAction,
+              itemBuilder: (BuildContext context) {
+                return menuChoices.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: Center(child: Container(child: DisplayWells())));
   }
 
   void choiceAction(String choice) {
@@ -76,3 +49,51 @@ class _WellOverviewState extends State<WellOverview> {
     }
   }
 }
+
+class DisplayWells extends StatefulWidget {
+  @override
+  DisplayWellsState createState() => DisplayWellsState();
+}
+
+class DisplayWellsState extends State<DisplayWells> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(body: _buildRow());
+  }
+
+  ListView _buildRow() {
+    return ListView(
+      children: ListTile.divideTiles(context: context, tiles: [
+        ListTile(
+            leading: ClipOval(
+              child: Container(
+                color: Colors.red,
+                height: 20.0, // height of the button
+                width: 20.0, // width of the button))
+              ),
+            ),
+            title: Text("Well Number 1"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.arrow_right),
+              ],
+            )),
+        ListTile(
+            leading: ClipOval(
+              child: Container(
+                color: Colors.green,
+                height: 20.0, // height of the button
+                width: 20.0, // width of the button))
+              ),
+            ),
+            title: Text("Well Number 1"),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Icon(Icons.arrow_right),
+            ])),
+      ]).toList(),
+    );
+  }
+}
+
+
