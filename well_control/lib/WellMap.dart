@@ -13,7 +13,7 @@ class WellMap extends StatefulWidget {
 
 class _WellMapState extends State<WellMap> {
   static const settings = "Settings";
-  static const wellOverview = "All Wells";
+  static const wellOverview = "List of Wells";
 
   static const List<String> menuChoices = <String>[settings, wellOverview];
 
@@ -73,7 +73,7 @@ class _WellMapState extends State<WellMap> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => WellOverview(title: "Well Overview")));
+              builder: (context) => WellOverview(title: "List of Wells")));
     }
   }
 }
