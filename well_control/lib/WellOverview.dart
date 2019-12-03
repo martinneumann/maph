@@ -40,7 +40,7 @@ class _WellOverviewState extends State<WellOverview> {
   }
 
   void choiceAction(String choice) {
-    if (choice == settings) {
+    if (choice == wellMap) {
       Navigator.push(context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
