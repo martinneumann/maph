@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:well_control/Settings.dart';
-import 'package:well_control/WellOverview.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong/latlong.dart';
 
 class WellMap extends StatefulWidget {
   WellMap({Key key, this.title}) : super(key: key);
@@ -12,68 +13,58 @@ class WellMap extends StatefulWidget {
 }
 
 class _WellMapState extends State<WellMap> {
-  static const settings = "Settings";
-  static const wellOverview = "List of Wells";
 
-  static const List<String> menuChoices = <String>[settings, wellOverview];
-
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: <Widget>[
-            PopupMenuButton<String>(
-              onSelected: choiceAction,
-              itemBuilder: (BuildContext context) {
-                return menuChoices.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            )
-          ],
-        ),
+    return MaterialApp(
+      home: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'You have pushed the button this many times:',
+          child: Container(
+            //width: 200,
+            //height: 200,
+            child: FlutterMap(
+              options: MapOptions(
+                center: LatLng(45.5231, -122.6765),
+                zoom: 13.0,
               ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.display1,
-              ),
-            ],
+              layers: [
+                TileLayerOptions(
+                  urlTemplate:
+                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: ['a', 'b', 'c'],
+                  additionalOptions: {
+                    'access_token': '',
+                    'id': ''
+                  },
+                ),
+                MarkerLayerOptions (
+                    markers: [
+                      Marker(
+                          //width: 80.0,
+                          //height: 80.0,
+                          point: LatLng(45.5231, -122.6765),
+                          builder: (ctx) =>
+                              Container(
+                                  child: IconButton(
+                                    icon: Icon(FontAwesomeIcons.mapMarkerAlt),
+                                    color: Color.fromARGB(255, 250, 0, 0),
+                                    iconSize: 45.0,
+                                    onPressed: (){},
+                                  )
+                              )
+                      )
+                    ]
+                ),
+              ],
+            ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: Icon(Icons.add),
-        ));
-  }
-
-  void choiceAction(String choice) {
-    if (choice == settings) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WellOverview(title: "List of Wells")));
-    }
+      ),
+    );
   }
 }
