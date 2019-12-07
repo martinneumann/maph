@@ -109,4 +109,8 @@ class _WellMapState extends State<WellMap> {
               builder: (context) => AddWell(title: "List of Wells")));
     }
   }
+
+  void addWellMarker(String status) {
+
+  }
 }
