@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart';
+import 'package:well_control/AddWell.dart';
+import 'package:well_control/Settings.dart';
+import 'package:well_control/WellOverview.dart';
 
 class WellMap extends StatefulWidget {
   WellMap({Key key, this.title}) : super(key: key);
@@ -13,6 +16,10 @@ class WellMap extends StatefulWidget {
 }
 
 class _WellMapState extends State<WellMap> {
+  static const addWell = "Add Well";
+  static const wellOverview = "List of Wells";
+  static const settings = "Settings";
+  static const List<String> menuChoices = <String>[wellOverview, settings , addWell];
 
   @override
   void initState() {
@@ -23,6 +30,22 @@ class _WellMapState extends State<WellMap> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: choiceAction,
+              itemBuilder: (BuildContext context) {
+                return menuChoices.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            )
+          ],
+        ),
         body: Center(
           child: Container(
             //width: 200,
@@ -66,5 +89,24 @@ class _WellMapState extends State<WellMap> {
         ),
       ),
     );
+  }
+
+  void choiceAction(String choice) {
+    if (choice == settings) {
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => Settings(title: "Settings")));
+    } else if(choice == wellOverview) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WellOverview(title: "List of Wells")));
+    }
+    else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AddWell(title: "List of Wells")));
+    }
   }
 }
