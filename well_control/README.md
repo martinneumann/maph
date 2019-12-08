@@ -78,10 +78,9 @@ to find the comment and generate documentation for it.
 ```
 
 In the comments you able to use markdown formatting.
-A general [dartdoc convention] shuold be hold by writing documentation.
+A general [dartdoc convention] should be hold by writing documentation.
 
 [dartdoc convention]: https://dart.dev/guides/language/effective-dart/documentation
-
 [dartdoc]: https://pub.dev/packages/dartdoc
 
 
