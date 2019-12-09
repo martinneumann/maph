@@ -134,7 +134,7 @@ class _AddWellState extends State<AddWell> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AddWell(title: "List of Wells")));
+              builder: (context) => AddWell(title: "Add new well")));
     }
   }
 }

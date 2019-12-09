@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:well_control/AddWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
 
@@ -14,8 +15,9 @@ class WellOverview extends StatefulWidget {
 class _WellOverviewState extends State<WellOverview> {
   static const settings = "Settings";
   static const wellMap = "Map Overview";
+  static const addWell = "Add Well";
 
-  static const List<String> menuChoices = <String>[settings, wellMap];
+  static const List<String> menuChoices = <String>[settings, wellMap, addWell];
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +46,13 @@ class _WellOverviewState extends State<WellOverview> {
       Navigator.push(context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
-    } else {
+    } else if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => AddWell(title: "Add new well")));
     }
   }
 }
