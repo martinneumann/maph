@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
+import 'package:well_control/WellInfo.dart';
 
 class WellOverview extends StatefulWidget {
   WellOverview({Key key, this.title}) : super(key: key);
@@ -94,10 +95,16 @@ class DisplayWellsState extends State<DisplayWells> {
                 width: 20.0, // width of the button))
               ),
             ),
-            title: Text("Well Number 1"),
+            title: Text("Well Number 2"),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (context) => WellInfo(title: "Further Information")));
+            },
             trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Icon(Icons.arrow_right),
-            ])),
+            ])
+        ),
       ]).toList(),
     );
   }
