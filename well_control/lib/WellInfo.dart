@@ -69,6 +69,7 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
     Color color = Theme.of(context).primaryColor;
 
     Widget buttonSection = Container(
+      margin: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -79,6 +80,56 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       ),
     );
 
+    Widget infoSection = Column(
+      //padding: const EdgeInsets.all(8),
+
+      children: <Widget>[
+        Container(
+          height: 30,
+          //color: Colors.blueGrey[100],
+          child: const Center(child: Text('well_ID: Well_Number2')),
+        ),
+        Container(
+          height: 30,
+          //color: Colors.grey,
+          child: const Center(child: Text( 'company: well constructor number 1')),
+        ),
+        Container(
+          height: 30,
+          //color: Colors.blueGrey[100],
+          child: const Center(child: Text('address: PO BOX 8798, Acra Ghana')),
+        ),
+        Container(
+          height: 30,
+         // color: Colors.blueGrey[100],
+          child: const Center(child: Text('telefon:243 34 34')),
+        ),
+      ],
+    );
+
+    Widget listSection = Column(
+      //padding: const EdgeInsets.all(8),
+
+      children: <Widget>[
+        Container(
+          height: 50,
+          color: Colors.blueGrey[100],
+          child: const Center(child: Text('maintenance history')),
+        ),
+        Container(
+          height: 50,
+          color: Colors.grey,
+          child: const Center(child: Text('how to repair')),
+        ),
+        Container(
+          height: 50,
+          color: Colors.blueGrey[100],
+          child: const Center(child: Text('change well status')),
+        ),
+      ],
+    );
+
+/// shows the image
     return Scaffold(
 
         body: Column(
@@ -88,6 +139,8 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             height: 240,
            //fit: BoxFit.fitHeight,
           ),
+            infoSection,
+            listSection,
             buttonSection,
           ],
         ),
