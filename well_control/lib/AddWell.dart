@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:well_control/WellMap.dart';
 
 import 'Settings.dart';
 import 'WellOverview.dart';
@@ -134,7 +135,7 @@ class _AddWellState extends State<AddWell> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AddWell(title: "Add new well")));
+              builder: (context) => WellMap(title: "Well Map")));
     }
   }
 }

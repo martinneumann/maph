@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/AddWell.dart';
+import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
 
@@ -19,7 +20,13 @@ class _WellMapState extends State<WellMap> {
   static const addWell = "Add Well";
   static const wellOverview = "List of Wells";
   static const settings = "Settings";
-  static const List<String> menuChoices = <String>[wellOverview, settings , addWell];
+  static const report = "Report Malfunction";
+  static const List<String> menuChoices = <String>[
+    wellOverview,
+    addWell,
+    report,
+    settings
+  ];
 
   @override
   void initState() {
@@ -102,11 +109,16 @@ class _WellMapState extends State<WellMap> {
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
     }
-    else {
+    else if (choice == addWell) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => AddWell(title: "List of Wells")));
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ReportWell(title: "Report Malfunction")));
     }
   }
 
