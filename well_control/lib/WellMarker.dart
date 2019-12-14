@@ -4,13 +4,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WellMarker {
-
+  String name;
   static final Icon icon = Icon(FontAwesomeIcons.mapMarkerAlt);
   static final double iconSize = 45.0;
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
 
-  WellMarker(String color , double latitude , double longitude) {
+  WellMarker(String wellName , String color , double latitude , double longitude) {
+    name = wellName;
     setColor(color);
 
     marker = Marker(

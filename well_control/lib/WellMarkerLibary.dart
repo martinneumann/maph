@@ -7,8 +7,8 @@ import 'package:well_control/WellMarker.dart';
 
 
 List<WellMarker> wells = <WellMarker> [
-  WellMarker("green" , 7.071891, 38.785878) ,
-  WellMarker("yellow" , 7.084114, 38.783217)
+  WellMarker("Mockup1" , "green" , 7.071891, 38.785878) ,
+  WellMarker("Mockup2" , "yellow" , 7.084114, 38.783217)
 ];
 
 List<Marker> getMarkers() {
