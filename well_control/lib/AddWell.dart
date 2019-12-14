@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:well_control/WellMap.dart';
+import 'package:well_control/WellMarker.dart';
+import 'WellMarkerLibary.dart' as wellList;
 
 import 'Settings.dart';
 import 'WellOverview.dart';
@@ -23,6 +25,16 @@ class _AddWellState extends State<AddWell> {
 
   static const List<String> menuChoices = <String>[wellOverview, wellMap , settings];
 
+  final nameController = TextEditingController();
+  final latitudeController = TextEditingController();
+  final longitudeController = TextEditingController();
+  String status;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +64,7 @@ class _AddWellState extends State<AddWell> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   TextFormField(
+                    controller: nameController,
                     decoration: InputDecoration(
                         labelText: "Name of well:"
                     ),
@@ -65,23 +78,25 @@ class _AddWellState extends State<AddWell> {
                   Column(
                     children: <Widget>[
                       TextFormField(
+                        controller: latitudeController,
                         decoration: InputDecoration(
-                            labelText: "Longitude:"
+                            labelText: "Latitude:"
                         ),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return 'Please enter some text';
+                            return 'Please enter latitdue!';
                           }
                           return null;
                         },
                       ),
                       TextFormField(
+                        controller: longitudeController,
                         decoration: InputDecoration(
                             labelText: "Longitude:"
                         ),
                         validator: (value) {
                           if (value.isEmpty) {
-                            return 'Please enter some text';
+                            return 'Please enter longitude';
                           }
                           return null;
                         },
@@ -93,7 +108,11 @@ class _AddWellState extends State<AddWell> {
                             child: new Text(value),
                           );
                         }).toList(),
-                        onChanged: (_) {},
+                        onChanged: (String value) {
+                          setState(() {
+                            status = value;
+                          });
+                        }
                       )
                     ],
                   ),
@@ -105,8 +124,7 @@ class _AddWellState extends State<AddWell> {
                         // otherwise.
                         if (_formKey.currentState.validate()) {
                           // If the form is valid, display a Snackbar.
-                          Scaffold.of(context)
-                              .showSnackBar(SnackBar(content: Text('Processing Data')));
+                          addWell();
                         }
                       },
                       child: Text('Submit'),
@@ -137,5 +155,23 @@ class _AddWellState extends State<AddWell> {
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Well Map")));
     }
+  }
+
+  void addWell() {
+    String color;
+    if(status == "Working") {
+      color = "green";
+    }
+    else if(status == "maintenance") {
+      color = "yellow";
+    }
+    else {
+      color = "red";
+    }
+    wellList.wells.add(new WellMarker(nameController.text , color ,
+        double.parse(latitudeController.text) ,
+        double.parse(longitudeController.text)));
+
+    //print(wellList.wells.length);
   }
 }
