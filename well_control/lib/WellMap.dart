@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
-import 'package:well_control/WellMarker.dart';
 import 'package:well_control/WellOverview.dart';
 import 'WellMarkerLibary.dart' as wellList;
 
@@ -107,9 +105,5 @@ class _WellMapState extends State<WellMap> {
           MaterialPageRoute(
               builder: (context) => ReportWell(title: "Report Malfunction")));
     }
-  }
-
-  void addWellMarker(String status) {
-
   }
 }
