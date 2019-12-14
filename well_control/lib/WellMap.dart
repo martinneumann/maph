@@ -5,7 +5,9 @@ import 'package:latlong/latlong.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
+import 'package:well_control/WellMarker.dart';
 import 'package:well_control/WellOverview.dart';
+import 'WellMarkerLibary.dart' as wellList;
 
 class WellMap extends StatefulWidget {
   WellMap({Key key, this.title}) : super(key: key);
@@ -59,7 +61,7 @@ class _WellMapState extends State<WellMap> {
             //height: 200,
             child: FlutterMap(
               options: MapOptions(
-                center: LatLng(45.5231, -122.6765),
+                center: LatLng(7.071891, 38.785878),
                 zoom: 13.0,
               ),
               layers: [
@@ -73,22 +75,7 @@ class _WellMapState extends State<WellMap> {
                   },
                 ),
                 MarkerLayerOptions (
-                    markers: [
-                      Marker(
-                          //width: 80.0,
-                          //height: 80.0,
-                          point: LatLng(45.5231, -122.6765),
-                          builder: (ctx) =>
-                              Container(
-                                  child: IconButton(
-                                    icon: Icon(FontAwesomeIcons.mapMarkerAlt),
-                                    color: Color.fromARGB(255, 250, 0, 0),
-                                    iconSize: 45.0,
-                                    onPressed: (){},
-                                  )
-                              )
-                      )
-                    ]
+                    markers: wellList.getMarkers()
                 ),
               ],
             ),
