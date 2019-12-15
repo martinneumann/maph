@@ -81,6 +81,11 @@ class DisplayWellsState extends State<DisplayWells> {
               ),
             ),
             title: Text("Well Number 1"),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (context) => WellInfo(title: "Well Number 1")));
+            },
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -99,7 +104,7 @@ class DisplayWellsState extends State<DisplayWells> {
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(
-                      builder: (context) => WellInfo(title: "Further Information")));
+                      builder: (context) => WellInfo(title: "Well Number 2")));
             },
             trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Icon(Icons.arrow_right),

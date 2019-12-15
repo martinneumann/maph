@@ -96,6 +96,10 @@ class _RepairInformationState extends State<RepairInformation> {
                                 ),
                               ],
                             ),
+                            ],
+                  ),
+                    ),
+
                             Card(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -149,9 +153,8 @@ class _RepairInformationState extends State<RepairInformation> {
 
                           ],
                         ))
-                  ],
                   ),
-                ))));
+                ));
   }
 
   void _displayOptionsDialog() async {
