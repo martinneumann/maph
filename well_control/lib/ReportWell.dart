@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:well_control/WellMap.dart';
 
+import 'RepairInformation.dart';
 import 'Settings.dart';
 import 'WellOverview.dart';
 
@@ -22,11 +23,13 @@ class _ReportWellState extends State<ReportWell> {
   static const wellOverview = "List of Wells";
   static const wellMap = "Map Overview";
   static const settings = "Settings";
+  static const repairInformation = "Repair Help";
 
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
-    settings
+    settings,
+    repairInformation,
   ];
 
   String _selectedWell;
@@ -211,9 +214,14 @@ class _ReportWellState extends State<ReportWell> {
           context,
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
+    } else if (choice == wellMap) {
+    Navigator.push(context,
+    MaterialPageRoute(builder: (context) =>
+    WellMap(title: "Well Map")
+    ));
     } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
-    }
+  Navigator.push(context,
+  MaterialPageRoute(builder: (context) => RepairInformation(title: "Repair Help")));
   }
+}
 }
