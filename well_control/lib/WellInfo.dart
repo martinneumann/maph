@@ -78,6 +78,7 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
           _buildButtonColumn(color, Icons.call, 'CALL'),
           _buildButtonColumn(color, Icons.near_me, 'ROUTE'),
           _buildButtonColumn(color, Icons.report, 'REPORT'),
+          _buildButtonColumn(color, Icons.build, 'Repair_Info')
         ],
       ),
     );
@@ -271,11 +272,8 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             status,
           //  infoSection,
            // listSection,
-           // buttonSection,
+            buttonSection,
 
-
-            Text(
-                'More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
             Row(
               children: <Widget>[
                 FlatButton(
