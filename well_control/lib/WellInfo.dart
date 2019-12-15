@@ -131,12 +131,149 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       ],
     );
 
+    Widget name = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Name:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+
+    Widget geolocation = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Geolaction:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget type = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Type:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget fundingInfo = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Funding Info:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget price = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Price:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget status = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+
+            title: Text('Status:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Widget test = Card(
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          const ListTile(
+            leading: Icon(Icons.my_location),
+            title: Text('Geolaction:'),
+            subtitle: Text(
+                'xy zy'
+            ),
+          ),
+          Image(
+              image:
+              AssetImage(
+                  'assets/repair-info/pressure-switch.jpg')),
+          ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                child: const Text('Step 1 done!'),
+                onPressed: () {
+                  /* ... */
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
 /// shows the image
     return Scaffold(
-        body: Center(
+        body: SingleChildScrollView(
           child: Center(
             child: Column(
           children: [
+            name,
+            type,
+            fundingInfo,
+            price,
+            status,
+          //  infoSection,
+           // listSection,
+           // buttonSection,
+
+
             Text(
                 'More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
             Row(
