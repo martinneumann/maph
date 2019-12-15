@@ -104,7 +104,11 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             icon: Icon(Icons.build),
             color: color,
             onPressed: (){
-
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          RepairInformation(title: "Repair Help")));
             },
 
           ),
@@ -301,6 +305,7 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
           children: [
             name,
             type,
+            geolocation,
             fundingInfo,
             price,
             status,
