@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/Settings.dart';
-import 'package:well_control/WellMap.dart';
 import 'package:well_control/WellInfo.dart';
+import 'package:well_control/WellMap.dart';
+
+import 'WellMarkerLibary.dart' as wellList;
 
 class WellOverview extends StatefulWidget {
   WellOverview({Key key, this.title}) : super(key: key);
@@ -44,14 +46,16 @@ class _WellOverviewState extends State<WellOverview> {
 
   void choiceAction(String choice) {
     if (choice == wellMap) {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => AddWell(title: "Add new well")));
     }
@@ -66,48 +70,37 @@ class DisplayWells extends StatefulWidget {
 class DisplayWellsState extends State<DisplayWells> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _buildRow());
-  }
-
-  ListView _buildRow() {
-    return ListView(
-      children: ListTile.divideTiles(context: context, tiles: [
-        ListTile(
-            leading: ClipOval(
-              child: Container(
-                color: Colors.red,
-                height: 20.0, // height of the button
-                width: 20.0, // width of the button))
+    return Scaffold(
+      body: ListView.separated(
+          itemCount: wellList.wells.length,
+          itemBuilder: (BuildContext context, int index) {
+            return new ListTile(
+              leading: ClipOval(
+                child: Container(
+                  color: wellList.wells[index].getMarkerStatus(),
+                  height: 20.0,
+                  width: 20.0,
+                ),
               ),
-            ),
-            title: Text("Well Number 1"),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.arrow_right),
-              ],
-            )),
-        ListTile(
-            leading: ClipOval(
-              child: Container(
-                color: Colors.green,
-                height: 20.0, // height of the button
-                width: 20.0, // width of the button))
+              title: Text(wellList.wells[index].getMarkerName()),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Icons.arrow_right),
+                ],
               ),
-            ),
-            title: Text("Well Number 2"),
             onTap: () {
-              Navigator.push(context,
+              Navigator.push(
+                  context,
                   MaterialPageRoute(
-                      builder: (context) => WellInfo(title: "Further Information")));
+                      builder: (context) =>
+                          WellInfo(title: "Further Information")));
             },
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Icon(Icons.arrow_right),
-            ])
-        ),
-      ]).toList(),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return Divider();
+          }),
     );
   }
 }
-
-

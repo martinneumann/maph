@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:latlong/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong/latlong.dart';
 
 class WellMarker {
   String name;
@@ -28,6 +28,13 @@ class WellMarker {
     );
   }
 
+  String getMarkerName() {
+    return name;
+  }
+
+  Color getMarkerStatus() {
+    return markerColor;
+  }
 
   void setMarker(String color , double latitude , double longitude) {
     setColor(color);
