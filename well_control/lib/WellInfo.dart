@@ -69,9 +69,20 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
     return Scaffold(
 
         body: Center(
-          child: Text('More info'),
+          child: Center(
+          child: Column(
+          children: [
+            Text('More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
+            Row(
+              children: <Widget>[
+                FlatButton(onPressed: () => { this.choice }, child: const Text("Try these DIY fixes"),),
+
+              ],
+            ),
+          ],
+          ),
         ),
 
-    );
+    ));
   }
 }
