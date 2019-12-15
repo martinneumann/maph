@@ -74,12 +74,46 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       margin: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildButtonColumn(color, Icons.call, 'CALL'),
-          _buildButtonColumn(color, Icons.near_me, 'ROUTE'),
-          _buildButtonColumn(color, Icons.report, 'REPORT'),
-          _buildButtonColumn(color, Icons.build, 'Repair_Info')
+        children: <Widget>[
+          IconButton(
+            tooltip: 'call',
+            color: color,
+            icon: Icon(Icons.call),
+
+            onPressed: () {
+              //add function to call
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.near_me),
+            color: color,
+            onPressed: (){
+
+            },
+
+          ),
+          IconButton(
+            icon: Icon(Icons.report),
+            color: color,
+            onPressed: (){
+
+            },
+
+          ),
+          IconButton(
+            icon: Icon(Icons.build),
+            color: color,
+            onPressed: (){
+
+            },
+
+          ),
         ],
+
+          //_buildButtonColumn(color, Icons.call, 'CALL'),
+          //_buildButtonColumn(color, Icons.near_me, 'ROUTE'),
+          //_buildButtonColumn(color, Icons.report, 'REPORT'),
+         // _buildButtonColumn(color, Icons.build, 'Repair_Info'),
       ),
     );
 
