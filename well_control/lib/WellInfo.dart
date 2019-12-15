@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
+import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
-import 'package:well_control/WellInfo.dart';
 
 class WellInfo extends StatefulWidget {
   WellInfo({Key key, this.title}) : super(key: key);
@@ -44,14 +44,16 @@ class _WellInfoState extends State<WellInfo> {
 
   void choiceAction(String choice) {
     if (choice == wellMap) {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => AddWell(title: "Add new well")));
     }
@@ -131,23 +133,30 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
 
 /// shows the image
     return Scaffold(
-
-        body: Column(
-          children: [Image.asset(
-            'images/well_number2.jpg',
-            width: 600,
-            height: 240,
-           //fit: BoxFit.fitHeight,
-          ),
-            infoSection,
-            listSection,
-            buttonSection,
+        body: Center(
+          child: Center(
+            child: Column(
+          children: [
+            Text(
+                'More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
+            Row(
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                RepairInformation(title: "Repair Help")));
+                  },
+                  child: const Text("Try these DIY fixes"),
+                ),
+              ],
+            ),
           ],
-        ),
-
-    );
-
-
+            ),
+          ),
+    ));
   }
 }
 

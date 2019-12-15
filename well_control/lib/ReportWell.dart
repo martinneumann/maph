@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:well_control/WellMap.dart';
 
+import 'RepairInformation.dart';
 import 'Settings.dart';
+import 'WellMarkerLibary.dart' as wellList;
 import 'WellOverview.dart';
 
 class ReportWell extends StatefulWidget {
@@ -22,17 +24,28 @@ class _ReportWellState extends State<ReportWell> {
   static const wellOverview = "List of Wells";
   static const wellMap = "Map Overview";
   static const settings = "Settings";
+  static const repairInformation = "Repair Help";
 
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
-    settings
+    settings,
+    repairInformation,
   ];
 
   String _selectedWell;
-  List<String> _wells = ['Well 1', 'Well 2', 'Well 3'];
+  List<String> wellNames = new List<String>();
 
   Future<File> _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (int i = 0; i < wellList.wells.length; i++) {
+      wellNames.add(wellList.wells[i].getMarkerName());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,58 +71,53 @@ class _ReportWellState extends State<ReportWell> {
             body: Center(
               child: Form(
                 key: _formKey,
-                child: ListView(
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: <Widget>[
-                      DropdownButton(
-                        isExpanded: true,
-
-                        hint: Text('Please choose a well'),
-                        // Not necessary for Option 1
-                        value: _selectedWell,
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedWell = newValue;
-                          });
-                        },
-                        items: _wells.map((well) {
-                          return DropdownMenuItem(
-                            child: new Text(well),
-                            value: well,
-                          );
-                        }).toList(),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                            alignLabelWithHint: true,
-                            labelText: "Describe the problem:",
-                            border: new OutlineInputBorder(
-                                borderRadius: const BorderRadius.all(
-                                  const Radius.circular(0.0),
-                                ),
-                                borderSide: new BorderSide(
-                                    color: Colors.black87, width: 1.0))),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
-                      showImage(),
-                      FlatButton.icon(
-                        onPressed: () {
-                          _displayOptionsDialog();
-                        },
-                        icon: Icon(Icons.add_a_photo),
-                        label: Text('Add a Photo'),
-                        color: Colors.blue,
-                      ),
-                      submitButton(),
-                    ]),
+                child: ListView(children: <Widget>[
+                  DropdownButton(
+                    isExpanded: true,
+                    hint: Text('Please choose a well'),
+                    value: _selectedWell,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedWell = newValue;
+                      });
+                    },
+                    items: wellList.wells.map((well) {
+                      return DropdownMenuItem(
+                        child: new Text(well.getMarkerName()),
+                        value: well.getMarkerName(),
+                      );
+                    }).toList(),
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 10,
+                    decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        labelText: "Describe the problem:",
+                        border: new OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(
+                              const Radius.circular(0.0),
+                            ),
+                            borderSide: new BorderSide(
+                                color: Colors.black87, width: 1.0))),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  showImage(),
+                  FlatButton.icon(
+                    onPressed: () {
+                      _displayOptionsDialog();
+                    },
+                    icon: Icon(Icons.add_a_photo),
+                    label: Text('Add a Photo'),
+                    color: Colors.blue,
+                  ),
+                  submitButton(),
+                ]),
               ),
             )));
   }
@@ -196,6 +204,7 @@ class _ReportWellState extends State<ReportWell> {
         icon: Icon(Icons.send),
         label: Text('Submit'),
         onPressed: () {
+          wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
           Navigator.pop(context);
         },
       ),
@@ -211,9 +220,14 @@ class _ReportWellState extends State<ReportWell> {
           context,
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
-    } else {
+    } else if (choice == wellMap) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RepairInformation(title: "Repair Help")));
     }
   }
 }

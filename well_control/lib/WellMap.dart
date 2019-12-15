@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
+
+import 'WellMarkerLibary.dart' as wellList;
 
 class WellMap extends StatefulWidget {
   WellMap({Key key, this.title}) : super(key: key);
@@ -59,7 +60,7 @@ class _WellMapState extends State<WellMap> {
             //height: 200,
             child: FlutterMap(
               options: MapOptions(
-                center: LatLng(45.5231, -122.6765),
+                center: LatLng(7.071891, 38.785878),
                 zoom: 13.0,
               ),
               layers: [
@@ -67,29 +68,9 @@ class _WellMapState extends State<WellMap> {
                   urlTemplate:
                   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                   subdomains: ['a', 'b', 'c'],
-                  additionalOptions: {
-                    'access_token': '',
-                    'id': ''
-                  },
+                  additionalOptions: {'access_token': '', 'id': ''},
                 ),
-                MarkerLayerOptions (
-                    markers: [
-                      Marker(
-                          //width: 80.0,
-                          //height: 80.0,
-                          point: LatLng(45.5231, -122.6765),
-                          builder: (ctx) =>
-                              Container(
-                                  child: IconButton(
-                                    icon: Icon(FontAwesomeIcons.mapMarkerAlt),
-                                    color: Color.fromARGB(255, 250, 0, 0),
-                                    iconSize: 45.0,
-                                    onPressed: (){},
-                                  )
-                              )
-                      )
-                    ]
-                ),
+                MarkerLayerOptions(markers: wellList.getMarkers()),
               ],
             ),
           ),
@@ -101,28 +82,20 @@ class _WellMapState extends State<WellMap> {
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
-          MaterialPageRoute(
-              builder: (context) => Settings(title: "Settings")));
-    } else if(choice == wellOverview) {
+          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else if (choice == wellOverview) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
-    }
-    else if (choice == addWell) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AddWell(title: "List of Wells")));
+    } else if (choice == addWell) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => AddWell(title: "Add Well")));
     } else {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => ReportWell(title: "Report Malfunction")));
     }
-  }
-
-  void addWellMarker(String status) {
-
   }
 }

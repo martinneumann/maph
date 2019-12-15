@@ -7,7 +7,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Well Controll',
+      title: 'Well Control',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -15,4 +15,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

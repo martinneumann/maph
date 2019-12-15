@@ -42,7 +42,8 @@ class _SettingsState extends State<Settings> {
 
   void choiceAction(String choice) {
     if (choice == wellMap) {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else {
@@ -96,8 +97,11 @@ class DisplaySettingsState extends State<DisplaySettings> {
             title: Text("Privacy Policy"),
             trailing: Icon(Icons.arrow_right),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  PrivacyPolicy(title: "Privacy Policy")));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          PrivacyPolicy(title: "Privacy Policy")));
             },
           )
         ]).toList());
