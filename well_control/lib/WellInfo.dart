@@ -3,6 +3,7 @@ import 'package:well_control/AddWell.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
+import 'package:well_control/ReportWell.dart';
 
 class WellInfo extends StatefulWidget {
   WellInfo({Key key, this.title}) : super(key: key);
@@ -84,6 +85,7 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
               //add function to call
             },
           ),
+
           IconButton(
             icon: Icon(Icons.near_me),
             color: color,
@@ -96,7 +98,11 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             icon: Icon(Icons.report),
             color: color,
             onPressed: (){
-
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ReportWell(title: "Report malfunction")));
             },
 
           ),
@@ -267,32 +273,24 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       ),
     );
 
-    Widget test = Card(
+    Widget image = Card(
 
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-            leading: Icon(Icons.my_location),
-            title: Text('Geolaction:'),
-            subtitle: Text(
-                'xy zy'
-            ),
-          ),
-          Image(
-              image:
-              AssetImage(
-                  'assets/repair-info/pressure-switch.jpg')),
-          ButtonBar(
-            children: <Widget>[
-              FlatButton(
-                child: const Text('Step 1 done!'),
-                onPressed: () {
-                  /* ... */
-                },
-              ),
-            ],
-          ),
+
+          Container(
+              width: 90.0,
+              height: 90.0,
+              decoration:  BoxDecoration(
+                  shape: BoxShape.circle,
+                  image:  DecorationImage(
+                      fit: BoxFit.fill,
+                      image:
+                      AssetImage(
+                          'assets/repair-info/pressure-switch.jpg'),
+                  ),
+              )),
         ],
       ),
     );
@@ -303,30 +301,18 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
           child: Center(
             child: Column(
           children: [
+            image,
             name,
             type,
             geolocation,
             fundingInfo,
             price,
             status,
+
           //  infoSection,
            // listSection,
             buttonSection,
-
-            Row(
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                RepairInformation(title: "Repair Help")));
-                  },
-                  child: const Text("Try these DIY fixes"),
-                ),
-              ],
-            ),
+            
           ],
             ),
           ),
