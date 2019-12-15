@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
-import 'package:well_control/WellInfo.dart';
 
 class WellInfo extends StatefulWidget {
   WellInfo({Key key, this.title}) : super(key: key);
@@ -75,7 +74,9 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             Text('More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
             Row(
               children: <Widget>[
-                FlatButton(onPressed: () => { this.choice }, child: const Text("Try these DIY fixes"),),
+//                FlatButton(onPressed: () => { this.choice }, child: const Text("Try these DIY fixes"),),
+                FlatButton(onPressed: () => {},
+                  child: const Text("Try these DIY fixes"),),
 
               ],
             ),

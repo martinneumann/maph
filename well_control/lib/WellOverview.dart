@@ -94,7 +94,8 @@ class DisplayWellsState extends State<DisplayWells> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          WellInfo(title: "Further Information")));
+                          WellInfo(
+                              title: wellList.wells[index].getMarkerName())));
             },
             );
           },
