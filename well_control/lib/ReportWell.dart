@@ -7,6 +7,7 @@ import 'package:well_control/WellMap.dart';
 
 import 'RepairInformation.dart';
 import 'Settings.dart';
+import 'WellMarkerLibary.dart' as wellList;
 import 'WellOverview.dart';
 
 class ReportWell extends StatefulWidget {
@@ -33,9 +34,18 @@ class _ReportWellState extends State<ReportWell> {
   ];
 
   String _selectedWell;
-  List<String> _wells = ['Well 1', 'Well 2', 'Well 3'];
+  List<String> wellNames = new List<String>();
 
   Future<File> _imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (int i = 0; i < wellList.wells.length; i++) {
+      wellNames.add(wellList.wells[i].getMarkerName());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,24 +72,20 @@ class _ReportWellState extends State<ReportWell> {
               child: Form(
                 key: _formKey,
                 child: ListView(
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: <Widget>[
                       DropdownButton(
                         isExpanded: true,
-
                         hint: Text('Please choose a well'),
-                        // Not necessary for Option 1
                         value: _selectedWell,
                         onChanged: (newValue) {
                           setState(() {
                             _selectedWell = newValue;
                           });
                         },
-                        items: _wells.map((well) {
+                        items: wellList.wells.map((well) {
                           return DropdownMenuItem(
-                            child: new Text(well),
-                            value: well,
+                            child: new Text(well.getMarkerName()),
+                            value: well.getMarkerName(),
                           );
                         }).toList(),
                       ),
@@ -199,6 +205,7 @@ class _ReportWellState extends State<ReportWell> {
         icon: Icon(Icons.send),
         label: Text('Submit'),
         onPressed: () {
+          wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
           Navigator.pop(context);
         },
       ),
