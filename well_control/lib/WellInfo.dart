@@ -280,15 +280,15 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
         children: <Widget>[
 
           Container(
-              width: 90.0,
-              height: 90.0,
+              width: 190.0,
+              height: 190.0,
               decoration:  BoxDecoration(
                   shape: BoxShape.circle,
                   image:  DecorationImage(
                       fit: BoxFit.fill,
                       image:
                       AssetImage(
-                          'assets/repair-info/pressure-switch.jpg'),
+                          'assets/well_picture/well_1.jpg'),
                   ),
               )),
         ],
