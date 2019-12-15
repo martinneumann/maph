@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
+import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
 
@@ -43,14 +44,16 @@ class _WellInfoState extends State<WellInfo> {
 
   void choiceAction(String choice) {
     if (choice == wellMap) {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {
-      Navigator.push(context,
+      Navigator.push(
+          context,
           MaterialPageRoute(
               builder: (context) => AddWell(title: "Add new well")));
     }
@@ -66,24 +69,29 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         body: Center(
           child: Center(
-          child: Column(
+            child: Column(
           children: [
-            Text('More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
+            Text(
+                'More information about this well.\nIt is located in Kefole city.\nThe current status is: needs maintenance.'),
             Row(
               children: <Widget>[
-//                FlatButton(onPressed: () => { this.choice }, child: const Text("Try these DIY fixes"),),
-                FlatButton(onPressed: () => {},
-                  child: const Text("Try these DIY fixes"),),
-
+                FlatButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                RepairInformation(title: "Repair Help")));
+                  },
+                  child: const Text("Try these DIY fixes"),
+                ),
               ],
             ),
           ],
+            ),
           ),
-        ),
-
     ));
   }
 }

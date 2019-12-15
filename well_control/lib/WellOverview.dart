@@ -89,14 +89,14 @@ class DisplayWellsState extends State<DisplayWells> {
                   Icon(Icons.arrow_right),
                 ],
               ),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          WellInfo(
-                              title: wellList.wells[index].getMarkerName())));
-            },
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            WellInfo(
+                                title: wellList.wells[index].getMarkerName())));
+              },
             );
           },
           separatorBuilder: (context, index) {

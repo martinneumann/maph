@@ -71,54 +71,53 @@ class _ReportWellState extends State<ReportWell> {
             body: Center(
               child: Form(
                 key: _formKey,
-                child: ListView(
-                    children: <Widget>[
-                      DropdownButton(
-                        isExpanded: true,
-                        hint: Text('Please choose a well'),
-                        value: _selectedWell,
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedWell = newValue;
-                          });
-                        },
-                        items: wellList.wells.map((well) {
-                          return DropdownMenuItem(
-                            child: new Text(well.getMarkerName()),
-                            value: well.getMarkerName(),
-                          );
-                        }).toList(),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 10,
-                        decoration: InputDecoration(
-                            alignLabelWithHint: true,
-                            labelText: "Describe the problem:",
-                            border: new OutlineInputBorder(
-                                borderRadius: const BorderRadius.all(
-                                  const Radius.circular(0.0),
-                                ),
-                                borderSide: new BorderSide(
-                                    color: Colors.black87, width: 1.0))),
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          return null;
-                        },
-                      ),
-                      showImage(),
-                      FlatButton.icon(
-                        onPressed: () {
-                          _displayOptionsDialog();
-                        },
-                        icon: Icon(Icons.add_a_photo),
-                        label: Text('Add a Photo'),
-                        color: Colors.blue,
-                      ),
-                      submitButton(),
-                    ]),
+                child: ListView(children: <Widget>[
+                  DropdownButton(
+                    isExpanded: true,
+                    hint: Text('Please choose a well'),
+                    value: _selectedWell,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedWell = newValue;
+                      });
+                    },
+                    items: wellList.wells.map((well) {
+                      return DropdownMenuItem(
+                        child: new Text(well.getMarkerName()),
+                        value: well.getMarkerName(),
+                      );
+                    }).toList(),
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 10,
+                    decoration: InputDecoration(
+                        alignLabelWithHint: true,
+                        labelText: "Describe the problem:",
+                        border: new OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(
+                              const Radius.circular(0.0),
+                            ),
+                            borderSide: new BorderSide(
+                                color: Colors.black87, width: 1.0))),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      return null;
+                    },
+                  ),
+                  showImage(),
+                  FlatButton.icon(
+                    onPressed: () {
+                      _displayOptionsDialog();
+                    },
+                    icon: Icon(Icons.add_a_photo),
+                    label: Text('Add a Photo'),
+                    color: Colors.blue,
+                  ),
+                  submitButton(),
+                ]),
               ),
             )));
   }
@@ -222,13 +221,13 @@ class _ReportWellState extends State<ReportWell> {
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
     } else if (choice == wellMap) {
-    Navigator.push(context,
-    MaterialPageRoute(builder: (context) =>
-    WellMap(title: "Well Map")
-    ));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
     } else {
-  Navigator.push(context,
-  MaterialPageRoute(builder: (context) => RepairInformation(title: "Repair Help")));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RepairInformation(title: "Repair Help")));
+    }
   }
-}
 }

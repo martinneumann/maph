@@ -10,7 +10,7 @@ class WellMarker {
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
 
-  WellMarker(String wellName , String color , double latitude , double longitude) {
+  WellMarker(String wellName, String color, double latitude, double longitude) {
     name = wellName;
     setColor(color);
 
@@ -22,10 +22,8 @@ class WellMarker {
                   icon: icon,
                   color: markerColor,
                   iconSize: iconSize,
-                  onPressed: (){},
-                )
-            )
-    );
+                  onPressed: () {},
+                )));
   }
 
   String getMarkerName() {
@@ -36,7 +34,7 @@ class WellMarker {
     return markerColor;
   }
 
-  void setMarker(String color , double latitude , double longitude) {
+  void setMarker(String color, double latitude, double longitude) {
     setColor(color);
 
     marker = Marker(
@@ -47,14 +45,12 @@ class WellMarker {
                   icon: icon,
                   color: markerColor,
                   iconSize: iconSize,
-                  onPressed: (){},
-                )
-            )
-    );
+                  onPressed: () {},
+                )));
   }
 
   void setColor(String color) {
-    switch(color) {
+    switch (color) {
       case "red":
         markerColor = Color.fromARGB(255, 255, 0, 0);
         break;

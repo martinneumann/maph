@@ -68,14 +68,9 @@ class _WellMapState extends State<WellMap> {
                   urlTemplate:
                   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                   subdomains: ['a', 'b', 'c'],
-                  additionalOptions: {
-                    'access_token': '',
-                    'id': ''
-                  },
+                  additionalOptions: {'access_token': '', 'id': ''},
                 ),
-                MarkerLayerOptions (
-                    markers: wellList.getMarkers()
-                ),
+                MarkerLayerOptions(markers: wellList.getMarkers()),
               ],
             ),
           ),
@@ -87,19 +82,15 @@ class _WellMapState extends State<WellMap> {
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
-          MaterialPageRoute(
-              builder: (context) => Settings(title: "Settings")));
-    } else if(choice == wellOverview) {
+          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else if (choice == wellOverview) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => WellOverview(title: "List of Wells")));
-    }
-    else if (choice == addWell) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => AddWell(title: "Add Well")));
+    } else if (choice == addWell) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => AddWell(title: "Add Well")));
     } else {
       Navigator.push(
           context,
