@@ -5,6 +5,7 @@ import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
+
 import 'WellMarkerLibary.dart' as wellList;
 
 class WellMap extends StatefulWidget {
@@ -98,7 +99,7 @@ class _WellMapState extends State<WellMap> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AddWell(title: "List of Wells")));
+              builder: (context) => AddWell(title: "Add Well")));
     } else {
       Navigator.push(
           context,
