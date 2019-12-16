@@ -18,7 +18,6 @@ environment:
 
 dependencies:
   flutter_map: any
-  font_awesome_flutter: any
   flutter_picker: ^1.1.0
   flutter:
     sdk: flutter
@@ -80,3 +79,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family:  WaterIcon
+      fonts:
+        - asset: assets/fonts/water-icon.ttf
