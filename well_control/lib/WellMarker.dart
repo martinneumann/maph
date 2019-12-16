@@ -23,7 +23,9 @@ class WellMarker {
                   color: markerColor,
                   iconSize: iconSize,
                   onPressed: () {},
-                )));
+                )
+            )
+    );
   }
 
   String getMarkerName() {
@@ -46,7 +48,9 @@ class WellMarker {
                   color: markerColor,
                   iconSize: iconSize,
                   onPressed: () {},
-                )));
+                )
+            )
+    );
   }
 
   void setColor(String color) {
