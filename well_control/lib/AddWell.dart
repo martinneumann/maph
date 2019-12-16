@@ -37,6 +37,8 @@ class _AddWellState extends State<AddWell> {
   @override
   void dispose() {
     nameController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
     super.dispose();
   }
 
