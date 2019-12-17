@@ -21,7 +21,6 @@ namespace WellApi.Controllers
             {
                 ID = index,
                 Name = $"Well {index}",
-                Status = "green",
                 Location = new Location
                 {
                     Longitude = rng.Next(-180,180) + rng.NextDouble(),
@@ -30,7 +29,7 @@ namespace WellApi.Controllers
                 FundingInfo = new FundingInfo
                 {
                     Organisation = "ABC",
-                    Opening = new DateTime(2019, rng.Next(1, 12), 10),
+                    OpeningDate = new DateTime(2019, rng.Next(1, 12), 10),
                     Price = 1000000 + rng.Next(-400000,400000)
                 },
                 WellType = new WellType
