@@ -22,7 +22,6 @@ namespace WellApi.Controllers
                 ID = 0,
                 Description = "First Issue",
                 CreationDate = new DateTime(2019,11,10),
-                CreatedBy = "abc",
                 WellID = 1
             });
             smallIssues = Enumerable.Range(0, 1).Select(index => new SmallIssue

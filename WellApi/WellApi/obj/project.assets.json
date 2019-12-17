@@ -7337,11 +7337,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Max\\Desktop\\WellApi\\WellApi\\WellApi.csproj",
+      "projectUniqueName": "C:\\Users\\Max\\Desktop\\maph\\WellApi\\WellApi\\WellApi.csproj",
       "projectName": "WellApi",
-      "projectPath": "C:\\Users\\Max\\Desktop\\WellApi\\WellApi\\WellApi.csproj",
+      "projectPath": "C:\\Users\\Max\\Desktop\\maph\\WellApi\\WellApi\\WellApi.csproj",
       "packagesPath": "C:\\Users\\Max\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Max\\Desktop\\WellApi\\WellApi\\obj\\",
+      "outputPath": "C:\\Users\\Max\\Desktop\\maph\\WellApi\\WellApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

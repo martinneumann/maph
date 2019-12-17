@@ -9,19 +9,21 @@ namespace WellApi
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public string Status { get; set; }
+        public string Image { get; set; }
+        public string HasWater { get; set; }
+        public WellStatus[] StatusHistory { get; set; }
         public Location Location { get; set; }
         public FundingInfo FundingInfo { get; set; }
         public WellType WellType { get; set; }
-        public string Image { get; set; }
     }
 
-    public class SmallWell
+    public class WellStatus
     {
         public int ID { get; set; }
-        public string Name { get; set; }
-        public string Status { get; set; }
-        public Location Location { get; set; }
+        public string Description { get; set; }
+        public bool HasWater { get; set; }
+        public bool Confirmed { get; set; }
+        public DateTime StatusChangedDate { get; set; }
     }
 
     public class Location
@@ -33,9 +35,10 @@ namespace WellApi
     public class FundingInfo
     {
         public string Organisation { get; set; }
-        public DateTime Opening { get; set; }
+        public DateTime OpeningDate { get; set; }
         public double Price { get; set; }
     }
+
     public class WellType
     {
         public string Name { get; set; }
@@ -48,7 +51,19 @@ namespace WellApi
     {
         public string BarCode { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+    }
+
+    //
+    // For API Controller
+    //
+
+    public class SmallWell
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
         public string Status { get; set; }
+        public Location Location { get; set; }
     }
 
     public class SearchNearbyWells
