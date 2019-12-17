@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WellApi</name>
+    </assembly>
+    <members>
+        <member name="M:WellApi.Controllers.IssueController.GetAll">
+            <summary>
+            Get all issues.
+            </summary>
+        </member>
+        <member name="M:WellApi.Controllers.IssueController.GetIssue(System.Int32)">
+            <summary>
+            Get a specific issue.
+            </summary>
+            <param name="id"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.IssueController.PostNewIssue(WellApi.Issue)">
+            <summary>
+            Creates a specific Issue.
+            </summary>
+            <param name="issue"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.IssueController.PostUpdateIssue(WellApi.Issue)">
+            <summary>
+            Updates a specific Issue.
+            </summary>
+            <param name="issue"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.IssueController.DeleteIssue(System.Int32)">
+            <summary>
+            Deletes a specific Issue.
+            </summary>
+            <param name="id"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.WellController.GetAll">
+            <summary>
+            Get all wells.
+            </summary>
+        </member>
+        <member name="M:WellApi.Controllers.WellController.GetNearbyWells(WellApi.SearchNearbyWells)">
+            <summary>
+            Get all nearby wells.
+            </summary>
+            <param name="searchNearbyWells"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.WellController.GetWell(System.Int32)">
+            <summary>
+            Get a specific well.
+            </summary>
+            <param name="id"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.WellController.PostNewWell(WellApi.Well)">
+            <summary>
+            Creates a specific well.
+            </summary>
+            <param name="well"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.WellController.PostUpdateWell(WellApi.Well)">
+            <summary>
+            Updates a specific well.
+            </summary>
+            <param name="well"></param> 
+        </member>
+        <member name="M:WellApi.Controllers.WellController.DeleteWell(System.Int32)">
+            <summary>
+            Deletes a specific well.
+            </summary>
+            <param name="id"></param> 
+        </member>
+    </members>
+</doc>
