@@ -9,13 +9,17 @@ class WellMarker {
   static final double iconSize = 45.0;
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
+  LatLng location;
+  String type = "WellType";
+  String status;
 
   WellMarker(String wellName, String color, double latitude, double longitude) {
     name = wellName;
+    location = LatLng(latitude, longitude);
     setColor(color);
 
     marker = Marker(
-        point: LatLng(latitude, longitude),
+        point: location,
         builder: (ctx) =>
             Container(
                 child: IconButton(
@@ -38,9 +42,10 @@ class WellMarker {
 
   void setMarker(String color, double latitude, double longitude) {
     setColor(color);
+    location = LatLng(latitude, longitude);
 
     marker = Marker(
-        point: LatLng(latitude, longitude),
+        point: location,
         builder: (ctx) =>
             Container(
                 child: IconButton(
@@ -57,15 +62,23 @@ class WellMarker {
     switch (color) {
       case "red":
         markerColor = Color.fromARGB(255, 255, 0, 0);
+        status = "Not working";
         break;
       case "yellow":
         markerColor = Color.fromARGB(255, 255, 255, 0);
+        status = "Maintaince";
         break;
       case "green":
         markerColor = Color.fromARGB(255, 0, 255, 0);
+        status = "Working";
         break;
       default:
         markerColor = Color.fromARGB(255, 0, 255, 0);
+        status = "Working";
     }
+  }
+
+  void getStatus() {
+
   }
 }
