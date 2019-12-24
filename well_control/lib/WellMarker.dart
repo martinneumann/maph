@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:well_control/WellInfo.dart';
 import 'package:well_control/assets/water_icon.dart';
 
 class WellMarker {
@@ -26,7 +27,14 @@ class WellMarker {
                   icon: icon,
                   color: markerColor,
                   iconSize: iconSize,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        ctx,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                WellInfo(
+                                    title: name , well: this)));
+                  },
                 )
             )
     );
@@ -52,7 +60,14 @@ class WellMarker {
                   icon: icon,
                   color: markerColor,
                   iconSize: iconSize,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        ctx,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                WellInfo(
+                                    title: name , well: this)));
+                  },
                 )
             )
     );
@@ -76,9 +91,5 @@ class WellMarker {
         markerColor = Color.fromARGB(255, 0, 255, 0);
         status = "Working";
     }
-  }
-
-  void getStatus() {
-
   }
 }
