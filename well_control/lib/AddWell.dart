@@ -167,7 +167,5 @@ class _AddWellState extends State<AddWell> {
         double.parse(longitudeController.text)));
 
     Navigator.pop(context);
-
-    //print(wellList.wells.length);
   }
 }
