@@ -270,11 +270,10 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-
+          ListTile(
             title: Text('Status:'),
             subtitle: Text(
-                'xy zy'
+                well.status
             ),
           ),
         ],
