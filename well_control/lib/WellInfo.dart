@@ -5,9 +5,12 @@ import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
 import 'package:well_control/ReportWell.dart';
 
-class WellInfo extends StatefulWidget {
-  WellInfo({Key key, this.title}) : super(key: key);
+import 'WellMarker.dart';
 
+class WellInfo extends StatefulWidget {
+  WellInfo({Key key, this.title , this.well}) : super(key: key);
+
+  final WellMarker well;
   final String title;
 
   @override
@@ -40,7 +43,7 @@ class _WellInfoState extends State<WellInfo> {
             )
           ],
         ),
-        body: Center(child: Container(child: DisplayWellsInfo())));
+        body: Center(child: Container(child: DisplayWellsInfo(currentWell: widget.well))));
   }
 
   void choiceAction(String choice) {
@@ -62,6 +65,10 @@ class _WellInfoState extends State<WellInfo> {
 }
 
 class DisplayWellsInfo extends StatefulWidget {
+  DisplayWellsInfo({this.currentWell});
+
+  final WellMarker currentWell;
+
   @override
   DisplayWellsInfoState createState() => DisplayWellsInfoState();
 }
@@ -69,7 +76,9 @@ class DisplayWellsInfo extends StatefulWidget {
 class DisplayWellsInfoState extends State<DisplayWellsInfo> {
   @override
   Widget build(BuildContext context) {
+
     Color color = Theme.of(context).primaryColor;
+    WellMarker well = widget.currentWell;
 
     Widget buttonSection = Container(
       margin: EdgeInsets.all(10.0),
@@ -181,11 +190,10 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-
+          ListTile(
             title: Text('Name:'),
             subtitle: Text(
-                'xy zy'
+                well.getMarkerName()
             ),
           ),
         ],
@@ -198,11 +206,12 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
+          ListTile(
 
             title: Text('Geolaction:'),
             subtitle: Text(
-                'xy zy'
+                "Longitude: " + well.location.longitude.toString() + "\n" +
+                    "Latitude: " + well.location.latitude.toString()
             ),
           ),
         ],
@@ -214,11 +223,10 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-
+          ListTile(
             title: Text('Type:'),
             subtitle: Text(
-                'xy zy'
+                well.type
             ),
           ),
         ],
@@ -262,11 +270,10 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const ListTile(
-
+          ListTile(
             title: Text('Status:'),
             subtitle: Text(
-                'xy zy'
+                well.status
             ),
           ),
         ],

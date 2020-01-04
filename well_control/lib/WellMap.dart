@@ -19,11 +19,9 @@ class WellMap extends StatefulWidget {
 
 class _WellMapState extends State<WellMap> {
   static const addWell = "Add Well";
-  static const wellOverview = "List of Wells";
   static const settings = "Settings";
   static const report = "Report Malfunction";
   static const List<String> menuChoices = <String>[
-    wellOverview,
     addWell,
     report,
     settings
@@ -56,8 +54,6 @@ class _WellMapState extends State<WellMap> {
         ),
         body: Center(
           child: Container(
-            //width: 200,
-            //height: 200,
             child: FlutterMap(
               options: MapOptions(
                 center: LatLng(7.071891, 38.785878),
@@ -83,11 +79,6 @@ class _WellMapState extends State<WellMap> {
     if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
-    } else if (choice == wellOverview) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WellOverview(title: "List of Wells")));
     } else if (choice == addWell) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => AddWell(title: "Add Well")));
