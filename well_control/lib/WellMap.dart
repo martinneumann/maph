@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:location/location.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
@@ -18,6 +19,9 @@ class WellMap extends StatefulWidget {
 }
 
 class _WellMapState extends State<WellMap> {
+  MapController mapController = new MapController();
+  Location userLocation = new Location();
+
   static const addWell = "Add Well";
   static const settings = "Settings";
   static const report = "Report Malfunction";
@@ -39,6 +43,15 @@ class _WellMapState extends State<WellMap> {
         appBar: AppBar(
           title: Text(widget.title),
           actions: <Widget>[
+            RaisedButton(
+              onPressed: () {
+                _getLocation().then((value) {
+                  setState(() {
+                    setUserLocation(value);
+                  });
+                });
+              },
+            ),
             PopupMenuButton<String>(
               onSelected: choiceAction,
               itemBuilder: (BuildContext context) {
@@ -55,6 +68,7 @@ class _WellMapState extends State<WellMap> {
         body: Center(
           child: Container(
             child: FlutterMap(
+              mapController: mapController,
               options: MapOptions(
                 center: LatLng(7.071891, 38.785878),
                 zoom: 13.0,
@@ -87,6 +101,25 @@ class _WellMapState extends State<WellMap> {
           context,
           MaterialPageRoute(
               builder: (context) => ReportWell(title: "Report Malfunction")));
+    }
+  }
+
+  Future<Map<String, double>> _getLocation() async {
+    var currentLocation = <String, double>{};
+    try {
+      currentLocation = await userLocation.getLocation();
+    } catch (e) {
+      currentLocation = null;
+    }
+    return currentLocation;
+  }
+
+  void setUserLocation(Map<String , double> userLocation) {
+    if(userLocation == null) {
+      mapController.move(LatLng(7.071891, 38.785878 ) , 14);
+    }
+    else {
+      mapController.move(LatLng(userLocation['latitude'] , userLocation['longitude']), 14);
     }
   }
 }
