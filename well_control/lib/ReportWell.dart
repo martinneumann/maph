@@ -4,18 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:well_control/WellMap.dart';
-import 'package:http/http.dart' as http;
 
 import 'RepairInformation.dart';
 import 'Settings.dart';
 import 'WellMarkerLibary.dart' as wellList;
 import 'WellOverview.dart';
+import 'Functions.dart';
 
-/// Makes a POST request to save a new issue to the database.
-/// @param description The issue's description
-Future<http.Response> postNewIssue(String description) {
-  return http.post('https://wellapi.azurewebsites.net/api/Issue/PostNewIssue/' + description);
-}
+
 
 class ReportWell extends StatefulWidget {
   ReportWell({Key key, this.title}) : super(key: key);
