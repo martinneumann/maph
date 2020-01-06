@@ -25,10 +25,12 @@ class _WellMapState extends State<WellMap> {
   static const addWell = "Add Well";
   static const settings = "Settings";
   static const report = "Report Malfunction";
+  static const wellOverview = "Map Overview";
   static const List<String> menuChoices = <String>[
     addWell,
     report,
-    settings
+    settings,
+    wellOverview
   ];
 
   @override
@@ -43,15 +45,6 @@ class _WellMapState extends State<WellMap> {
         appBar: AppBar(
           title: Text(widget.title),
           actions: <Widget>[
-            RaisedButton(
-              onPressed: () {
-                _getLocation().then((value) {
-                  setState(() {
-                    setUserLocation(value);
-                  });
-                });
-              },
-            ),
             PopupMenuButton<String>(
               onSelected: choiceAction,
               itemBuilder: (BuildContext context) {
@@ -68,7 +61,6 @@ class _WellMapState extends State<WellMap> {
         body: Center(
           child: Container(
             child: FlutterMap(
-              mapController: mapController,
               options: MapOptions(
                 center: LatLng(7.071891, 38.785878),
                 zoom: 13.0,
@@ -82,8 +74,20 @@ class _WellMapState extends State<WellMap> {
                 ),
                 MarkerLayerOptions(markers: wellList.getMarkers()),
               ],
+              mapController: mapController,
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _getLocation().then((value) {
+              setState(() {
+                setUserLocation(value);
+              });
+            });
+          },
+          child: Icon(Icons.gps_fixed),
+          backgroundColor: Colors.blue,
         ),
       ),
     );
@@ -96,7 +100,12 @@ class _WellMapState extends State<WellMap> {
     } else if (choice == addWell) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => AddWell(title: "Add Well")));
-    } else {
+    }
+    else if (choice == wellOverview) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => WellOverview(title: "Map Overview")));
+    }
+    else {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -115,10 +124,7 @@ class _WellMapState extends State<WellMap> {
   }
 
   void setUserLocation(Map<String , double> userLocation) {
-    if(userLocation == null) {
-      mapController.move(LatLng(7.071891, 38.785878 ) , 14);
-    }
-    else {
+    if(userLocation != null) {
       mapController.move(LatLng(userLocation['latitude'] , userLocation['longitude']), 14);
     }
   }

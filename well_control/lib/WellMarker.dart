@@ -6,7 +6,8 @@ import 'package:well_control/assets/water_icon.dart';
 
 class WellMarker {
   String name;
-  static final Icon icon = Icon(WaterIcon.water);
+  //static final Icon icon = Icon(WaterIcon.water);
+  static final Icon icon = new Icon(Icons.local_drink);
   static final double iconSize = 45.0;
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
