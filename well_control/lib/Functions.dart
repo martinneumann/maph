@@ -16,3 +16,36 @@ Future<http.Response> getAllIssues() {
 Future<http.Response> getAllWells() {
   return http.get('https://wellapi.azurewebsites.net/api/Well/GetAll');
 }
+
+/// Gets a specific well
+/// @param id The specific well ID
+Future<http.Response> getWell(int id) {
+  return http.get('https://wellapi.azurewebsites.net/api/Well/GetWell/$id');
+}
+
+/// Gets nearby wells
+/// @param searchRadius A JSON String including searchRadius and current Position.
+Future<http.Response> getNearbyWells(String searchRadius) {
+  return http.post(
+      'https://wellapi.azurewebsites.net/api/Well/GetNearbyWells/$searchRadius');
+}
+
+/// Saves a new well
+/// @param well A JSON String with all current available well information.
+Future<http.Response> postNewWell(String well) {
+  return http.post(
+      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/$well');
+}
+
+/// Updates the information of a specific well
+/// @param well A JSON String including the updated well information.
+Future<http.Response> postUpdateWell(String well) {
+  return http.post(
+      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/$well');
+}
+
+/// Deletes a specific well
+/// @param id The specific well ID
+Future<http.Response> deleteWell(int id) {
+  return http.get('https://wellapi.azurewebsites.net/api/Well/DeleteWell/$id');
+}
