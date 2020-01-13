@@ -4,6 +4,7 @@ import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
 import 'package:well_control/ReportWell.dart';
+import 'Functions.dart';
 
 import 'WellMarker.dart';
 
@@ -65,6 +66,7 @@ class _WellInfoState extends State<WellInfo> {
 }
 
 class DisplayWellsInfo extends StatefulWidget {
+
   DisplayWellsInfo({this.currentWell});
 
   final WellMarker currentWell;
@@ -274,6 +276,8 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
             title: Text('Status:'),
             subtitle: Text(
                 well.status
+                /// getAllIssues();
+
             ),
           ),
         ],
