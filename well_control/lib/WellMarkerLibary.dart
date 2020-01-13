@@ -6,11 +6,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:well_control/WellMarker.dart';
 import 'Functions.dart';
 
+/// Well list
 List<WellMarker> wells = <WellMarker>[
 ];
 
-
-/// Returns all markers requested from DB
+/// Returns all markers requested from DB and saves them in the global
+/// well list.
 Future<List<Marker>> getMarkers() {
   // request wells
   return getAllWells().then((response)

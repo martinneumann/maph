@@ -275,9 +275,7 @@ class DisplayWellsInfoState extends State<DisplayWellsInfo> {
           ListTile(
             title: Text('Status:'),
             subtitle: Text(
-                well.status
-                /// getAllIssues();
-
+             "Issue text here"
             ),
           ),
         ],
