@@ -11,7 +11,7 @@ namespace WellApi
         public int Id { get; set; }
         public string Name { get; set; }
         public IFormFile Image { get; set; }
-        public bool Works { get; set; }
+        public string Status { get; set; }
         public WellStatus[] StatusHistory { get; set; }
         public Location Location { get; set; }
         public FundingInfo FundingInfo { get; set; }

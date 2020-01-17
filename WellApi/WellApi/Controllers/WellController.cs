@@ -12,42 +12,6 @@ namespace WellApi.Controllers
     [ApiController]
     public class WellController : ControllerBase
     {
-        private IEnumerable<SmallWell> smallWells;
-        private IEnumerable<Well> wells;
-        public WellController()
-        {
-            var rng = new Random();
-            wells = Enumerable.Range(0, 5).Select(index => new Well
-            {
-                ID = index,
-                Name = $"Well {index}",
-                Location = new Location
-                {
-                    Longitude = rng.Next(-180,180) + rng.NextDouble(),
-                    Latitude = rng.Next(-90, 90) + rng.NextDouble()
-                },
-                FundingInfo = new FundingInfo
-                {
-                    Organisation = "ABC",
-                    OpeningDate = new DateTime(2019, rng.Next(1, 12), 10),
-                    Price = 1000000 + rng.Next(-400000,400000)
-                },
-                WellType = new WellType
-                {
-                    Name = "Type X",
-                    Particularity = "None",
-                    Depth = 100 + rng.Next(-20,20)
-                }
-            });
-            Well[] wellArray = wells.ToArray();
-            smallWells = Enumerable.Range(0, 5).Select(index => new SmallWell
-            {
-                ID = index,
-                Name = $"Well {index}",
-                Status = "#00FF00",
-                Location = wellArray[index].Location
-            });
-        }
 
         /// <summary>
         /// Get all wells.
@@ -56,7 +20,7 @@ namespace WellApi.Controllers
         [ActionName("GetAll")]
         public SmallWell[] GetAll()
         {
-            return smallWells.ToArray();
+            return DB.GetSmallWells();
         }
 
         /// <summary>
@@ -68,20 +32,18 @@ namespace WellApi.Controllers
         public SmallWell[] GetNearbyWells(SearchNearbyWells searchNearbyWells)
         {
             //Berechnung fehlt
-            SmallWell[] smalls = new SmallWell[3];
-            Array.Copy(smallWells.ToArray(), 1, smalls, 0, 3);
-            return smalls;
+            return DB.GetSmallWells();
         }
 
         /// <summary>
         /// Get a specific well.
         /// </summary>
-        /// <param name="id"></param> 
-        [HttpGet("{id}")]
+        /// <param name="Id"></param> 
+        [HttpGet("{Id}")]
         [ActionName("GetWell")]
-        public Well GetWell(int id)
+        public Well GetWell(int Id)
         {
-            return wells.Single(well => well.ID == id);
+            return DB.GetWell(Id);
         }
 
         /// <summary>
@@ -92,7 +54,7 @@ namespace WellApi.Controllers
         [ActionName("PostNewWell")]
         public IActionResult PostNewWell(Well well)
         {
-            wells.Append(well);
+            DB.CreateNewWell(well);
             return Ok();
         }
 
@@ -104,20 +66,19 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateWell")]
         public IActionResult PostUpdateWell(Well well)
         {
-            wells = wells.Where(w => w.ID != well.ID).ToList();
-            wells.Append(well);
+            DB.UpdateWell(well);
             return Ok();
         }
 
         /// <summary>
         /// Deletes a specific well.
         /// </summary>
-        /// <param name="id"></param> 
-        [HttpDelete("{id}")]
+        /// <param name="Id"></param> 
+        [HttpDelete("{Id}")]
         [ActionName("DeleteWell")]
-        public IActionResult DeleteWell(int id)
+        public IActionResult DeleteWell(int Id)
         {
-            wells = wells.Where(w => w.ID != id).ToList();
+            DB.DeleteWell(Id);
             return Ok();
         }
     }

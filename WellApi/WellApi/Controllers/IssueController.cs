@@ -17,19 +17,7 @@ namespace WellApi.Controllers
 
         public IssueController()
         {
-            issues = Enumerable.Range(0,1).Select(index => new Issue
-            {
-                ID = 0,
-                Description = "First Issue",
-                CreationDate = new DateTime(2019,11,10),
-                WellID = 1
-            });
-            smallIssues = Enumerable.Range(0, 1).Select(index => new SmallIssue
-            {
-                ID = 0,
-                CreationDate = new DateTime(2019, 11, 10),
-                WellID = 1
-            });
+            
         }
 
         /// <summary>
@@ -50,7 +38,7 @@ namespace WellApi.Controllers
         [ActionName("GetIssue")]
         public Issue GetIssue(int id)
         {
-            return issues.Single(i => i.ID == id);
+            return issues.Single(i => i.Id == id);
         }
 
         /// <summary>
@@ -73,7 +61,7 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateIssue")]
         public IActionResult PostUpdateIssue(Issue issue)
         {
-            issues = issues.Where(w => w.ID != issue.ID).ToList();
+            issues = issues.Where(w => w.Id != issue.Id).ToList();
             issues.Append(issue);
             return Ok();
         }
@@ -86,7 +74,7 @@ namespace WellApi.Controllers
         [ActionName("DeleteIssue")]
         public IActionResult DeleteIssue(int id)
         {
-            issues = issues.Where(w => w.ID != id).ToList();
+            issues = issues.Where(w => w.Id != id).ToList();
             return Ok();
         }
     }
