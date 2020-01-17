@@ -29,16 +29,23 @@ class _AddWellState extends State<AddWell> {
   ];
 
   final nameController = TextEditingController();
+  final fundingController = TextEditingController();
+  final costsController = TextEditingController();
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
   String status;
   List<String> _wellStatus = ['Working', 'maintenance', 'Not Working'];
+
+  String type;
+  List<String> _wellTypes = ['Type A', 'Type B', 'Type C'];
 
   @override
   void dispose() {
     nameController.dispose();
     latitudeController.dispose();
     longitudeController.dispose();
+    fundingController.dispose();
+    costsController.dispose();
     super.dispose();
   }
 
@@ -114,9 +121,44 @@ class _AddWellState extends State<AddWell> {
                             value: stat,
                           );
                         }).toList(),
-                      )
-                    ],
+                      ),
+
+                      DropdownButton<String>(
+                        value: type,
+                        hint: Text("Select the well type"),
+                        onChanged: (String value) {
+                          setState(() {
+                            type = value;
+                          });
+                        },
+                        items: _wellTypes.map((type) {
+                          return DropdownMenuItem(
+                            child: new Text(type),
+                            value: type,
+                          );
+                        }).toList(),
+                      ),
+                      TextFormField(
+                        controller: fundingController,
+                        decoration: InputDecoration(labelText: "Funding info:"),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter funding info.';
+                          }
+                          return null;
+                        },
                   ),
+                      TextFormField(
+                        controller: costsController,
+                        decoration: InputDecoration(labelText: "Costs:"),
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter the building costs of the well.';
+                          }
+                          return null;
+                        },
+                      ),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: RaisedButton(
@@ -130,6 +172,8 @@ class _AddWellState extends State<AddWell> {
                       },
                       child: Text('Submit'),
                     ),
+                  ),
+                    ],
                   ),
                 ],
               ),
