@@ -19,10 +19,12 @@ class WellMap extends StatefulWidget {
 
 class _WellMapState extends State<WellMap> {
   static const mapMarkers = null;
+  static const listofWells = "List of wells";
   static const addWell = "Add Well";
   static const settings = "Settings";
   static const report = "Report Malfunction";
   static const List<String> menuChoices = <String>[
+    listofWells,
     addWell,
     report,
     settings
@@ -135,11 +137,16 @@ class _WellMapState extends State<WellMap> {
         Navigator.push(context,
             MaterialPageRoute(
                 builder: (context) => AddWell(title: "Add Well")));
+      } else if (choice == listofWells) {
+        Navigator.push(context,
+            MaterialPageRoute(
+                builder: (context) => WellOverview(title: "List of Wells")));
       } else {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ReportWell(title: "Report Malfunction")));
       }
+      }
     }
-  }
+
