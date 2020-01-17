@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +8,10 @@ namespace WellApi
 {
     public class Well
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
-        public string Image { get; set; }
-        public string HasWater { get; set; }
+        public IFormFile Image { get; set; }
+        public bool Works { get; set; }
         public WellStatus[] StatusHistory { get; set; }
         public Location Location { get; set; }
         public FundingInfo FundingInfo { get; set; }
@@ -19,21 +20,23 @@ namespace WellApi
 
     public class WellStatus
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Description { get; set; }
-        public bool HasWater { get; set; }
+        public bool Works { get; set; }
         public bool Confirmed { get; set; }
         public DateTime StatusChangedDate { get; set; }
     }
 
     public class Location
     {
+        public int Id { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
     }
 
     public class FundingInfo
     {
+        public int Id { get; set; }
         public string Organisation { get; set; }
         public DateTime OpeningDate { get; set; }
         public double Price { get; set; }
@@ -41,6 +44,7 @@ namespace WellApi
 
     public class WellType
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public Part[] Parts { get; set; }
         public string Particularity { get; set; }
@@ -49,7 +53,7 @@ namespace WellApi
 
     public class Part
     {
-        public string BarCode { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
@@ -60,7 +64,7 @@ namespace WellApi
 
     public class SmallWell
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
         public Location Location { get; set; }

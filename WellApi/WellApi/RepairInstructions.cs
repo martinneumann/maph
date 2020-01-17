@@ -7,7 +7,7 @@ namespace WellApi
 {
     public class RepairInstructions
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Description { get; set; }
         public Part PartToRepair { get; set; }
         public Instruction[] Instructions { get; set; }
@@ -15,9 +15,10 @@ namespace WellApi
 
     public class Instruction
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public int Number { get; set; }
         public string Image { get; set; }
 
     }
