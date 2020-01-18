@@ -65,6 +65,9 @@ class _WellMapState extends State<WellMap> {
               options: MapOptions(
                 center: LatLng(7.071891, 38.785878),
                 zoom: 13.0,
+                plugins: [
+                  MarkerClusterPlugin(),
+                ]
               ),
               layers: [
                 TileLayerOptions(
@@ -73,8 +76,27 @@ class _WellMapState extends State<WellMap> {
                   subdomains: ['a', 'b', 'c'],
                   additionalOptions: {'access_token': '', 'id': ''},
                 ),
+                /*
                 MarkerLayerOptions(
                   markers: wellList.getMarkers()
+                ),*/
+                MarkerClusterLayerOptions(
+                  maxClusterRadius: 120,
+                  size: Size(40, 40),
+                  fitBoundsOptions: FitBoundsOptions(
+                    padding: EdgeInsets.all(50),
+                  ),
+                  markers: wellList.getMarkers(),
+                  polygonOptions: PolygonOptions(
+                      borderColor: Colors.blueAccent,
+                      color: Colors.black12,
+                      borderStrokeWidth: 3),
+                  builder: (context, markers) {
+                    return FloatingActionButton(
+                      child: Text(markers.length.toString()),
+                      onPressed: null,
+                    );
+                  },
                 ),
               ],
               mapController: mapController,
