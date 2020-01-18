@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:well_control/AddWell.dart';
@@ -72,7 +73,9 @@ class _WellMapState extends State<WellMap> {
                   subdomains: ['a', 'b', 'c'],
                   additionalOptions: {'access_token': '', 'id': ''},
                 ),
-                MarkerLayerOptions(markers: wellList.getMarkers()),
+                MarkerLayerOptions(
+                  markers: wellList.getMarkers()
+                ),
               ],
               mapController: mapController,
             ),
@@ -125,7 +128,9 @@ class _WellMapState extends State<WellMap> {
 
   void setUserLocation(Map<String , double> userLocation) {
     if(userLocation != null) {
-      mapController.move(LatLng(userLocation['latitude'] , userLocation['longitude']), 14);
+      LatLng location = LatLng(userLocation['latitude'] , userLocation['longitude']);
+      wellList.setUserPositionMarker(location);
+      mapController.move(location, 14);
     }
   }
 }
