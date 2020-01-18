@@ -158,25 +158,57 @@ namespace WellApi
             return well;
         }
     
-        public static void CreateNewWell(Well newWell)
+        public static bool CreateNewWell(Well well)
         {
-
-            foreach (var part in newWell.WellType.Parts)
+            if (well == null)
+                return false;
+            int wellTypeId = 0;
+            if (well.WellType != null)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.Append("INSERT INTO [well].[dbo].[Part] (Name, Description)");
-                sb.Append($"VALUES ('{part.Name}','{part.Description}');");
-                String sql = sb.ToString();
+                WellType wellType = well.WellType;
+                wellTypeId = ExecuteInsertWellType(wellType);
 
-                Well well = new Well();
-                using (SqlCommand command = new SqlCommand(sql, sqlConnection))
+                if (wellType.Parts != null)
                 {
-                    SqlDataReader reader = command.ExecuteReader();
+                    int[] partIds = ExecuteInsertParts(wellType.Parts);
+                    foreach (int partId in partIds)
+                    {
+
+                    }
                 }
             }
-            
+
+            return true;
         }
     
+        public static int[] ExecuteInsertParts(Part[] parts)
+        {
+            if (parts == null)
+                return null;
+            String sqlParts = SqlQuerry.InsertParts(parts);
+            List<int> partsId = new List<int>();
+            using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        partsId.Add(reader.GetInt32(0));
+                    }
+                }
+            }
+            return partsId.ToArray();
+        }
+        public static int ExecuteInsertWellType(WellType wellType)
+        {
+            if (wellType == null)
+                return 0;
+            String sqlParts = SqlQuerry.InsertWellType(wellType);
+            using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+            {
+                return (int)command.ExecuteScalar();
+            }
+        }
         public static void UpdateWell(Well newWell)
         {
 
