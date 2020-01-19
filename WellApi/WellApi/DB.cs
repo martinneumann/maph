@@ -10,15 +10,15 @@ namespace WellApi
 {
     public class DB
     {
-        static SqlConnection sqlConnection = null;
+        // Connection
 
+        static SqlConnection sqlConnection = null;
         public static void ConnectToDb()
         {
             string connectionString = "Server=tcp:wellhtw.database.windows.net,1433;Initial Catalog=well;Persist Security Info=False;User ID=htw;Password=maph2019!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             sqlConnection = new SqlConnection(connectionString);
             sqlConnection.Open();
-        }
-        
+        }      
         public static void DisconnectFromDb()
         {
             if( sqlConnection != null)
@@ -28,137 +28,22 @@ namespace WellApi
             }
         }
 
-        public static SmallWell[] GetSmallWells()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Status, l.Longitude, l.Latitude ");
-            sb.Append("FROM [well].[dbo].[Well] w ");
-            sb.Append("JOIN [well].[dbo].[Location] l ");
-            sb.Append("ON w.LocationId = l.id;");
-            String sql = sb.ToString();
+        // Well
 
-            List<SmallWell> smallWells = new List<SmallWell>();
-            using (SqlCommand command = new SqlCommand(sql, sqlConnection))
-            {
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        SmallWell smallWell = new SmallWell
-                        {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Status = reader.GetString(2)
-                        };
-                        smallWell.Location.Longitude = reader.GetDouble(3);
-                        smallWell.Location.Latitude = reader.GetDouble(4);
-                        smallWells.Add(smallWell);
-                    }
-                }
-            }
-            return smallWells.ToArray();
-        }
-    
-        public static Well GetWell(int Id)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Image, w.Status, l.id, l.Longitude, l.Latitude, f.id, f.Organisation, f.OpeningDate, f.Price, t.id, t.Name, t.Particularity, t.Depth ");
-            sb.Append("FROM [well].[dbo].[Well] w ");
-            sb.Append("JOIN [well].[dbo].[Location] l ");
-            sb.Append("ON w.LocationId = l.id");
-            sb.Append("JOIN [well].[dbo].[FundingInfo] f ");
-            sb.Append("ON w.FundingInfoId = f.id");
-            sb.Append("JOIN [well].[dbo].[WellType] t ");
-            sb.Append("ON w.WellTypeId = t.id");
-            sb.Append($"WHERE w.id = {Id};");
-            String sql = sb.ToString();
+        // Mutiple SQL Querries
 
-            Well well = new Well();
-            using (SqlCommand command = new SqlCommand(sql, sqlConnection))
-            {
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        well.Id = reader.GetInt32(0);
-                        well.Name = reader.GetString(1);
-                        well.Image = null;
-                        Stream real_Image = reader.GetStream(2);
-                        well.Status = reader.GetString(3);
-                        well.Location.Id = reader.GetInt32(4);
-                        well.Location.Longitude = reader.GetDouble(5);
-                        well.Location.Latitude = reader.GetDouble(6);
-                        well.FundingInfo.Id = reader.GetInt32(7);
-                        well.FundingInfo.Organisation = reader.GetString(8);
-                        well.FundingInfo.OpeningDate = reader.GetDateTime(9);
-                        well.FundingInfo.Price = reader.GetDouble(10);
-                        well.WellType.Id = reader.GetInt32(11);
-                        well.WellType.Name = reader.GetString(12);
-                        well.WellType.Particularity = reader.GetString(13);
-                        well.WellType.Depth = reader.GetDouble(14);
-                    }
-                }
-            }
-            if( well.Id != 0)
-            {
-                StringBuilder sb2 = new StringBuilder();
-                sb2.Append("SELECT Id, Description, Works, Confirmed, StatusChangedDate");
-                sb2.Append("FROM [well].[dbo].[StatusHistory]");
-                sb2.Append($"WHERE Id = {well.Id};");
-                String sql2 = sb2.ToString();
-                List<WellStatus> wellStatuses = new List<WellStatus>();
-                using (SqlCommand command = new SqlCommand(sql2, sqlConnection))
-                {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            WellStatus wellStatus = new WellStatus
-                            {
-                                Id = reader.GetInt32(0),
-                                Description = reader.GetString(1),
-                                Works = reader.GetBoolean(2),
-                                Confirmed = reader.GetBoolean(3),
-                                StatusChangedDate = reader.GetDateTime(4)
-                            };
-                            wellStatuses.Add(wellStatus);
-                        }
-                    }
-                }
-                well.StatusHistory = wellStatuses.ToArray();
-            }
-            if(well.WellType.Id != 0)
-            {
-                StringBuilder sb2 = new StringBuilder();
-                sb2.Append("SELECT p.Id, p.Name, p.Description");
-                sb2.Append("FROM [well].[dbo].[Part] p");
-                sb2.Append("JOIN [well].[dbo].[WellParts] w");
-                sb2.Append("On w.PartId = p.Id");
-                sb2.Append($"WHERE w.WellTypeId = {well.WellType.Id};");
-                String sql2 = sb2.ToString();
-                List<Part> parts = new List<Part>();
-                using (SqlCommand command = new SqlCommand(sql2, sqlConnection))
-                {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Part part = new Part
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Description = reader.GetString(2)
-                            };
-                            parts.Add(part);
-                        }
-                    }
-                }
-                well.WellType.Parts = parts.ToArray();
-            }
+        public static Well GetCompleteWell(int wellId)
+        {
+            Well well = ExecuteSelectWell(wellId);
+            if (well == null || well.Id == 0)
+                return null;
+            well.StatusHistory = ExecuteSelectStatusHistory(wellId);
+            if (well.WellType.Id == 0)
+                return well;
+            well.WellType.Parts = ExecuteSelectWellParts(well.WellType.Id);
             return well;
         }
-    
-        public static bool CreateNewWell(Well well)
+        public static bool AddCompleteWell(Well well)
         {
             if (well == null)
                 return false;
@@ -188,7 +73,133 @@ namespace WellApi
             ExecuteStatusHistory(well.StatusHistory, well.Id);
             return true;
         }
-    
+        public static void UpdateCompleteWell(Well well)
+        {
+            if (well == null)
+                return;
+            if (well.WellType != null)
+            {
+                ExecuteUpdateParts(well.WellType.Parts);
+            }
+            ExecuteUpdateWellType(well.WellType);
+            ExecuteUpdateFundingInfo(well.FundingInfo);
+            ExecuteUpdateLocation(well.Location);
+            ExecuteUpdateWell(well);
+            ExecuteUpdateStatusHistory(well.StatusHistory, well.Id);
+
+        }
+
+        // Single SQL Querry
+
+        public static SmallWell[] ExecuteSelectSmallWells()
+        {
+            String sqlSelectSmallWells = SqlQuerry.SelectSmallWells();
+            if (sqlSelectSmallWells == null)
+                return null;
+            List<SmallWell> smallWells = new List<SmallWell>();
+            using (SqlCommand command = new SqlCommand(sqlSelectSmallWells, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        SmallWell smallWell = new SmallWell
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Status = reader.GetString(2)
+                        };
+                        smallWell.Location.Longitude = reader.GetDouble(3);
+                        smallWell.Location.Latitude = reader.GetDouble(4);
+                        smallWells.Add(smallWell);
+                    }
+                }
+            }
+            return smallWells.ToArray();
+        }
+        public static Well ExecuteSelectWell(int wellId)
+        {
+            string sqlSelectWell = SqlQuerry.SelectWell(wellId);
+            if (sqlSelectWell == null)
+                return null;
+            Well well = new Well();
+            using (SqlCommand command = new SqlCommand(sqlSelectWell, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        well.Id = reader.GetInt32(0);
+                        well.Name = reader.GetString(1);
+                        well.Image = null;
+                        Stream real_Image = reader.GetStream(3);
+                        well.Status = reader.GetString(4);
+                        well.Location.Id = reader.GetInt32(5);
+                        well.Location.Longitude = reader.GetDouble(6);
+                        well.Location.Latitude = reader.GetDouble(7);
+                        well.FundingInfo.Id = reader.GetInt32(8);
+                        well.FundingInfo.Organisation = reader.GetString(9);
+                        well.FundingInfo.OpeningDate = reader.GetDateTime(10);
+                        well.FundingInfo.Price = reader.GetDouble(11);
+                        well.WellType.Id = reader.GetInt32(12);
+                        well.WellType.Name = reader.GetString(13);
+                        well.WellType.Particularity = reader.GetString(14);
+                        well.WellType.Depth = reader.GetDouble(15);
+                    }
+                }
+            }
+            return well;
+        }     
+        public static WellStatus[] ExecuteSelectStatusHistory(int wellId)
+        {
+            string sqlSelectStatusHistory = SqlQuerry.SelectStatusHistory(wellId);
+            if (sqlSelectStatusHistory == null)
+                return null;
+            List<WellStatus> wellStatuses = new List<WellStatus>();
+            using (SqlCommand command = new SqlCommand(sqlSelectStatusHistory, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        WellStatus wellStatus = new WellStatus
+                        {
+                            Id = reader.GetInt32(0),
+                            Description = reader.GetString(1),
+                            Works = reader.GetBoolean(2),
+                            Confirmed = reader.GetBoolean(3),
+                            StatusChangedDate = reader.GetDateTime(4)
+                        };
+                        wellStatuses.Add(wellStatus);
+                    }
+                }
+            }
+            return wellStatuses.ToArray();
+        }
+        public static Part[] ExecuteSelectWellParts(int wellTypeId)
+        {
+            string sqlSelectWellParts = SqlQuerry.SelectWellParts(wellTypeId);
+            if (sqlSelectWellParts == null)
+                return null;
+            List<Part> parts = new List<Part>();
+            using (SqlCommand command = new SqlCommand(sqlSelectWellParts, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Part part = new Part
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Description = reader.GetString(2)
+                        };
+                        parts.Add(part);
+                    }
+                }
+            }
+            return parts.ToArray();
+        }
         public static int[] ExecuteInsertParts(Part[] parts)
         {
             string sqlParts = SqlQuerry.InsertParts(parts);
@@ -267,64 +278,7 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void UpdateWell(Well well)
-        {
-            if (well == null)
-                return;
-            if (well.WellType != null)
-            {
-                string sqlParts = SqlQuerry.UpdateParts(well.WellType.Parts);
-                if (sqlParts != null)
-                {
-                    using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                }
-            }
-            string sqlWellType = SqlQuerry.UpdateWellType(well.WellType);
-            if (sqlWellType != null)
-            {
-                using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-            string sqlFundingInfo = SqlQuerry.UpdateFundingInfo(well.FundingInfo);
-            if (sqlFundingInfo != null)
-            {
-                using (SqlCommand command = new SqlCommand(sqlFundingInfo, sqlConnection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-            string sqlLocation = SqlQuerry.UpdateLocation(well.Location);
-            if (sqlFundingInfo != null)
-            {
-                using (SqlCommand command = new SqlCommand(sqlLocation, sqlConnection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-            string sqlWell = SqlQuerry.UpdateWell(well);
-            if (sqlWell != null)
-            {
-                using (SqlCommand command = new SqlCommand(sqlWell, sqlConnection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-            string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(well.StatusHistory, well.Id);
-            if (sqlStatusHistory != null)
-            {
-                using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
-                {
-                    command.ExecuteNonQuery();
-                }
-            }
-
-        }
-        public static void DeleteWell(int wellId)
+        public static void ExecuteDeleteWell(int wellId)
         {
             string sqlDelete = SqlQuerry.DeleteWell(wellId);
             if (sqlDelete == null)
@@ -334,28 +288,210 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-    
+        public static void ExecuteUpdateParts(Part[] parts)
+        {
+            string sqlParts = SqlQuerry.UpdateParts(parts);
+            if (sqlParts == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteUpdateWellType(WellType wellType)
+        {
+            string sqlWellType = SqlQuerry.UpdateWellType(wellType);
+            if (sqlWellType == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }   
+        public static void ExecuteUpdateFundingInfo(FundingInfo fundingInfo)
+        {
+            string sqlFundingInfo = SqlQuerry.UpdateFundingInfo(fundingInfo);
+            if (sqlFundingInfo == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlFundingInfo, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteUpdateLocation(Location location)
+        {
+            string sqlLocation = SqlQuerry.UpdateLocation(location);
+            if (sqlLocation == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlLocation, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteUpdateWell(Well well)
+        {
+            string sqlWell = SqlQuerry.UpdateWell(well);
+            if (sqlWell == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlWell, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteUpdateStatusHistory(WellStatus[] statusHistory, int wellId)
+        {
+            string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(statusHistory, wellId);
+            if (sqlStatusHistory == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
         
-        public static SmallIssue[] GetSmallIssues()
-        {
-            return null;
-        }
+        
+        // Issue
 
-        public static Issue GetIssue(int id)
-        {
-            return null;
-        }
-        public static bool NewIssue(Issue issue)
-        {
-            return true;
-        }
-        public static void UpdateIssue(Issue issue)
-        {
+        // Mutiple SQL Querries
 
-        }
-        public static void DeleteIssue(int id)
+        public static Issue GetCompleteIssue(int issueId)
         {
+            Issue issue = ExecuteSelectIssue(issueId);
+            if (issue != null || issue.Id != 0)
+                issue.BrokenParts = ExecuteSelectBrokenParts(issue.Id);
+            return issue;
+        }
+        public static void AddCompleteNewIssue(Issue issue)
+        {
+            int IssueId = ExecuteInsertIssue(issue);
+            if (IssueId == 0)
+                return;
+            List<int> partIds = new List<int>();
+            foreach (Part part in issue.BrokenParts)
+            {
+                partIds.Add(part.Id);
+            }
+            ExecuteInsertBrokenParts(partIds.ToArray(), issue.Id);
+        }
+        
+        // Single SQL Querry
 
+        public static SmallIssue[] ExecuteSelectSmallIssues()
+        {
+            string sqlSmallIssue = SqlQuerry.SelectSmallIssue();
+            if (sqlSmallIssue == null)
+                return null;
+            List<SmallIssue> smallIssues = new List<SmallIssue>();
+            using (SqlCommand command = new SqlCommand(sqlSmallIssue, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        SmallIssue smallIssue = new SmallIssue
+                        {
+                            Id = reader.GetInt32(0),
+                            CreationDate = reader.GetDateTime(1),
+                            WellId = reader.GetInt32(2)
+                        };
+                        smallIssues.Add(smallIssue);
+                    }
+                }
+            }
+            return smallIssues.ToArray();
+        }
+        public static Issue ExecuteSelectIssue(int issueId)
+        {
+            Issue issue = new Issue();
+            string sqlIssue = SqlQuerry.SelectIssue(issueId);
+            if (sqlIssue == null)
+                return null;
+            using (SqlCommand command = new SqlCommand(sqlIssue, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        issue.Id = reader.GetInt32(0);
+                        issue.WellId = reader.GetInt32(1);
+                        issue.Description = reader.GetString(2);
+                        issue.CreationDate = reader.GetDateTime(3);
+                        issue.Image = null;
+                        issue.Status = reader.GetString(5);
+                        issue.Open = reader.GetBoolean(6);
+                        issue.ConfirmedBy = reader.GetString(7);
+                        issue.SolvedDate = reader.GetDateTime(8);
+                        issue.RepairedBy = reader.GetString(9);
+                        issue.Bill = null;
+                        issue.Works = reader.GetBoolean(11);
+                    }
+                }
+            }
+            return issue;
+        }
+        public static Part[] ExecuteSelectBrokenParts(int issueId)
+        {
+            string sqlBrokenParts = SqlQuerry.SelectBrokenParts(issueId);
+            if (sqlBrokenParts == null)
+                return null;
+            List<Part> parts = new List<Part>();
+            using (SqlCommand command = new SqlCommand(sqlBrokenParts, sqlConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Part part = new Part
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Description = reader.GetString(2)
+                        };
+                        parts.Add(part);
+                    }
+                }
+            }
+            return parts.ToArray();
+        }      
+        public static int ExecuteInsertIssue(Issue issue)
+        {
+            string sqlInsertIssue = SqlQuerry.InsertIssue(issue);
+            if (sqlInsertIssue == null)
+                return 0;
+            using (SqlCommand command = new SqlCommand(sqlInsertIssue, sqlConnection))
+            {
+                return (int)command.ExecuteScalar();
+            }
+        }
+        public static void ExecuteInsertBrokenParts(int[] partIds, int issueId)
+        {
+            string sqlBrokenParts = SqlQuerry.InsertBrokenParts(partIds, issueId);
+            if (sqlBrokenParts == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlBrokenParts, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteUpdateIssue(Issue issue)
+        {
+            string sqlUpdateIssue = SqlQuerry.UpdateIssue(issue);
+            if (sqlUpdateIssue == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlUpdateIssue, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void ExecuteDeleteIssue(int issueId)
+        {
+            string sqlDeleteIssue = SqlQuerry.DeleteIssue(issueId);
+            if (sqlDeleteIssue == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlDeleteIssue, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

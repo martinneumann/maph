@@ -20,7 +20,7 @@ namespace WellApi.Controllers
         [ActionName("GetAll")]
         public SmallWell[] GetAll()
         {
-            return DB.GetSmallWells();
+            return DB.ExecuteSelectSmallWells();
         }
 
         /// <summary>
@@ -32,19 +32,19 @@ namespace WellApi.Controllers
         public SmallWell[] GetNearbyWells(SearchNearbyWells searchNearbyWells)
         {
             //Berechnung fehlt
-            return DB.GetSmallWells();
+            return DB.ExecuteSelectSmallWells();
         }
 
         /// <summary>
         /// Get a specific well.
         /// </summary>
-        /// <param name="Id"></param> 
-        [HttpGet("{Id}")]
+        /// <param name="wellId"></param> 
+        [HttpGet("{wellId}")]
         [ActionName("GetWell")]
-        public Well GetWell(int Id)
+        public Well GetWell(int wellId)
         {
             // get Image sneeded
-            return DB.GetWell(Id);
+            return DB.GetCompleteWell(wellId);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace WellApi.Controllers
         public IActionResult PostNewWell(Well well)
         {
             // Image creation needed
-            if (DB.CreateNewWell(well))
+            if (DB.AddCompleteWell(well))
                 return Ok();
             else
                 return BadRequest();
@@ -70,7 +70,7 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateWell")]
         public IActionResult PostUpdateWell(Well well)
         {
-            DB.UpdateWell(well);
+            DB.UpdateCompleteWell(well);
             return Ok();
         }
 
@@ -82,7 +82,7 @@ namespace WellApi.Controllers
         [ActionName("DeleteWell")]
         public IActionResult DeleteWell(int Id)
         {
-            DB.DeleteWell(Id);
+            DB.ExecuteDeleteWell(Id);
             return Ok();
         }
     }

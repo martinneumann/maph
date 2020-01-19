@@ -221,5 +221,130 @@ namespace WellApi
             sb.Append($"WellId=VALUES(WellId);");
             return sb.ToString();
         }
+        public static string SelectSmallIssue()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Id, CreationDate, WellId ");
+            sb.Append("FROM [well].[dbo].[Issue];");
+            return sb.ToString();
+        }
+        public static string SelectIssue(int issueId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Id, WellId, Description, CreationDate, Image, Status, Open, ConfirmedBy, SolvedDate, RepairedBy, Bill, Works");
+            sb.Append("FROM [well].[dbo].[Issue]");
+            sb.Append($"WHERE Id = {issueId}");
+            return sb.ToString();
+        }
+        public static string SelectBrokenParts(int issueId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT p.Id, p.Name, p.Description");
+            sb.Append("FROM [well].[dbo].[BrokenParts] b");
+            sb.Append("JOIN [well].[dbo].[Part] p ");
+            sb.Append("ON b.PartId = p.id");
+            sb.Append($"WHERE b.IssueId = {issueId}");
+            return sb.ToString();
+        }
+        public static string InsertIssue(Issue issue)
+        {
+            if (issue == null)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("INSERT INTO [well].[dbo].[Issue] (WellId, Description, CreationDate, Status, Open, ConfirmedBy, SolvedDate, RepairedBy, Works)");
+            sb.Append("OUTPUT inserted.Id");
+            sb.Append($"VALUES ({issue.WellId},'{issue.Description}','{issue.CreationDate}','{issue.Status}',{issue.Open},'{issue.ConfirmedBy}','{issue.SolvedDate.Date}','{issue.RepairedBy}',{issue.Works});");
+            return sb.ToString();
+        }
+        public static string InsertBrokenParts(int[] partIds, int issueId)
+        {
+            if (issueId == 0 || partIds.Length == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("INSERT INTO [well].[dbo].[BrokenParts] (IssueId, PartId)");
+            List<string> values = new List<string>();
+            foreach (int partId in partIds)
+            {
+                if (partId != 0)
+                    values.Add($"({issueId}, {partId}),");
+            }
+            if (values.Count == 0)
+                return null;
+            values[0] = "VALUES " + values[0];
+            values[values.Count - 1].TrimEnd(',');
+            values[values.Count - 1].Append(';');
+            foreach (string value in values)
+            {
+                sb.Append(value);
+            }
+            return sb.ToString();
+        }
+        public static string UpdateIssue(Issue issue)
+        {
+            if (issue == null || issue.Id == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("UPDATE [well].[dbo].[Issue]");
+            sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.Date}', Status = '{issue.Status}', Open = {issue.Open}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.Date}', RepairedBy = '{issue.RepairedBy}', Works = {issue.Works}");
+            sb.Append($"WHERE Id = {issue.Id};");
+            return sb.ToString();
+        }
+        public static string DeleteIssue(int issueId)
+        {
+            if (issueId == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("DELETE");
+            sb.Append("FROM [well].[dbo].[Issue]");
+            sb.Append($"WHERE Id = {issueId};");
+            return sb.ToString();
+        }
+        public static string SelectSmallWells()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT w.Id, w.Name, w.Status, l.Longitude, l.Latitude ");
+            sb.Append("FROM [well].[dbo].[Well] w ");
+            sb.Append("JOIN [well].[dbo].[Location] l ");
+            sb.Append("ON w.LocationId = l.id;");
+            return sb.ToString();
+        }
+        public static string SelectWell(int wellId)
+        {
+            if (wellId == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT w.Id, w.Name, w.Image, w.Status, l.id, l.Longitude, l.Latitude, f.id, f.Organisation, f.OpeningDate, f.Price, t.id, t.Name, t.Particularity, t.Depth ");
+            sb.Append("FROM [well].[dbo].[Well] w ");
+            sb.Append("JOIN [well].[dbo].[Location] l ");
+            sb.Append("ON w.LocationId = l.id");
+            sb.Append("JOIN [well].[dbo].[FundingInfo] f ");
+            sb.Append("ON w.FundingInfoId = f.id");
+            sb.Append("JOIN [well].[dbo].[WellType] t ");
+            sb.Append("ON w.WellTypeId = t.id");
+            sb.Append($"WHERE w.id = {wellId};");
+            return sb.ToString();
+        }
+        public static string SelectStatusHistory(int wellId)
+        {
+            if (wellId == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Id, Description, Works, Confirmed, StatusChangedDate");
+            sb.Append("FROM [well].[dbo].[StatusHistory]");
+            sb.Append($"WHERE Id = {wellId};");
+            return sb.ToString();
+        }
+        public static string SelectWellParts(int wellTypeId)
+        {
+            if (wellTypeId == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT p.Id, p.Name, p.Description");
+            sb.Append("FROM [well].[dbo].[Part] p");
+            sb.Append("JOIN [well].[dbo].[WellParts] w");
+            sb.Append("On w.PartId = p.Id");
+            sb.Append($"WHERE w.WellTypeId = {wellTypeId};");
+            return sb.ToString();
+        }
     }
 }

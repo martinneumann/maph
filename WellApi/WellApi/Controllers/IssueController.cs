@@ -19,7 +19,7 @@ namespace WellApi.Controllers
         [ActionName("GetAll")]
         public SmallIssue[] GetAll()
         {
-            return DB.GetSmallIssues();
+            return DB.ExecuteSelectSmallIssues();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace WellApi.Controllers
         [ActionName("GetIssue")]
         public Issue GetIssue(int id)
         {
-            return DB.GetIssue(id);
+            return DB.GetCompleteIssue(id);
         }
 
         /// <summary>
@@ -41,10 +41,8 @@ namespace WellApi.Controllers
         [ActionName("PostNewIssue")]
         public IActionResult PostNewIssue(Issue issue)
         {
-            if (DB.NewIssue(issue))
-                return Ok();
-            else
-                return BadRequest();
+            DB.AddCompleteNewIssue(issue);
+            return Ok();
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateIssue")]
         public IActionResult PostUpdateIssue(Issue issue)
         {
-            DB.UpdateIssue(issue);
+            DB.ExecuteUpdateIssue(issue);
             return Ok();
         }
 
@@ -67,7 +65,7 @@ namespace WellApi.Controllers
         [ActionName("DeleteIssue")]
         public IActionResult DeleteIssue(int id)
         {
-            DB.DeleteIssue(id);
+            DB.ExecuteDeleteIssue(id);
             return Ok();
         }
     }
