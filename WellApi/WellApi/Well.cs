@@ -75,4 +75,5 @@ namespace WellApi
         public double SearchRadius { get; set; }
         public Location Location { get; set; }
     }
+
 }

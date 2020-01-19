@@ -28,16 +28,19 @@ namespace WellApi.Controllers
         /// <param name="id"></param> 
         [HttpGet("{id}")]
         [ActionName("GetIssue")]
-        public Issue GetIssue(int id)
+        public IActionResult GetIssue(int id)
         {
-            return DB.GetCompleteIssue(id);
+            Issue issue = DB.GetCompleteIssue(id);
+            if (issue.Id == 0)
+                return BadRequest("Id not found!");
+            return Ok(issue);
         }
 
         /// <summary>
         /// Creates a specific Issue.
         /// </summary>
         /// <param name="issue"></param> 
-        [HttpPost("{issue}")]
+        [HttpPost]
         [ActionName("PostNewIssue")]
         public IActionResult PostNewIssue(Issue issue)
         {
@@ -49,7 +52,7 @@ namespace WellApi.Controllers
         /// Updates a specific Issue.
         /// </summary>
         /// <param name="issue"></param> 
-        [HttpPost("{issue}")]
+        [HttpPost]
         [ActionName("PostUpdateIssue")]
         public IActionResult PostUpdateIssue(Issue issue)
         {

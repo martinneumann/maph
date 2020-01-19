@@ -13,10 +13,10 @@ namespace WellApi
         public static string SelectSmallWells()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Status, l.Longitude, l.Latitude ");
+            sb.Append("SELECT w.Id, w.Name, w.Status, l.Id, l.Longitude, l.Latitude ");
             sb.Append("FROM [well].[dbo].[Well] w ");
             sb.Append("JOIN [well].[dbo].[Location] l ");
-            sb.Append("ON w.LocationId = l.id;");
+            sb.Append("ON w.LocationId = l.Id;");
             return sb.ToString();
         }
         public static string SelectWell(int wellId)
@@ -24,15 +24,15 @@ namespace WellApi
             if (wellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Image, w.Status, l.id, l.Longitude, l.Latitude, f.id, f.Organisation, f.OpeningDate, f.Price, t.id, t.Name, t.Particularity, t.Depth ");
+            sb.Append("SELECT w.Id, w.Name, w.Image, w.Status, l.Id, l.Longitude, l.Latitude, f.Id, f.Organisation, f.OpeningDate, f.Price, t.Id, t.Name, t.Particularity, t.Depth ");
             sb.Append("FROM [well].[dbo].[Well] w ");
             sb.Append("JOIN [well].[dbo].[Location] l ");
-            sb.Append("ON w.LocationId = l.id");
+            sb.Append("ON w.LocationId = l.Id ");
             sb.Append("JOIN [well].[dbo].[FundingInfo] f ");
-            sb.Append("ON w.FundingInfoId = f.id");
+            sb.Append("ON w.FundingInfoId = f.Id ");
             sb.Append("JOIN [well].[dbo].[WellType] t ");
-            sb.Append("ON w.WellTypeId = t.id");
-            sb.Append($"WHERE w.id = {wellId};");
+            sb.Append("ON w.WellTypeId = t.Id ");
+            sb.Append($"WHERE w.Id = {wellId};");
             return sb.ToString();
         }
         public static string SelectStatusHistory(int wellId)
@@ -40,8 +40,8 @@ namespace WellApi
             if (wellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT Id, Description, Works, Confirmed, StatusChangedDate");
-            sb.Append("FROM [well].[dbo].[StatusHistory]");
+            sb.Append("SELECT Id, Description, Works, Confirmed, StatusChangedDate ");
+            sb.Append("FROM [well].[dbo].[StatusHistory] ");
             sb.Append($"WHERE Id = {wellId};");
             return sb.ToString();
         }
@@ -50,10 +50,10 @@ namespace WellApi
             if (wellTypeId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT p.Id, p.Name, p.Description");
-            sb.Append("FROM [well].[dbo].[Part] p");
-            sb.Append("JOIN [well].[dbo].[WellParts] w");
-            sb.Append("On w.PartId = p.Id");
+            sb.Append("SELECT p.Id, p.Name, p.Description ");
+            sb.Append("FROM [well].[dbo].[Part] p ");
+            sb.Append("JOIN [well].[dbo].[WellParts] w ");
+            sb.Append("On w.PartId = p.Id ");
             sb.Append($"WHERE w.WellTypeId = {wellTypeId};");
             return sb.ToString();
         }
@@ -67,19 +67,19 @@ namespace WellApi
         public static string SelectIssue(int issueId)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT Id, WellId, Description, CreationDate, Image, Status, Open, ConfirmedBy, SolvedDate, RepairedBy, Bill, Works");
-            sb.Append("FROM [well].[dbo].[Issue]");
-            sb.Append($"WHERE Id = {issueId}");
+            sb.Append("SELECT Id, WellId, Description, CreationDate, Image, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Bill, Works ");
+            sb.Append("FROM [well].[dbo].[Issue] ");
+            sb.Append($"WHERE Id = {issueId};");
             return sb.ToString();
         }
         public static string SelectBrokenParts(int issueId)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT p.Id, p.Name, p.Description");
-            sb.Append("FROM [well].[dbo].[BrokenParts] b");
+            sb.Append("SELECT p.Id, p.Name, p.Description ");
+            sb.Append("FROM [well].[dbo].[BrokenParts] b ");
             sb.Append("JOIN [well].[dbo].[Part] p ");
-            sb.Append("ON b.PartId = p.id");
-            sb.Append($"WHERE b.IssueId = {issueId}");
+            sb.Append("ON b.PartId = p.id ");
+            sb.Append($"WHERE b.IssueId = {issueId};");
             return sb.ToString();
         }
         
@@ -90,8 +90,8 @@ namespace WellApi
             if (parts == null || parts.Length == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[Part] (Name, Description)");
-            sb.Append("OUTPUT inserted.Id");
+            sb.Append("INSERT INTO [well].[dbo].[Part] (Name, Description) ");
+            sb.Append("OUTPUT inserted.Id ");
             for (int i = 0; i < parts.Length - 1; i++)
             {
                 sb.Append($"VALUES ('{parts[i].Name}','{parts[i].Description}'),");
@@ -104,9 +104,9 @@ namespace WellApi
             if (wellType == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[WellType] (Name, Particularity,Depth)");
-            sb.Append("OUTPUT INSERTED.Id");
-            sb.Append($"VALUES ('{wellType.Name}','{wellType.Particularity}',{wellType.Depth});");
+            sb.Append("INSERT INTO [well].[dbo].[WellType] (Name, Particularity,Depth) ");
+            sb.Append("OUTPUT INSERTED.Id ");
+            sb.Append($"VALUES ('{wellType.Name}','{wellType.Particularity}',{wellType.Depth.ToString(System.Globalization.CultureInfo.InvariantCulture)});");
             return sb.ToString();
         }
         public static string InsertWellParts(int wellTypeId, int[] partId)
@@ -116,7 +116,7 @@ namespace WellApi
             if (partId.Length == 0 || wellTypeId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[WellParts] (WellTypeId, PartId)");
+            sb.Append("INSERT INTO [well].[dbo].[WellParts] (WellTypeId, PartId) ");
             for (int i = 0; i < partId.Length - 1; i++)
             {
                 sb.Append($"VALUES ({wellTypeId},{partId[i]}),");
@@ -129,12 +129,12 @@ namespace WellApi
             if(fundingInfo == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[FundingInfo] (Organisation, OpeningDate, Price)");
-            sb.Append("OUTPUT INSERTED.Id");
+            sb.Append("INSERT INTO [well].[dbo].[FundingInfo] (Organisation, OpeningDate, Price) ");
+            sb.Append("OUTPUT INSERTED.Id ");
             if (fundingInfo.OpeningDate == null)
-                sb.Append($"VALUES ('{fundingInfo.Organisation}',CURRENT_TIMESTAMP,{fundingInfo.Price});");
+                sb.Append($"VALUES ('{fundingInfo.Organisation}',CURRENT_TIMESTAMP,{fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)});");
             else
-                sb.Append($"VALUES ('{fundingInfo.Organisation}','{fundingInfo.OpeningDate.Date}',{fundingInfo.Price});");
+                sb.Append($"VALUES ('{fundingInfo.Organisation}','{fundingInfo.OpeningDate.ToString("yyyyMMdd")}',{fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)});");
             return sb.ToString();
         }
         public static string InsertLocation(Location location)
@@ -142,9 +142,9 @@ namespace WellApi
             if (location == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[Location] (Longitude, Latitude)");
-            sb.Append("OUTPUT INSERTED.Id");
-            sb.Append($"VALUES ({location.Longitude},{location.Latitude});");
+            sb.Append("INSERT INTO [well].[dbo].[Location] (Longitude, Latitude) ");
+            sb.Append("OUTPUT INSERTED.Id ");
+            sb.Append($"VALUES ({location.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)},{location.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)});");
             return sb.ToString();
         }
         public static string InsertWell(Well well)
@@ -153,8 +153,8 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             // no Image!!!
-            sb.Append("INSERT INTO [well].[dbo].[Well] (Name, Status, LocationId, FundingInfoId, WellTypeId)");
-            sb.Append("OUTPUT INSERTED.Id");
+            sb.Append("INSERT INTO [well].[dbo].[Well] (Name, Status, LocationId, FundingInfoId, WellTypeId) ");
+            sb.Append("OUTPUT INSERTED.Id ");
             sb.Append($"VALUES ('{well.Name}', '{well.Status}', {well.Location.Id}, {well.FundingInfo.Id}, {well.WellType.Id});");
             return sb.ToString();
         }
@@ -164,20 +164,24 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             // no Image!!!
-            sb.Append("INSERT INTO [well].[dbo].[StatusHistory] (Description, Works, Confirmed, StatusChangedDate, WellId)");
+            sb.Append("INSERT INTO [well].[dbo].[StatusHistory] (Description, Works, Confirmed, StatusChangedDate, WellId) ");
             List<string> values = new List<string>();
             foreach (WellStatus status in statusHistory)
             {
                 if (status.StatusChangedDate == null)
-                    sb.Append($"VALUES ('{status.Description}',{status.Works},{status.Confirmed},CURRENT_TIMESTAMP, {wellId}),");
+                    values.Add($"('{status.Description}',{status.Works},{status.Confirmed},CURRENT_TIMESTAMP, {wellId}),");
                 else
-                    sb.Append($"VALUES ('{status.Description}',{status.Works},{status.Confirmed},'{status.StatusChangedDate.Date}', {wellId}),");
+                    values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},'{status.StatusChangedDate.ToString("yyyyMMdd")}', {wellId}),");
             }
             if (values.Count == 0)
                 return null;
             values[0] = "VALUES " + values[0];
-            values[values.Count - 1].TrimEnd(',');
-            values[values.Count - 1].Append(';');
+            values[values.Count - 1] = values[values.Count - 1].TrimEnd(',');
+            values[values.Count - 1] += ";";
+            foreach (string value in values)
+            {
+                sb.Append(value);
+            }
             return sb.ToString();
         }
         public static string InsertIssue(Issue issue)
@@ -185,9 +189,55 @@ namespace WellApi
             if (issue == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[Issue] (WellId, Description, CreationDate, Status, Open, ConfirmedBy, SolvedDate, RepairedBy, Works)");
-            sb.Append("OUTPUT inserted.Id");
-            sb.Append($"VALUES ({issue.WellId},'{issue.Description}','{issue.CreationDate}','{issue.Status}',{issue.Open},'{issue.ConfirmedBy}','{issue.SolvedDate.Date}','{issue.RepairedBy}',{issue.Works});");
+            string insertColumns = "";
+            string insertColumnValues = "";
+            if (issue.WellId != 0)
+            {
+                insertColumns += "WellId, ";
+                insertColumnValues += $"{issue.WellId}, ";
+            }
+            if (issue.Description != null)
+            {
+                insertColumns += "Description, ";
+                insertColumnValues += $"'{issue.Description}', ";
+            }
+            if (issue.CreationDate != new DateTime())
+            {
+                insertColumns += "CreationDate, ";
+                insertColumnValues += $"'{issue.CreationDate.ToString("yyyyMMdd")}', ";
+            }
+            else
+            {
+                insertColumns += "CreationDate, ";
+                insertColumnValues += $"CURRENT_TIMESTAMP, ";
+            }
+            if (issue.Status != null)
+            {
+                insertColumns += "Status, ";
+                insertColumnValues += $"'{issue.Status}', ";
+            }
+            insertColumns += "[Open], ";
+            insertColumnValues += $"{Convert.ToInt32(issue.Open)}, ";
+            if (issue.ConfirmedBy != null)
+            {
+                insertColumns += "ConfirmedBy, ";
+                insertColumnValues += $"'{issue.ConfirmedBy}', ";
+            }
+            if (issue.SolvedDate != new DateTime())
+            {
+                insertColumns += "SolvedDate, ";
+                insertColumnValues += $"'{issue.SolvedDate.ToString("yyyyMMdd")}', ";
+            }
+            if (issue.RepairedBy != null)
+            {
+                insertColumns += "RepairedBy, ";
+                insertColumnValues += $"'{issue.RepairedBy}', ";
+            }
+            insertColumns += "Works";
+            insertColumnValues += $"{Convert.ToInt32(issue.Works)}";
+            sb.Append($"INSERT INTO [well].[dbo].[Issue] ({insertColumns}) ");
+            sb.Append("OUTPUT inserted.Id ");
+            sb.Append($"VALUES ({insertColumnValues});");
             return sb.ToString();
         }
         public static string InsertBrokenParts(int[] partIds, int issueId)
@@ -195,7 +245,7 @@ namespace WellApi
             if (issueId == 0 || partIds.Length == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[BrokenParts] (IssueId, PartId)");
+            sb.Append("INSERT INTO [well].[dbo].[BrokenParts] (IssueId, PartId) ");
             List<string> values = new List<string>();
             foreach (int partId in partIds)
             {
@@ -216,31 +266,14 @@ namespace WellApi
 
         // Update
 
-        public static string UpdateParts(Part[] parts)
+        public static string UpdatePart(Part part)
         {
-            if (parts == null)
-                return null;
-            if (parts.Length == 0)
+            if (part == null || part.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[Part] (Id, Name, Description)");
-            List<string> values = new List<string>();
-            foreach (Part part in parts)
-            {
-                if (part.Id != 0)
-                    values.Add($"({part.Id}, '{part.Name}', '{part.Description}'),");
-            }
-            if (values.Count == 0)
-                return null;
-            values[0] = "VALUES " + values[0];
-            values[values.Count - 1].TrimEnd(',');
-            foreach (string value in values)
-            {
-                sb.Append(value);
-            }
-            sb.Append($"ON DUPLICATE KEY UPDATE Id=VALUES(Id),");
-            sb.Append($"Name=VALUES(Name),");
-            sb.Append($"Description=VALUES(Description);");
+            sb.Append("UPDATE [well].[dbo].[Part] ");
+            sb.Append($"SET Name = '{part.Name}', Description = '{part.Description}' ");
+            sb.Append($"WHERE Id = {part.Id};");
             return sb.ToString();
         }
         public static string UpdateWellType(WellType wellType)
@@ -248,8 +281,8 @@ namespace WellApi
             if (wellType == null || wellType.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("UPDATE [well].[dbo].[WellType]");
-            sb.Append($"SET Name = '{wellType.Name}', Particularity = '{wellType.Particularity}', Depth = {wellType.Depth}");
+            sb.Append("UPDATE [well].[dbo].[WellType] ");
+            sb.Append($"SET Name = '{wellType.Name}', Particularity = '{wellType.Particularity}', Depth = {wellType.Depth.ToString(System.Globalization.CultureInfo.InvariantCulture)} ");
             sb.Append($"WHERE Id = {wellType.Id};");
             return sb.ToString();
         }
@@ -258,8 +291,8 @@ namespace WellApi
             if (fundingInfo == null || fundingInfo.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("UPDATE [well].[dbo].[FundingInfo]");
-            sb.Append($"SET Organisation = '{fundingInfo.Organisation}', OpeningDate = '{fundingInfo.OpeningDate.Date}', Price = {fundingInfo.Price}");
+            sb.Append("UPDATE [well].[dbo].[FundingInfo] ");
+            sb.Append($"SET Organisation = '{fundingInfo.Organisation}', OpeningDate = '{fundingInfo.OpeningDate.ToString("yyyyMMdd")}', Price = {fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} ");
             sb.Append($"WHERE Id = {fundingInfo.Id};");
             return sb.ToString();
         }
@@ -268,8 +301,8 @@ namespace WellApi
             if (location == null || location.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("UPDATE [well].[dbo].[Location]");
-            sb.Append($"SET Longitude = {location.Longitude}, Latitude = {location.Latitude}");
+            sb.Append("UPDATE [well].[dbo].[Location] ");
+            sb.Append($"SET Longitude = {location.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}, Latitude = {location.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)} ");
             sb.Append($"WHERE Id = {location.Id};");
             return sb.ToString();
         }
@@ -278,37 +311,19 @@ namespace WellApi
             if (well == null || well.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("UPDATE [well].[dbo].[Well]");
-            sb.Append($"SET Name = '{well.Name}', Status = '{well.Status}', LocationId = {well.Location.Id}, FundingInfoId = {well.FundingInfo.Id}, WellTypeId = {well.WellType.Id}");
+            sb.Append("UPDATE [well].[dbo].[Well] ");
+            sb.Append($"SET Name = '{well.Name}', Status = '{well.Status}', LocationId = {well.Location.Id}, FundingInfoId = {well.FundingInfo.Id}, WellTypeId = {well.WellType.Id} ");
             sb.Append($"WHERE Id = {well.Id};");
             return sb.ToString();
         }
-        public static string UpdateStatusHistory(WellStatus[] statusHistory, int wellId)
+        public static string UpdateStatusHistory(WellStatus statusHistory, int wellId)
         {
-            if (statusHistory == null || statusHistory.Length == 0 || wellId == 0)
+            if (statusHistory == null || statusHistory.Id == 0 || wellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[StatusHistory] (Id, Description, Works, Confirmed, StatusChangedDate, WellId)");
-            List<string> values = new List<string>();
-            foreach (WellStatus status in statusHistory)
-            {
-                if (status.Id != 0)
-                    values.Add($"({status.Id}, '{status.Description}', {status.Works}, {status.Confirmed}, {status.StatusChangedDate.Date}, {wellId}),");
-            }
-            if (values.Count == 0)
-                return null;
-            values[0] = "VALUES " + values[0];
-            values[values.Count - 1].TrimEnd(',');
-            foreach (string value in values)
-            {
-                sb.Append(value);
-            }
-            sb.Append($"ON DUPLICATE KEY UPDATE Id=VALUES(Id),");
-            sb.Append($"Description=VALUES(Description),");
-            sb.Append($"Works=VALUES(Works),");
-            sb.Append($"Confirmed=VALUES(Confirmed),");
-            sb.Append($"StatusChangedDate=VALUES(StatusChangedDate),");
-            sb.Append($"WellId=VALUES(WellId);");
+            sb.Append("UPDATE [well].[dbo].[StatusHistory] ");
+            sb.Append($"SET Description = '{statusHistory.Description}', Works = {Convert.ToInt32(statusHistory.Works)}, Confirmed = {Convert.ToInt32(statusHistory.Confirmed)}, StatusChangedDate = '{statusHistory.StatusChangedDate.ToString("yyyyMMdd")}', WellId = {wellId} ");
+            sb.Append($"WHERE Id = {statusHistory.Id};");
             return sb.ToString();
         }
         public static string UpdateIssue(Issue issue)
@@ -316,8 +331,8 @@ namespace WellApi
             if (issue == null || issue.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("UPDATE [well].[dbo].[Issue]");
-            sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.Date}', Status = '{issue.Status}', Open = {issue.Open}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.Date}', RepairedBy = '{issue.RepairedBy}', Works = {issue.Works}");
+            sb.Append("UPDATE [well].[dbo].[Issue] ");
+            sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.ToString("yyyyMMdd")}', Status = '{issue.Status}', [Open] = {Convert.ToInt32(issue.Open)}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.ToString("yyyyMMdd")}', RepairedBy = '{issue.RepairedBy}', Works = {Convert.ToInt32(issue.Works)} ");
             sb.Append($"WHERE Id = {issue.Id};");
             return sb.ToString();
         }
@@ -328,15 +343,9 @@ namespace WellApi
             if (wellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("DELETE");
-            sb.Append("FROM [well].[dbo].[Well] w");
-            sb.Append("JOIN [well].[dbo].[StatusHistory] h");
-            sb.Append("On w.Id = h.WellId");
-            sb.Append("JOIN [well].[dbo].[FundingInfo] f");
-            sb.Append("On w.FundingId = f.Id");
-            sb.Append("JOIN [well].[dbo].[Issue] i");
-            sb.Append("On w.Id = i.WellId");
-            sb.Append($"WHERE w.Id = {wellId};");
+            sb.Append("DELETE ");
+            sb.Append("FROM [well].[dbo].[Well] ");
+            sb.Append($"WHERE Id = {wellId};");
             return sb.ToString();
         }
         public static string DeleteIssue(int issueId)
@@ -344,8 +353,8 @@ namespace WellApi
             if (issueId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("DELETE");
-            sb.Append("FROM [well].[dbo].[Issue]");
+            sb.Append("DELETE ");
+            sb.Append("FROM [well].[dbo].[Issue] ");
             sb.Append($"WHERE Id = {issueId};");
             return sb.ToString();
         }

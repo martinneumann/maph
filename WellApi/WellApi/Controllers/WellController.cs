@@ -27,7 +27,7 @@ namespace WellApi.Controllers
         /// Get all nearby wells.
         /// </summary>
         /// <param name="searchNearbyWells"></param> 
-        [HttpPost("{searchNearbyWells}")]
+        [HttpPost]
         [ActionName("GetNearbyWells")]
         public SmallWell[] GetNearbyWells(SearchNearbyWells searchNearbyWells)
         {
@@ -51,7 +51,7 @@ namespace WellApi.Controllers
         /// Creates a specific well.
         /// </summary>
         /// <param name="well"></param> 
-        [HttpPost("{well}")]
+        [HttpPost]
         [ActionName("PostNewWell")]
         public IActionResult PostNewWell(Well well)
         {
@@ -66,7 +66,7 @@ namespace WellApi.Controllers
         /// Updates a specific well.
         /// </summary>
         /// <param name="well"></param> 
-        [HttpPost("{well}")]
+        [HttpPost]
         [ActionName("PostUpdateWell")]
         public IActionResult PostUpdateWell(Well well)
         {

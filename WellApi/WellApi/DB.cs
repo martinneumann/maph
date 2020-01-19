@@ -70,7 +70,7 @@ namespace WellApi
                 statusHistory.Add(status);
                 well.StatusHistory = statusHistory.ToArray();
             }
-            ExecuteStatusHistory(well.StatusHistory, well.Id);
+            ExecuteInsertStatusHistory(well.StatusHistory, well.Id);
             return true;
         }
         public static void UpdateCompleteWell(Well well)
@@ -79,14 +79,19 @@ namespace WellApi
                 return;
             if (well.WellType != null)
             {
-                ExecuteUpdateParts(well.WellType.Parts);
+                foreach (Part part in well.WellType.Parts)
+                {
+                    ExecuteUpdatePart(part);
+                }
             }
             ExecuteUpdateWellType(well.WellType);
             ExecuteUpdateFundingInfo(well.FundingInfo);
             ExecuteUpdateLocation(well.Location);
             ExecuteUpdateWell(well);
-            ExecuteUpdateStatusHistory(well.StatusHistory, well.Id);
-
+            foreach (WellStatus status in well.StatusHistory)
+            {
+                ExecuteUpdateStatusHistory(status, well.Id);
+            }
         }
 
         // Single SQL Querry
@@ -95,7 +100,7 @@ namespace WellApi
         {
             String sqlSelectSmallWells = SqlQuerry.SelectSmallWells();
             if (sqlSelectSmallWells == null)
-                return null;
+                return new SmallWell[0];
             List<SmallWell> smallWells = new List<SmallWell>();
             using (SqlCommand command = new SqlCommand(sqlSelectSmallWells, sqlConnection))
             {
@@ -107,10 +112,14 @@ namespace WellApi
                         {
                             Id = reader.GetInt32(0),
                             Name = reader.GetString(1),
-                            Status = reader.GetString(2)
+                            Status = reader.GetString(2),
+                            Location = new Location
+                            {
+                                Id = reader.GetInt32(3),
+                                Longitude = reader.GetDouble(4),
+                                Latitude = reader.GetDouble(5)
+                            }
                         };
-                        smallWell.Location.Longitude = reader.GetDouble(3);
-                        smallWell.Location.Latitude = reader.GetDouble(4);
                         smallWells.Add(smallWell);
                     }
                 }
@@ -122,39 +131,52 @@ namespace WellApi
             string sqlSelectWell = SqlQuerry.SelectWell(wellId);
             if (sqlSelectWell == null)
                 return null;
-            Well well = new Well();
+
             using (SqlCommand command = new SqlCommand(sqlSelectWell, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        well.Id = reader.GetInt32(0);
-                        well.Name = reader.GetString(1);
-                        well.Image = null;
-                        Stream real_Image = reader.GetStream(3);
-                        well.Status = reader.GetString(4);
-                        well.Location.Id = reader.GetInt32(5);
-                        well.Location.Longitude = reader.GetDouble(6);
-                        well.Location.Latitude = reader.GetDouble(7);
-                        well.FundingInfo.Id = reader.GetInt32(8);
-                        well.FundingInfo.Organisation = reader.GetString(9);
-                        well.FundingInfo.OpeningDate = reader.GetDateTime(10);
-                        well.FundingInfo.Price = reader.GetDouble(11);
-                        well.WellType.Id = reader.GetInt32(12);
-                        well.WellType.Name = reader.GetString(13);
-                        well.WellType.Particularity = reader.GetString(14);
-                        well.WellType.Depth = reader.GetDouble(15);
+                        Well well = new Well
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Image = null,
+                            Status = reader.GetString(3)
+                        };
+                        Stream real_Image = reader.GetStream(2);
+                        well.Location = new Location
+                        {
+                            Id = reader.GetInt32(4),
+                            Longitude = reader.GetDouble(5),
+                            Latitude = reader.GetDouble(6)
+                        };
+                        well.FundingInfo = new FundingInfo
+                        {
+                            Id = reader.GetInt32(7),
+                            Organisation = reader.GetString(8),
+                            OpeningDate = reader.GetDateTime(9),
+                            Price = reader.GetDouble(10)
+                        };
+                        well.WellType = new WellType
+                        {
+                            Id = reader.GetInt32(11),
+                            Name = reader.GetString(12),
+                            Particularity = reader.GetString(13),
+                            Depth = reader.GetDouble(14)
+                        };
+                        return well;
                     }
                 }
             }
-            return well;
+            return null;
         }     
         public static WellStatus[] ExecuteSelectStatusHistory(int wellId)
         {
             string sqlSelectStatusHistory = SqlQuerry.SelectStatusHistory(wellId);
             if (sqlSelectStatusHistory == null)
-                return null;
+                return new WellStatus[0];
             List<WellStatus> wellStatuses = new List<WellStatus>();
             using (SqlCommand command = new SqlCommand(sqlSelectStatusHistory, sqlConnection))
             {
@@ -268,7 +290,7 @@ namespace WellApi
                 return (int)command.ExecuteScalar();
             }
         }
-        public static void ExecuteStatusHistory(WellStatus[] statusHistory, int wellId)
+        public static void ExecuteInsertStatusHistory(WellStatus[] statusHistory, int wellId)
         {
             string sqlStatusHistory = SqlQuerry.InsertStatusHistory(statusHistory, wellId);
             if (sqlStatusHistory == null)
@@ -288,12 +310,12 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateParts(Part[] parts)
+        public static void ExecuteUpdatePart(Part part)
         {
-            string sqlParts = SqlQuerry.UpdateParts(parts);
-            if (sqlParts == null)
+            string sqlPart = SqlQuerry.UpdatePart(part);
+            if (sqlPart == null)
                 return;
-            using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+            using (SqlCommand command = new SqlCommand(sqlPart, sqlConnection))
             {
                 command.ExecuteNonQuery();
             }
@@ -338,7 +360,7 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateStatusHistory(WellStatus[] statusHistory, int wellId)
+        public static void ExecuteUpdateStatusHistory(WellStatus statusHistory, int wellId)
         {
             string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(statusHistory, wellId);
             if (sqlStatusHistory == null)
@@ -413,17 +435,27 @@ namespace WellApi
                     if (reader.Read())
                     {
                         issue.Id = reader.GetInt32(0);
-                        issue.WellId = reader.GetInt32(1);
-                        issue.Description = reader.GetString(2);
-                        issue.CreationDate = reader.GetDateTime(3);
+                        if (!reader.IsDBNull(1))
+                            issue.WellId = reader.GetInt32(1);
+                        if(!reader.IsDBNull(2))
+                            issue.Description = reader.GetString(2);
+                        if (!reader.IsDBNull(3))
+                            issue.CreationDate = reader.GetDateTime(3);
                         issue.Image = null;
-                        issue.Status = reader.GetString(5);
-                        issue.Open = reader.GetBoolean(6);
-                        issue.ConfirmedBy = reader.GetString(7);
-                        issue.SolvedDate = reader.GetDateTime(8);
-                        issue.RepairedBy = reader.GetString(9);
+
+                        if (!reader.IsDBNull(5))
+                            issue.Status = reader.GetString(5);
+                        if (!reader.IsDBNull(6))
+                            issue.Open = reader.GetBoolean(6);
+                        if (!reader.IsDBNull(7))
+                            issue.ConfirmedBy = reader.GetString(7);
+                        if (!reader.IsDBNull(8))
+                            issue.SolvedDate = reader.GetDateTime(8);
+                        if (!reader.IsDBNull(9))
+                            issue.RepairedBy = reader.GetString(9);
                         issue.Bill = null;
-                        issue.Works = reader.GetBoolean(11);
+                        if (!reader.IsDBNull(11))
+                            issue.Works = reader.GetBoolean(11);
                     }
                 }
             }
