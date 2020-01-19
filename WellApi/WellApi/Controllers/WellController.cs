@@ -43,6 +43,7 @@ namespace WellApi.Controllers
         [ActionName("GetWell")]
         public Well GetWell(int Id)
         {
+            // get Image sneeded
             return DB.GetWell(Id);
         }
 
@@ -54,8 +55,11 @@ namespace WellApi.Controllers
         [ActionName("PostNewWell")]
         public IActionResult PostNewWell(Well well)
         {
-            DB.CreateNewWell(well);
-            return Ok();
+            // Image creation needed
+            if (DB.CreateNewWell(well))
+                return Ok();
+            else
+                return BadRequest();
         }
 
         /// <summary>

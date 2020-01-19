@@ -162,30 +162,38 @@ namespace WellApi
         {
             if (well == null)
                 return false;
-            int wellTypeId = 0;
-            if (well.WellType != null)
+            well.WellType.Id = ExecuteInsertWellType(well.WellType);
+            if (well.WellType.Id != 0)
             {
-                WellType wellType = well.WellType;
-                wellTypeId = ExecuteInsertWellType(wellType);
-
-                if (wellType.Parts != null)
-                {
-                    int[] partIds = ExecuteInsertParts(wellType.Parts);
-                    foreach (int partId in partIds)
-                    {
-
-                    }
-                }
+                int[] partIds = ExecuteInsertParts(well.WellType.Parts);
+                ExecuteInsertWellParts(well.WellType.Id, partIds);
             }
-
+            well.FundingInfo.Id = ExecuteInsertFundingInfo(well.FundingInfo);
+            well.Location.Id = ExecuteInsertLocation(well.Location);
+            well.Id = ExecuteInsertWell(well);
+            if (well.Id == 0)
+                return false;
+            if (well.StatusHistory == null || well.StatusHistory.Length == 0)
+            {
+                List<WellStatus> statusHistory = new List<WellStatus>();
+                WellStatus status = new WellStatus
+                {
+                    Works = true,
+                    Confirmed = true,
+                    Description = "new Well created"
+                };
+                statusHistory.Add(status);
+                well.StatusHistory = statusHistory.ToArray();
+            }
+            ExecuteStatusHistory(well.StatusHistory, well.Id);
             return true;
         }
     
         public static int[] ExecuteInsertParts(Part[] parts)
         {
-            if (parts == null)
+            string sqlParts = SqlQuerry.InsertParts(parts);
+            if (sqlParts == null)
                 return null;
-            String sqlParts = SqlQuerry.InsertParts(parts);
             List<int> partsId = new List<int>();
             using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
             {
@@ -201,20 +209,151 @@ namespace WellApi
         }
         public static int ExecuteInsertWellType(WellType wellType)
         {
-            if (wellType == null)
+            string sqlWellType = SqlQuerry.InsertWellType(wellType);
+            if (sqlWellType == null)
                 return 0;
-            String sqlParts = SqlQuerry.InsertWellType(wellType);
-            using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+            using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
             {
                 return (int)command.ExecuteScalar();
             }
         }
-        public static void UpdateWell(Well newWell)
+        public static void ExecuteInsertWellParts(int wellTypeId, int[] partId)
+        {
+            string sqlWellParts = SqlQuerry.InsertWellParts(wellTypeId, partId);
+            if (sqlWellParts == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlWellParts, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static int ExecuteInsertFundingInfo(FundingInfo fundingInfo)
+        {
+            string sqlFundingInfo = SqlQuerry.InsertFundingInfo(fundingInfo);
+            if (sqlFundingInfo == null)
+                return 0;
+            using (SqlCommand command = new SqlCommand(sqlFundingInfo, sqlConnection))
+            {
+                return (int)command.ExecuteScalar();
+            }
+        }
+        public static int ExecuteInsertLocation(Location location)
+        {
+            string sqlLocation = SqlQuerry.InsertLocation(location);
+            if (sqlLocation == null)
+                return 0;
+            using (SqlCommand command = new SqlCommand(sqlLocation, sqlConnection))
+            {
+                return (int)command.ExecuteScalar();
+            }
+        }
+        public static int ExecuteInsertWell(Well well)
+        {
+            string sqlWell = SqlQuerry.InsertWell(well);
+            if (sqlWell == null)
+                return 0;
+            using (SqlCommand command = new SqlCommand(sqlWell, sqlConnection))
+            {
+                return (int)command.ExecuteScalar();
+            }
+        }
+        public static void ExecuteStatusHistory(WellStatus[] statusHistory, int wellId)
+        {
+            string sqlStatusHistory = SqlQuerry.InsertStatusHistory(statusHistory, wellId);
+            if (sqlStatusHistory == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        public static void UpdateWell(Well well)
+        {
+            if (well == null)
+                return;
+            if (well.WellType != null)
+            {
+                string sqlParts = SqlQuerry.UpdateParts(well.WellType.Parts);
+                if (sqlParts != null)
+                {
+                    using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            string sqlWellType = SqlQuerry.UpdateWellType(well.WellType);
+            if (sqlWellType != null)
+            {
+                using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+            string sqlFundingInfo = SqlQuerry.UpdateFundingInfo(well.FundingInfo);
+            if (sqlFundingInfo != null)
+            {
+                using (SqlCommand command = new SqlCommand(sqlFundingInfo, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+            string sqlLocation = SqlQuerry.UpdateLocation(well.Location);
+            if (sqlFundingInfo != null)
+            {
+                using (SqlCommand command = new SqlCommand(sqlLocation, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+            string sqlWell = SqlQuerry.UpdateWell(well);
+            if (sqlWell != null)
+            {
+                using (SqlCommand command = new SqlCommand(sqlWell, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+            string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(well.StatusHistory, well.Id);
+            if (sqlStatusHistory != null)
+            {
+                using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+
+        }
+        public static void DeleteWell(int wellId)
+        {
+            string sqlDelete = SqlQuerry.DeleteWell(wellId);
+            if (sqlDelete == null)
+                return;
+            using (SqlCommand command = new SqlCommand(sqlDelete, sqlConnection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+    
+        
+        public static SmallIssue[] GetSmallIssues()
+        {
+            return null;
+        }
+
+        public static Issue GetIssue(int id)
+        {
+            return null;
+        }
+        public static bool NewIssue(Issue issue)
+        {
+            return true;
+        }
+        public static void UpdateIssue(Issue issue)
         {
 
         }
-
-        public static void DeleteWell(int Id)
+        public static void DeleteIssue(int id)
         {
 
         }

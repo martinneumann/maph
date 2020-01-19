@@ -12,14 +12,6 @@ namespace WellApi.Controllers
     [ApiController]
     public class IssueController : ControllerBase
     {
-        private IEnumerable<SmallIssue> smallIssues;
-        private IEnumerable<Issue> issues;
-
-        public IssueController()
-        {
-            
-        }
-
         /// <summary>
         /// Get all issues.
         /// </summary>
@@ -27,7 +19,7 @@ namespace WellApi.Controllers
         [ActionName("GetAll")]
         public SmallIssue[] GetAll()
         {
-            return smallIssues.ToArray();
+            return DB.GetSmallIssues();
         }
 
         /// <summary>
@@ -38,7 +30,7 @@ namespace WellApi.Controllers
         [ActionName("GetIssue")]
         public Issue GetIssue(int id)
         {
-            return issues.Single(i => i.Id == id);
+            return DB.GetIssue(id);
         }
 
         /// <summary>
@@ -49,8 +41,10 @@ namespace WellApi.Controllers
         [ActionName("PostNewIssue")]
         public IActionResult PostNewIssue(Issue issue)
         {
-            issues.Append(issue);
-            return Ok();
+            if (DB.NewIssue(issue))
+                return Ok();
+            else
+                return BadRequest();
         }
 
         /// <summary>
@@ -61,8 +55,7 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateIssue")]
         public IActionResult PostUpdateIssue(Issue issue)
         {
-            issues = issues.Where(w => w.Id != issue.Id).ToList();
-            issues.Append(issue);
+            DB.UpdateIssue(issue);
             return Ok();
         }
 
@@ -74,7 +67,7 @@ namespace WellApi.Controllers
         [ActionName("DeleteIssue")]
         public IActionResult DeleteIssue(int id)
         {
-            issues = issues.Where(w => w.Id != id).ToList();
+            DB.DeleteIssue(id);
             return Ok();
         }
     }
