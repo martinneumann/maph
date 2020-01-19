@@ -27,12 +27,14 @@ class _WellInfoState extends State<WellInfo> {
   _WellInfoState(this.wellMarker);
 
   static const wellUpdate = "Change Well";
+  static const wellDelete = "Delete Well";
   static const settings = "Settings";
   static const wellMap = "Map Overview";
   static const addWell = "Add Well";
 
   static const List<String> menuChoices = <String>[
     wellUpdate,
+    wellDelete,
     settings,
     wellMap,
     addWell
@@ -218,6 +220,9 @@ class _WellInfoState extends State<WellInfo> {
               builder: (context) =>
                   WellUpdate(
                       title: "Change well information", well: widget.well)));
+    } else if (choice == wellDelete) {
+      deleteWell(widget.well.id);
+      Navigator.pop(context);
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -245,6 +250,12 @@ class _WellInfoState extends State<WellInfo> {
     });
 
     return 'OK';
+  }
+
+  Future<String> deleteWell(int wellId) async {
+    await deleteWell(wellId);
+
+    return 'Deleted';
   }
 
   Widget image = Card(
