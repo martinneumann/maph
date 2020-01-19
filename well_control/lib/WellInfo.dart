@@ -125,7 +125,7 @@ class _WellInfoState extends State<WellInfo> {
                                 ListTile(
                                   title: Text('Price:'),
                                   subtitle:
-                                  Text(wellMarker.costs.toString() + "0€"),
+                                  Text(wellMarker.costs.toString() + "0\$"),
                                 ),
                               ],
                             ),

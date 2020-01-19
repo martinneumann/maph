@@ -204,11 +204,11 @@ class _AddWellState extends State<AddWell> {
   void addWell() async {
     String color;
     if (status == "Working") {
-      color = "#00FF00";
+      color = "green";
     } else if (status == "Maintenance") {
-      color = "#FFFF00";
+      color = "yellow";
     } else {
-      color = "#FF0000";
+      color = "red";
     }
 
     var location = {};

@@ -24,19 +24,11 @@ Future<List<Marker>> getMarkers() {
 
       wells.add(WellMarker(
           resultList[i]["name"],
-          "green",
+          resultList[i]["status"],
           resultList[i]["location"]["latitude"],
           resultList[i]["location"]["longitude"]));
 
       wells[i].setId(resultList[i]["id"]);
-
-      if (resultList[i]["status"] == "#00FF00") {
-        wells[i].setColor("green");
-      } else if (resultList[i]["status"] == "#FFFF00") {
-        wells[i].setColor("yellow");
-      } else {
-        wells[i].setColor("red");
-      }
     }
     List<Marker> markers = new List(wells.length);
     for (var i = 0; i < wells.length; i++) {
