@@ -205,7 +205,7 @@ class _AddWellState extends State<AddWell> {
     String color;
     if (status == "Working") {
       color = "#00FF00";
-    } else if (status == "maintenance") {
+    } else if (status == "Maintenance") {
       color = "#FFFF00";
     } else {
       color = "#FF0000";

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:well_control/WellMarker.dart';
+
 import 'Functions.dart';
 
 List<WellMarker> wells = <WellMarker>[
@@ -26,6 +27,16 @@ Future<List<Marker>> getMarkers() {
           "green",
           resultList[i]["location"]["latitude"],
           resultList[i]["location"]["longitude"]));
+
+      wells[i].setId(resultList[i]["id"]);
+
+      if (resultList[i]["status"] == "#00FF00") {
+        wells[i].setColor("green");
+      } else if (resultList[i]["status"] == "#FFFF00") {
+        wells[i].setColor("yellow");
+      } else {
+        wells[i].setColor("red");
+      }
     }
     List<Marker> markers = new List(wells.length);
     for (var i = 0; i < wells.length; i++) {
