@@ -52,9 +52,9 @@ Future<http.Response> postNewWell(var body) {
 
 /// Updates the information of a specific well
 /// @param well A JSON String including the updated well information.
-Future<http.Response> postUpdateWell(int id, var body) {
+Future<http.Response> postUpdateWell(var body) {
   return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/$id',
+      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/',
       headers: {"Content-Type": "application/json"},
       body: body);
 }

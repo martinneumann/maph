@@ -94,7 +94,7 @@ class WellMarker {
     switch (color) {
       case "red":
         markerColor = Color.fromARGB(255, 255, 0, 0);
-        status = "Not working";
+        status = "Not Working";
         break;
       case "yellow":
         markerColor = Color.fromARGB(255, 255, 255, 0);

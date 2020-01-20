@@ -249,13 +249,14 @@ class _WellUpdateState extends State<WellUpdate> {
     wellType["name"] = type;
 
     var data = {};
+    data["id"] = widget.well.wellId;
     data["name"] = nameController.text;
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
     data["wellType"] = wellType;
 
-    await postUpdateWell(widget.well.wellId, json.encode(data)).then(
+    await postUpdateWell(json.encode(data)).then(
         (response) => print("Response: " + response.statusCode.toString()));
 
     Navigator.pop(context);
