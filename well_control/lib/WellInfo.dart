@@ -222,7 +222,7 @@ class _WellInfoState extends State<WellInfo> {
                       title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
       print("wellId: " + widget.well.wellId.toString());
-      deleteWell(widget.well.wellId);
+      requestDelete(widget.well.wellId);
       wellList.getMarkers().then((result) {
         Navigator.pop(context);
       });
@@ -261,9 +261,9 @@ class _WellInfoState extends State<WellInfo> {
     return 'OK';
   }
 
-  Future<String> deleteWell(int wellId) async {
+  Future<String> requestDelete(int wellId) async {
     await deleteWell(wellId).then((response) {
-      print("Delete Resposne: " + response);
+      print("Delete Resposne: " + response.statusCode.toString());
     });
     return 'Deleted';
   }
