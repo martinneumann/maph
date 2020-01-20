@@ -1,5 +1,4 @@
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'WellIssue.dart';
 
@@ -43,7 +42,7 @@ Future<http.Response> getNearbyWells(String searchRadius) {
 /// @param well A JSON String with all current available well information.
 Future<http.Response> postNewWell(var body) {
   return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/1',
+      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/',
       headers: {"Content-Type": "application/json"},
       body: body);
 }

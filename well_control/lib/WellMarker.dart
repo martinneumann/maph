@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/WellInfo.dart';
 import 'package:well_control/assets/water_icon.dart';
-import 'WellIssue.dart';
 
 class WellMarker {
   int wellId;
@@ -17,7 +16,7 @@ class WellMarker {
   String type;
   String status;
   String fundingOrganisation;
-  double costs;
+  String costs;
 
 
   WellMarker(int id, String wellName, String color, double latitude, double longitude) {
@@ -67,8 +66,8 @@ class WellMarker {
     this.fundingOrganisation = organisation;
   }
 
-  void setWellCosts(int costs) {
-    this.costs = costs.toDouble();
+  void setWellCosts(String costs) {
+    this.costs = costs;
   }
 
   void setMarker(String color, double latitude, double longitude) {

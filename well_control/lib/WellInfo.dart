@@ -125,7 +125,7 @@ class _WellInfoState extends State<WellInfo> {
                                 ListTile(
                                   title: Text('Price:'),
                                   subtitle:
-                                  Text(wellMarker.costs.toString() + "0\$"),
+                                  Text(wellMarker.costs + "\$"),
                                 ),
                               ],
                             ),
@@ -246,7 +246,12 @@ class _WellInfoState extends State<WellInfo> {
       result = json.decode(response.body);
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
-      well.setWellCosts(result["fundingInfo"]["price"]);
+
+      String price = result["fundingInfo"]["price"].toString();
+      if (!price.contains('.')) {
+        price += ".00";
+      }
+      well.setWellCosts(price);
     });
 
     return 'OK';
