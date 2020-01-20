@@ -389,14 +389,26 @@ namespace WellApi
             int IssueId = ExecuteInsertIssue(issue);
             if (IssueId == 0)
                 return false;
-            if (issue.BrokenParts == null)
-                return true;
-            List<int> partIds = new List<int>();
-            foreach (Part part in issue.BrokenParts)
+            if (issue.BrokenParts != null)
             {
-                partIds.Add(part.Id);
+                List<int> partIds = new List<int>();
+                foreach (Part part in issue.BrokenParts)
+                {
+                    partIds.Add(part.Id);
+                }
+                ExecuteInsertBrokenParts(partIds.ToArray(), issue.Id);
             }
-            ExecuteInsertBrokenParts(partIds.ToArray(), issue.Id);
+
+            string status = ExecuteSelectWellStatus(issue.WellId);
+            if (status != null && status == "green")
+            {
+                if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
+                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
+                else if (issue.Works == false && status != "red")
+                {
+                    ExecuteUpdateWellStatus(issue.WellId, "red");
+                }
+            }
             return true;
         }
         public static void UpdateCompleteIssue(Issue issue)
@@ -544,6 +556,26 @@ namespace WellApi
             using (SqlCommand command = new SqlCommand(sqlDeleteIssue, sqlConnection))
             {
                 command.ExecuteNonQuery();
+            }
+        }
+        public static string ExecuteSelectWellStatus(int wellId)
+        {
+            string sqlSelectWellStatus = SqlQuerry.SelectWellStatus(wellId);
+            if (sqlSelectWellStatus == null)
+                return null;
+            using (SqlCommand command = new SqlCommand(sqlSelectWellStatus, sqlConnection))
+            {
+                return (string)command.ExecuteScalar();
+            }
+        }
+        public static int ExecuteUpdateWellStatus(int wellId, string status)
+        {
+            string sqlUpdateWellStatus = SqlQuerry.UpdateWellStatus(wellId, status);
+            if (sqlUpdateWellStatus == null)
+                return 0;
+            using (SqlCommand command = new SqlCommand(sqlUpdateWellStatus, sqlConnection))
+            {
+                return command.ExecuteNonQuery();
             }
         }
     }

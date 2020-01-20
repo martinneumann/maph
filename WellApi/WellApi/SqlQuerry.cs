@@ -82,6 +82,14 @@ namespace WellApi
             sb.Append($"WHERE b.IssueId = {issueId};");
             return sb.ToString();
         }
+        public static string SelectWellStatus(int wellId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Status ");
+            sb.Append("FROM [well].[dbo].[Well] ");
+            sb.Append($"WHERE Id = {wellId};");
+            return sb.ToString();
+        }
         
         // Insert
 
@@ -334,6 +342,16 @@ namespace WellApi
             sb.Append("UPDATE [well].[dbo].[Issue] ");
             sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.ToString("yyyyMMdd")}', Status = '{issue.Status}', [Open] = {Convert.ToInt32(issue.Open)}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.ToString("yyyyMMdd")}', RepairedBy = '{issue.RepairedBy}', Works = {Convert.ToInt32(issue.Works)} ");
             sb.Append($"WHERE Id = {issue.Id};");
+            return sb.ToString();
+        }
+        public static string UpdateWellStatus(int wellId, string status)
+        {
+            if (status == null || wellId == 0)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("UPDATE [well].[dbo].[Well] ");
+            sb.Append($"SET Status = '{status}' ");
+            sb.Append($"WHERE Id = {wellId};");
             return sb.ToString();
         }
 
