@@ -61,7 +61,7 @@ class _WellUpdateState extends State<WellUpdate> {
     latitudeController.text = widget.well.location.latitude.toString();
     longitudeController.text = widget.well.location.longitude.toString();
     fundingController.text = widget.well.fundingOrganisation;
-    costsController.text = widget.well.costs;
+    costsController.text = widget.well.costs.toString();
     status = widget.well.status;
     type = widget.well.type;
   }

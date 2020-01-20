@@ -16,7 +16,7 @@ class WellMarker {
   String type;
   String status;
   String fundingOrganisation;
-  String costs;
+  double costs;
 
 
   WellMarker(String wellName, int wellId, String color, double latitude, double longitude) {
@@ -66,8 +66,8 @@ class WellMarker {
     this.fundingOrganisation = organisation;
   }
 
-  void setWellCosts(String costs) {
-    this.costs = costs;
+  void setWellCosts(int costs) {
+    this.costs = costs.toDouble();
   }
 
   void setMarker(String color, double latitude, double longitude) {
