@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:well_control/WellMarker.dart';
+
 import 'Functions.dart';
 
 /// Well list
@@ -26,9 +27,11 @@ Future<List<Marker>> getMarkers() {
       wells.add(WellMarker(
           resultList[i]["id"],
           resultList[i]["name"],
-          "green",
+          resultList[i]["status"],
           resultList[i]["location"]["latitude"],
           resultList[i]["location"]["longitude"]));
+
+      wells[i].setId(resultList[i]["id"]);
     }
     List<Marker> markers = new List(wells.length);
     for (var i = 0; i < wells.length; i++) {

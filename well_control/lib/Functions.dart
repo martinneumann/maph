@@ -41,16 +41,20 @@ Future<http.Response> getNearbyWells(String searchRadius) {
 
 /// Saves a new well
 /// @param well A JSON String with all current available well information.
-Future<http.Response> postNewWell(String well) {
+Future<http.Response> postNewWell(var body) {
   return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/$well');
+      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/1',
+      headers: {"Content-Type": "application/json"},
+      body: body);
 }
 
 /// Updates the information of a specific well
 /// @param well A JSON String including the updated well information.
-Future<http.Response> postUpdateWell(String well) {
+Future<http.Response> postUpdateWell(int id, var body) {
   return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/$well');
+      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/$id',
+      headers: {"Content-Type": "application/json"},
+      body: body);
 }
 
 /// Deletes a specific well

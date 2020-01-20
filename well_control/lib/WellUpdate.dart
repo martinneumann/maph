@@ -6,18 +6,20 @@ import 'package:flutter/material.dart';
 import 'Functions.dart';
 import 'Settings.dart';
 import 'WellMap.dart';
+import 'WellMarker.dart';
 import 'WellOverview.dart';
 
-class AddWell extends StatefulWidget {
-  AddWell({Key key, this.title}) : super(key: key);
+class WellUpdate extends StatefulWidget {
+  WellUpdate({Key key, this.title, this.well}) : super(key: key);
 
+  final WellMarker well;
   final String title;
 
   @override
-  _AddWellState createState() => _AddWellState();
+  _WellUpdateState createState() => _WellUpdateState();
 }
 
-class _AddWellState extends State<AddWell> {
+class _WellUpdateState extends State<WellUpdate> {
   final _formKey = GlobalKey<FormState>();
   static const wellOverview = "List of Wells";
   static const wellMap = "Map Overview";
@@ -35,10 +37,11 @@ class _AddWellState extends State<AddWell> {
   final latitudeController = TextEditingController();
   final longitudeController = TextEditingController();
   String status;
+
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
   String type;
-  List<String> _wellTypes = ['Type A', 'Type B', 'Type C'];
+  List<String> _wellTypes = ['Type A', 'Type B', 'Type C', 'Type X'];
 
   @override
   void dispose() {
@@ -48,6 +51,19 @@ class _AddWellState extends State<AddWell> {
     fundingController.dispose();
     costsController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    nameController.text = widget.well.getMarkerName();
+    latitudeController.text = widget.well.location.latitude.toString();
+    longitudeController.text = widget.well.location.longitude.toString();
+    fundingController.text = widget.well.fundingOrganisation;
+    costsController.text = widget.well.costs.toString();
+    status = widget.well.status;
+    type = widget.well.type;
   }
 
   @override
@@ -80,10 +96,10 @@ class _AddWellState extends State<AddWell> {
                           TextFormField(
                             controller: nameController,
                             decoration:
-                            InputDecoration(labelText: "Name of well:"),
+                                InputDecoration(labelText: "Name of well:"),
                             validator: (value) {
                               if (value.isEmpty) {
-                                return 'Please enter some text';
+                                return "Enter well name";
                               }
                               return null;
                             },
@@ -93,21 +109,24 @@ class _AddWellState extends State<AddWell> {
                               TextFormField(
                                 controller: latitudeController,
                                 decoration:
-                                InputDecoration(labelText: "Latitude:"),
+                                    InputDecoration(labelText: "Latitude:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return 'Please enter latitude!';
+                                    return "Enter latitude";
                                   }
                                   return null;
+                                },
+                                onFieldSubmitted: (value) {
+                                  latitudeController..text = value.toString();
                                 },
                               ),
                               TextFormField(
                                 controller: longitudeController,
                                 decoration:
-                                InputDecoration(labelText: "Longitude:"),
+                                    InputDecoration(labelText: "Longitude:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return 'Please enter longitude';
+                                    return "Enter longitude";
                                   }
                                   return null;
                                 },
@@ -145,7 +164,7 @@ class _AddWellState extends State<AddWell> {
                               TextFormField(
                                 controller: fundingController,
                                 decoration:
-                                InputDecoration(labelText: "Funded by:"),
+                                    InputDecoration(labelText: "Funded by:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter funding organisation.';
@@ -156,7 +175,7 @@ class _AddWellState extends State<AddWell> {
                               TextFormField(
                                 controller: costsController,
                                 decoration:
-                                InputDecoration(labelText: "Costs:"),
+                                    InputDecoration(labelText: "Costs:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter the building costs of the well.';
@@ -166,14 +185,14 @@ class _AddWellState extends State<AddWell> {
                               ),
                               Padding(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 16.0),
+                                    const EdgeInsets.symmetric(vertical: 16.0),
                                 child: RaisedButton(
                                   onPressed: () {
                                     // Validate returns true if the form is valid, or false
                                     // otherwise.
                                     if (_formKey.currentState.validate()) {
                                       // If the form is valid, display a Snackbar.
-                                      addWell();
+                                      updateWell();
                                     }
                                   },
                                   child: Text('Submit'),
@@ -201,7 +220,7 @@ class _AddWellState extends State<AddWell> {
     }
   }
 
-  void addWell() async {
+  void updateWell() async {
     String color;
     if (status == "Working") {
       color = "green";
@@ -229,8 +248,8 @@ class _AddWellState extends State<AddWell> {
     data["fundingInfo"] = fundingInfo;
     data["wellType"] = wellType;
 
-    await postNewWell(json.encode(data)).then(
-            (response) => print("Response: " + response.statusCode.toString()));
+    await postUpdateWell(widget.well.id, json.encode(data)).then(
+        (response) => print("Response: " + response.statusCode.toString()));
 
     Navigator.pop(context);
   }
