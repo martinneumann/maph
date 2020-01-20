@@ -15,22 +15,21 @@ class WellIssue {
   String repairedBy;
   String bill;
 
-  WellIssue(int id, int wellId, String description, DateTime creationDate, String image,
+  WellIssue(int id, String description, DateTime creationDate, String image,
       String status, bool open, List<String> brokenParts, String confirmedBy, DateTime solvedDate,
       String repairedBy, String bill, bool works) {
-    id = id;
-    wellId = wellId;
-    description = description;
-    creationDate = creationDate;
-    image = image;
-    status = status;
-    open = open;
-    brokenParts = brokenParts;
-    confirmedBy = confirmedBy;
-    solvedDate = solvedDate;
-    repairedBy = repairedBy;
-    bill = bill;
-    works = works;
+    this.id = id;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.image = image;
+    this.status = status;
+    this.open = open;
+    this.brokenParts = brokenParts;
+    this.confirmedBy = confirmedBy;
+    this.solvedDate = solvedDate;
+    this.repairedBy = repairedBy;
+    this.bill = bill;
+    this.works = works;
   }
 
 

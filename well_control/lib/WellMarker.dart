@@ -20,9 +20,9 @@ class WellMarker {
   double costs;
 
 
-  WellMarker(int id, String wellName, String color, double latitude, double longitude) {
-    wellId = id;
-    name = wellName;
+  WellMarker(String wellName, int wellId, String color, double latitude, double longitude) {
+    this.name = wellName;
+    this.wellId = wellId;
     location = LatLng(latitude, longitude);
     setColor(color);
 

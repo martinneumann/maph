@@ -21,7 +21,6 @@ Future<List<WellIssue>> getIssues() {
 
     issues.add(WellIssue(
         resultList[i]["id"],
-        resultList[i]["wellId"],
         resultList[i]["description"],
         resultList[i]["creationDate"],
         resultList[i]["image"],
