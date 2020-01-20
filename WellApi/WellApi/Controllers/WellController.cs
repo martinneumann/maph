@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.Swagger.Annotations;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
+
 namespace WellApi.Controllers
 {
     [Produces("application/json")]

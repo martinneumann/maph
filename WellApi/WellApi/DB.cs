@@ -71,20 +71,30 @@ namespace WellApi
         }
         public static int UpdateCompleteWell(Well well)
         {
-            if (well == null)
+            if (well == null || well.Id == 0)
                 return 0;
+            
             int affected = 0;
-            if (well.WellType != null)
+            Well oldWell = ExecuteSelectWell(well.Id);
+            if (well.WellType != null && well.WellType.Parts != null)
             {
                 foreach (Part part in well.WellType.Parts)
                 {
                     affected += ExecuteUpdatePart(part);
                 }
             }
+            if (well.WellType != null && well.WellType.Id == 0)
+                well.WellType.Id = oldWell.WellType.Id;
             affected += ExecuteUpdateWellType(well.WellType);
+            if (well.FundingInfo != null && well.FundingInfo.Id == 0)
+                well.FundingInfo.Id = oldWell.FundingInfo.Id;
             affected += ExecuteUpdateFundingInfo(well.FundingInfo);
+            if (well.Location != null && well.Location.Id == 0)
+                well.Location.Id = oldWell.Location.Id;
             affected += ExecuteUpdateLocation(well.Location);
             affected += ExecuteUpdateWell(well);
+            if (well.StatusHistory == null)
+                return affected;
             foreach (WellStatus status in well.StatusHistory)
             {
                 affected += ExecuteUpdateStatusHistory(status, well.Id);

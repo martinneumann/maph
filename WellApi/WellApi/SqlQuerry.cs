@@ -320,7 +320,14 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Well] ");
-            sb.Append($"SET Name = '{well.Name}', Status = '{well.Status}', LocationId = {well.Location.Id}, FundingInfoId = {well.FundingInfo.Id}, WellTypeId = {well.WellType.Id} ");
+            string setToUpdate = "";
+            if (well.Location != null)
+                setToUpdate += $"LocationId = {well.Location.Id}, ";
+            if (well.FundingInfo != null)
+                setToUpdate += $"FundingInfoId = {well.FundingInfo.Id}, ";
+            if (well.WellType != null)
+                setToUpdate += $"WellTypeId = {well.WellType.Id}, ";
+            sb.Append($"SET Name = '{well.Name}', {setToUpdate}Status = '{well.Status}' ");
             sb.Append($"WHERE Id = {well.Id};");
             return sb.ToString();
         }
