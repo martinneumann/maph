@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
-using System.Text;
 using System.IO;
 
 namespace WellApi
@@ -42,10 +39,10 @@ namespace WellApi
             well.WellType.Parts = ExecuteSelectWellParts(well.WellType.Id);
             return well;
         }
-        public static bool AddCompleteWell(Well well)
+        public static int AddCompleteWell(Well well)
         {
             if (well == null)
-                return false;
+                return 0;
             well.WellType.Id = ExecuteInsertWellType(well.WellType);
             if (well.WellType.Id != 0)
             {
@@ -56,7 +53,7 @@ namespace WellApi
             well.Location.Id = ExecuteInsertLocation(well.Location);
             well.Id = ExecuteInsertWell(well);
             if (well.Id == 0)
-                return false;
+                return 0;
             if (well.StatusHistory == null || well.StatusHistory.Length == 0)
             {
                 List<WellStatus> statusHistory = new List<WellStatus>();
@@ -70,27 +67,29 @@ namespace WellApi
                 well.StatusHistory = statusHistory.ToArray();
             }
             ExecuteInsertStatusHistory(well.StatusHistory, well.Id);
-            return true;
+            return well.Id;
         }
-        public static void UpdateCompleteWell(Well well)
+        public static int UpdateCompleteWell(Well well)
         {
             if (well == null)
-                return;
+                return 0;
+            int affected = 0;
             if (well.WellType != null)
             {
                 foreach (Part part in well.WellType.Parts)
                 {
-                    ExecuteUpdatePart(part);
+                    affected += ExecuteUpdatePart(part);
                 }
             }
-            ExecuteUpdateWellType(well.WellType);
-            ExecuteUpdateFundingInfo(well.FundingInfo);
-            ExecuteUpdateLocation(well.Location);
-            ExecuteUpdateWell(well);
+            affected += ExecuteUpdateWellType(well.WellType);
+            affected += ExecuteUpdateFundingInfo(well.FundingInfo);
+            affected += ExecuteUpdateLocation(well.Location);
+            affected += ExecuteUpdateWell(well);
             foreach (WellStatus status in well.StatusHistory)
             {
-                ExecuteUpdateStatusHistory(status, well.Id);
+                affected += ExecuteUpdateStatusHistory(status, well.Id);
             }
+            return affected;
         }
 
         // Single SQL Querry
@@ -99,7 +98,7 @@ namespace WellApi
         {
             String sqlSelectSmallWells = SqlQuerry.SelectSmallWells();
             if (sqlSelectSmallWells == null)
-                return new SmallWell[0];
+                return null;
             List<SmallWell> smallWells = new List<SmallWell>();
             using (SqlCommand command = new SqlCommand(sqlSelectSmallWells, sqlConnection))
             {
@@ -299,74 +298,77 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteDeleteWell(int wellId)
+        public static bool ExecuteDeleteWell(int wellId)
         {
             string sqlDelete = SqlQuerry.DeleteWell(wellId);
             if (sqlDelete == null)
-                return;
+                return false;
             using (SqlCommand command = new SqlCommand(sqlDelete, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                int affected = command.ExecuteNonQuery();
+                if (affected > 0)
+                    return true;
             }
+            return false;
         }
-        public static void ExecuteUpdatePart(Part part)
+        public static int ExecuteUpdatePart(Part part)
         {
             string sqlPart = SqlQuerry.UpdatePart(part);
             if (sqlPart == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlPart, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateWellType(WellType wellType)
+        public static int ExecuteUpdateWellType(WellType wellType)
         {
             string sqlWellType = SqlQuerry.UpdateWellType(wellType);
             if (sqlWellType == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }   
-        public static void ExecuteUpdateFundingInfo(FundingInfo fundingInfo)
+        public static int ExecuteUpdateFundingInfo(FundingInfo fundingInfo)
         {
             string sqlFundingInfo = SqlQuerry.UpdateFundingInfo(fundingInfo);
             if (sqlFundingInfo == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlFundingInfo, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateLocation(Location location)
+        public static int ExecuteUpdateLocation(Location location)
         {
             string sqlLocation = SqlQuerry.UpdateLocation(location);
             if (sqlLocation == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlLocation, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateWell(Well well)
+        public static int ExecuteUpdateWell(Well well)
         {
             string sqlWell = SqlQuerry.UpdateWell(well);
             if (sqlWell == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlWell, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateStatusHistory(WellStatus statusHistory, int wellId)
+        public static int ExecuteUpdateStatusHistory(WellStatus statusHistory, int wellId)
         {
             string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(statusHistory, wellId);
             if (sqlStatusHistory == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
             {
-                command.ExecuteNonQuery();
+                return command.ExecuteNonQuery();
             }
         }
         
@@ -382,19 +384,30 @@ namespace WellApi
                 issue.BrokenParts = ExecuteSelectBrokenParts(issue.Id);
             return issue;
         }
-        public static void AddCompleteNewIssue(Issue issue)
+        public static bool AddCompleteNewIssue(Issue issue)
         {
             int IssueId = ExecuteInsertIssue(issue);
             if (IssueId == 0)
-                return;
+                return false;
+            if (issue.BrokenParts == null)
+                return true;
             List<int> partIds = new List<int>();
             foreach (Part part in issue.BrokenParts)
             {
                 partIds.Add(part.Id);
             }
             ExecuteInsertBrokenParts(partIds.ToArray(), issue.Id);
+            return true;
         }
-        
+        public static void UpdateCompleteIssue(Issue issue)
+        {
+            if (issue.Id == 0)
+                return;
+            ExecuteUpdateIssue(issue);
+            //Update well
+
+        }
+
         // Single SQL Querry
 
         public static SmallIssue[] ExecuteSelectSmallIssues()
@@ -411,10 +424,12 @@ namespace WellApi
                     {
                         SmallIssue smallIssue = new SmallIssue
                         {
-                            Id = reader.GetInt32(0),
-                            CreationDate = reader.GetDateTime(1),
-                            WellId = reader.GetInt32(2)
+                            Id = reader.GetInt32(0)
                         };
+                        if (!reader.IsDBNull(1))
+                            smallIssue.CreationDate = reader.GetDateTime(1);
+                        if (!reader.IsDBNull(2))
+                            smallIssue.WellId = reader.GetInt32(2);
                         smallIssues.Add(smallIssue);
                     }
                 }
@@ -491,7 +506,14 @@ namespace WellApi
                 return 0;
             using (SqlCommand command = new SqlCommand(sqlInsertIssue, sqlConnection))
             {
-                return (int)command.ExecuteScalar();
+                try
+                {
+                    return (int)command.ExecuteScalar();
+                }
+                catch
+                {
+                    return 0;
+                }
             }
         }
         public static void ExecuteInsertBrokenParts(int[] partIds, int issueId)

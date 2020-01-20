@@ -42,10 +42,13 @@ namespace WellApi.Controllers
         /// <param name="issue"></param> 
         [HttpPost]
         [ActionName("PostNewIssue")]
+        [ProducesResponseType(typeof(Well), 200)]
+        [ProducesResponseType(typeof(string), 400)]
         public IActionResult PostNewIssue(Issue issue)
         {
-            DB.AddCompleteNewIssue(issue);
-            return Ok();
+            if(DB.AddCompleteNewIssue(issue))
+                return Ok("Created");
+            return BadRequest("something went wrong");
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateIssue")]
         public IActionResult PostUpdateIssue(Issue issue)
         {
-            DB.ExecuteUpdateIssue(issue);
+            DB.UpdateCompleteIssue(issue);
             return Ok();
         }
 
