@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:well_control/WellMap.dart';
 
+import 'Functions.dart';
 import 'RepairInformation.dart';
 import 'Settings.dart';
-import 'WellIssueLibrary.dart';
+import 'WellIssue.dart';
 import 'WellMarkerLibary.dart' as wellList;
 import 'WellMarkerLibary.dart';
 import 'WellOverview.dart';
-import 'Functions.dart';
-import 'WellIssue.dart';
 
 
 
@@ -232,10 +231,15 @@ class _ReportWellState extends State<ReportWell> {
           print("Controller text: " + textController.text);
           print("Selceted well: " + _selectedWell);
           print("Wells: " + wells[1].name.toString());
-          print("Search: " + wells.firstWhere((a) => a.name == _selectedWell).id.toString());
+          print("Search: " + wells
+              .firstWhere((a) => a.name == _selectedWell)
+              .wellId
+              .toString());
           var issue = new WellIssue(
               numberOfIssues,
-              wells.firstWhere((a) => a.name == _selectedWell).id,
+              wells
+                  .firstWhere((a) => a.name == _selectedWell)
+                  .wellId,
               Text(textController.text).toString(),
               new DateTime.now(),
               "broken",

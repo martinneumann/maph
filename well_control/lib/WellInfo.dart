@@ -125,7 +125,7 @@ class _WellInfoState extends State<WellInfo> {
                                 ListTile(
                                   title: Text('Price:'),
                                   subtitle:
-                                  Text(wellMarker.costs.toString() + "0\$"),
+                                  Text(wellMarker.costs + "\$"),
                                 ),
                               ],
                             ),
@@ -221,7 +221,7 @@ class _WellInfoState extends State<WellInfo> {
                   WellUpdate(
                       title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
-      deleteWell(widget.well.id);
+      deleteWell(widget.well.wellId);
       Navigator.pop(context);
     } else if (choice == wellMap) {
       Navigator.push(
@@ -241,12 +241,18 @@ class _WellInfoState extends State<WellInfo> {
 
   Future<String> getWellnfos(WellMarker well) async {
     var result;
-    await getWell(well.id).then((response) {
+
+    await getWell(well.wellId).then((response) {
       print("response:" + response.statusCode.toString());
       result = json.decode(response.body);
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
-      well.setWellCosts(result["fundingInfo"]["price"]);
+
+      String price = result["fundingInfo"]["price"].toString();
+      if (!price.contains('.')) {
+        price += ".00";
+      }
+      well.setWellCosts(price);
     });
 
     return 'OK';

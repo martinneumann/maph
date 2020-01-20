@@ -9,14 +9,13 @@ class WellMarker {
   String name;
   static final Icon icon = Icon(WaterIcon.water);
   static final double iconSize = 45.0;
-  int id;
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
   LatLng location;
   String type;
   String status;
   String fundingOrganisation;
-  double costs;
+  String costs;
 
 
   WellMarker(String wellName, int wellId, String color, double latitude, double longitude) {
@@ -54,10 +53,6 @@ class WellMarker {
     return markerColor;
   }
 
-  void setId(int wellId) {
-    this.id = wellId;
-  }
-
   void setType(String type) {
     this.type = type;
   }
@@ -66,8 +61,8 @@ class WellMarker {
     this.fundingOrganisation = organisation;
   }
 
-  void setWellCosts(int costs) {
-    this.costs = costs.toDouble();
+  void setWellCosts(String costs) {
+    this.costs = costs;
   }
 
   void setMarker(String color, double latitude, double longitude) {

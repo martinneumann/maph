@@ -41,7 +41,14 @@ class _WellUpdateState extends State<WellUpdate> {
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
   String type;
-  List<String> _wellTypes = ['Type A', 'Type B', 'Type C', 'Type X'];
+  List<String> _wellTypes = [
+    'Type A',
+    'Type B',
+    'Type C',
+    'Type X',
+    'Special Well',
+    'Power Well'
+  ];
 
   @override
   void dispose() {
@@ -248,7 +255,7 @@ class _WellUpdateState extends State<WellUpdate> {
     data["fundingInfo"] = fundingInfo;
     data["wellType"] = wellType;
 
-    await postUpdateWell(widget.well.id, json.encode(data)).then(
+    await postUpdateWell(widget.well.wellId, json.encode(data)).then(
         (response) => print("Response: " + response.statusCode.toString()));
 
     Navigator.pop(context);

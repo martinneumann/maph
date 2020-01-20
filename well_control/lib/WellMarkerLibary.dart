@@ -28,11 +28,12 @@ Future<List<Marker>> getMarkers() {
       print("test was: " + test.toString());
       wells.add(WellMarker(
           resultList[i]["name"].toString(),
-          resultList[i]["wellId"],
+          resultList[i]["id"],
           resultList[i]["status"].toString(),
           resultList[i]["location"]["latitude"],
           resultList[i]["location"]["longitude"]));
     }
+
     List<Marker> markers = new List(wells.length);
     print("Markers " + markers[0].toString());
     for (var i = 0; i < wells.length; i++) {
