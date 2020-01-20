@@ -7,12 +7,12 @@ import 'WellIssue.dart';
 /// @param issue The issue to be posted.
 Future<http.Response> postNewIssue(WellIssue issue) {
   print("Param issue description: " + issue.description.toString());
-  var query = "{ id: ${issue.id.toString()}, description: ${issue.description.toString()}, image: ${issue.image.toString()}, "
+  var query = json.encode("{ id: ${issue.id.toString()}, description: ${issue.description.toString()}, image: ${issue.image.toString()}, "
       "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
       "confirmedBy: ${issue.confirmedBy.toString()}, solvedDate: ${issue.solvedDate.toIso8601String()}, repairedBy: ${issue.repairedBy.toString()}, "
-      "bill: ${issue.bill.toString()}, works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts.toString()}, wellId: ${issue.wellId.toString()}";
+      "bill: ${issue.bill.toString()}, works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts.toString()}}");
   print(query);
-  return http.post(new Uri.http('https://wellapi.azurewebsites.net/api/Issue/PostNewIssue', query));
+  return http.post('http://wellapi.azurewebsites.net/api/Issue/PostNewIssue', body: query);
 }
 
 /// Gets all issues

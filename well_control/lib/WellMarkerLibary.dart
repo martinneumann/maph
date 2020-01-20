@@ -18,37 +18,30 @@ Future<List<Marker>> getMarkers() {
   return getAllWells().then((response)
   {
     print(response.statusCode);
-    print(json.decode(response.body));
     Iterable result = json.decode(response.body);
     var resultList = result.toList();
     print('Result ' + resultList.toString());
+    double test = 0.0;
     for (var i = 0; i < resultList.length; i++) {
-
+      print("ResultList: " + resultList[i].toString());
+      test = resultList[i]["location"]["latitude"];
+      print("test was: " + test.toString());
       wells.add(WellMarker(
-          resultList[i]["id"],
-          resultList[i]["name"],
-          resultList[i]["status"],
+          resultList[i]["name"].toString(),
+          resultList[i]["wellId"],
+          resultList[i]["status"].toString(),
           resultList[i]["location"]["latitude"],
           resultList[i]["location"]["longitude"]));
-
-      wells[i].setId(resultList[i]["id"]);
     }
     List<Marker> markers = new List(wells.length);
+    print("Markers " + markers[0].toString());
     for (var i = 0; i < wells.length; i++) {
       markers[i] = wells[i].marker;
     }
+    print("Markers " + markers[0].toString());
 
-    if (markers.length == 0) {
-      print("No markers retrieved, posting dummy.");
-      var dummyMarker = new List(1);
-      dummyMarker.add(WellMarker(1, "TestMarker", "green", 10, 10));
-      List<Marker> dummyMarkers = new List(1);
-      return dummyMarkers;
-    } else {
-      print("Received valid markers.");
-      return markers;
-
-    }
+    return markers;
+  }).catchError((error) {
+    print(error.toString());
   });
-
 }
