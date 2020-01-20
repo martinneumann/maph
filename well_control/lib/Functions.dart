@@ -4,17 +4,20 @@ import 'package:http/http.dart' as http;
 
 import 'WellIssue.dart';
 
-
 /// Makes a POST request to save a new issue to the database.
 /// @param issue The issue to be posted.
 Future<http.Response> postNewIssue(WellIssue issue) {
   print("Param issue description: " + issue.description.toString());
-  var query = json.encode("{ id: ${issue.id.toString()}, description: ${issue.description.toString()},"
+  var query = json.encode(
+      "{ id: ${issue.id.toString()}, description: ${issue.description
+          .toString()},"
       "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
       "confirmedBy: ${issue.confirmedBy.toString()}, solvedDate: ${issue.solvedDate.toIso8601String()}, repairedBy: ${issue.repairedBy.toString()}, "
-       "works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts.toString()}}");
+          "works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts
+          .toString()}}");
   print(query);
-  return http.post('http://wellapi.azurewebsites.net/api/Issue/PostNewIssue', body: query);
+  return http.post('http://wellapi.azurewebsites.net/api/Issue/PostNewIssue',
+      body: query);
 }
 
 /// Gets all issues
@@ -43,10 +46,8 @@ Future<http.Response> getNearbyWells(String searchRadius) {
 /// Saves a new well
 /// @param well A JSON String with all current available well information.
 Future<http.Response> postNewWell(var body) {
-  return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostNewWell/1',
-      headers: {"Content-Type": "application/json"},
-      body: body);
+  return http.post('https://wellapi.azurewebsites.net/api/Well/PostNewWell/',
+      headers: {"Content-Type": "application/json"}, body: body);
 }
 
 /// Updates the information of a specific well

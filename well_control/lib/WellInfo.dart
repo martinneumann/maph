@@ -6,6 +6,7 @@ import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
+import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
 import 'WellMarker.dart';
@@ -124,8 +125,7 @@ class _WellInfoState extends State<WellInfo> {
                               children: <Widget>[
                                 ListTile(
                                   title: Text('Price:'),
-                                  subtitle:
-                                  Text(wellMarker.costs + "\$"),
+                                  subtitle: Text(wellMarker.costs + "\$"),
                                 ),
                               ],
                             ),
@@ -221,8 +221,11 @@ class _WellInfoState extends State<WellInfo> {
                   WellUpdate(
                       title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
+      print("wellId: " + widget.well.wellId.toString());
       deleteWell(widget.well.wellId);
-      Navigator.pop(context);
+      wellList.getMarkers().then((result) {
+        Navigator.pop(context);
+      });
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -259,8 +262,9 @@ class _WellInfoState extends State<WellInfo> {
   }
 
   Future<String> deleteWell(int wellId) async {
-    await deleteWell(wellId);
-
+    await deleteWell(wellId).then((response) {
+      print("Delete Resposne: " + response);
+    });
     return 'Deleted';
   }
 

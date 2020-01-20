@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
 import 'Settings.dart';
@@ -231,7 +232,7 @@ class _AddWellState extends State<AddWell> {
 
     await postNewWell(json.encode(data)).then(
             (response) => print("Response: " + response.statusCode.toString()));
-
+    await wellList.getMarkers();
     Navigator.pop(context);
   }
 }
