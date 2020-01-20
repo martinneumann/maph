@@ -13,9 +13,8 @@ namespace WellApi
         // Connection
 
         static SqlConnection sqlConnection = null;
-        public static void ConnectToDb()
+        public static void ConnectToDb(string connectionString)
         {
-            string connectionString = "Server=tcp:wellhtw.database.windows.net,1433;Initial Catalog=well;Persist Security Info=False;User ID=htw;Password=maph2019!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
             sqlConnection = new SqlConnection(connectionString);
             sqlConnection.Open();
         }      
