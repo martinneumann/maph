@@ -15,10 +15,11 @@ class WellIssue {
   String repairedBy;
   String bill;
 
-  WellIssue(int id, String description, DateTime creationDate, String image,
+  WellIssue(int id, int wellId, String description, DateTime creationDate,
       String status, bool open, List<String> brokenParts, String confirmedBy, DateTime solvedDate,
-      String repairedBy, String bill, bool works) {
+      String repairedBy, bool works) {
     this.id = id;
+    this.wellId = wellId;
     this.description = description;
     this.creationDate = creationDate;
     this.image = image;

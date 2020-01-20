@@ -232,25 +232,25 @@ class _ReportWellState extends State<ReportWell> {
           print("Controller text: " + textController.text);
           print("Selceted well: " + _selectedWell);
           print("Wells: " + wells[1].name.toString());
-          print("Search: " + wells.firstWhere((a) => a.name == _selectedWell).name.toString());
+          print("Search: " + wells.firstWhere((a) => a.name == _selectedWell).id.toString());
           var issue = new WellIssue(
               numberOfIssues,
+              wells.firstWhere((a) => a.name == _selectedWell).id,
               Text(textController.text).toString(),
               new DateTime.now(),
-              "test",
               "broken",
               true,
               new List(1),
               "User",
               new DateTime.now(),
               "test",
-              "test",
               false);
           print("Created issue: " + issue.description.toString());
           postNewIssue(issue).then((response) {
-            print("Creation response: " + response.body.toString());
-            choiceAction("wellMap");
+            print("Creation response: " + response.toString());
+            choiceAction(wellMap);
           }).catchError((error)  {
+            print("Error on creating issue.");
             print(error);
           });
           wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
