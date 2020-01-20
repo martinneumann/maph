@@ -12,9 +12,7 @@ Future<http.Response> postNewIssue(WellIssue issue) {
       "{ id: ${issue.id.toString()}, description: ${issue.description
           .toString()},"
       "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
-      "confirmedBy: ${issue.confirmedBy.toString()}, solvedDate: ${issue.solvedDate.toIso8601String()}, repairedBy: ${issue.repairedBy.toString()}, "
-          "works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts
-          .toString()}}");
+      ")");
   print(query);
   return http.post('http://wellapi.azurewebsites.net/api/Issue/PostNewIssue',
       body: query);

@@ -25,12 +25,7 @@ Future<List<WellIssue>> getIssues() {
         resultList[i]["description"],
         resultList[i]["creationDate"],
         resultList[i]["status"],
-        resultList[i]["open"],
-        resultList[i]["brokenParts"],
-        resultList[i]["confirmedBy"],
-        resultList[i]["solvedDate"],
-        resultList[i]["repairedBy"],
-        resultList[i]["works"]));
+        resultList[i]["open"]));
   }
 
   return issues;

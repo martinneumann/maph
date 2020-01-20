@@ -236,22 +236,16 @@ class _ReportWellState extends State<ReportWell> {
               .wellId
               .toString());
           var issue = new WellIssue(
-              numberOfIssues,
-              wells
-                  .firstWhere((a) => a.name == _selectedWell)
-                  .wellId,
-              Text(textController.text).toString(),
+            numberOfIssues,
+              wells.firstWhere((a) => a.name == _selectedWell).wellId,
+              textController.text,
               new DateTime.now(),
               "broken",
-              true,
-              new List(1),
-              "User",
-              new DateTime.now(),
-              "test",
-              false);
+              true
+              );
           print("Created issue: " + issue.description.toString());
           postNewIssue(issue).then((response) {
-            print("Creation response: " + response.toString());
+            print("Creation response: " + response.body.toString());
             choiceAction(wellMap);
           }).catchError((error)  {
             print("Error on creating issue.");
