@@ -3,8 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/WellInfo.dart';
 import 'package:well_control/assets/water_icon.dart';
+import 'WellIssue.dart';
 
 class WellMarker {
+  int wellId;
   String name;
   static final Icon icon = Icon(WaterIcon.water);
   static final double iconSize = 45.0;
@@ -14,7 +16,8 @@ class WellMarker {
   String type = "WellType";
   String status;
 
-  WellMarker(String wellName, String color, double latitude, double longitude) {
+  WellMarker(int id, String wellName, String color, double latitude, double longitude) {
+    wellId = id;
     name = wellName;
     location = LatLng(latitude, longitude);
     setColor(color);

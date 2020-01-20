@@ -1,10 +1,19 @@
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'WellIssue.dart';
 
 
 /// Makes a POST request to save a new issue to the database.
-/// @param description The issue's description
-Future<http.Response> postNewIssue(String description) {
-  return http.post(new Uri.http('https://wellapi.azurewebsites.net/api/Issue/PostNewIssue', description));
+/// @param issue The issue to be posted.
+Future<http.Response> postNewIssue(WellIssue issue) {
+  print("Param issue description: " + issue.description.toString());
+  var query = "{ id: ${issue.id.toString()}, description: ${issue.description.toString()}, image: ${issue.image.toString()}, "
+      "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
+      "confirmedBy: ${issue.confirmedBy.toString()}, solvedDate: ${issue.solvedDate.toIso8601String()}, repairedBy: ${issue.repairedBy.toString()}, "
+      "bill: ${issue.bill.toString()}, works: ${issue.works.toString()}, brokenParts: ${issue.brokenParts.toString()}, wellId: ${issue.wellId.toString()}";
+  print(query);
+  return http.post(new Uri.http('https://wellapi.azurewebsites.net/api/Issue/PostNewIssue', query));
 }
 
 /// Gets all issues

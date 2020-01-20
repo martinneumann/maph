@@ -17,12 +17,14 @@ Future<List<Marker>> getMarkers() {
   return getAllWells().then((response)
   {
     print(response.statusCode);
+    print(json.decode(response.body));
     Iterable result = json.decode(response.body);
     var resultList = result.toList();
     print('Result ' + resultList.toString());
     for (var i = 0; i < resultList.length; i++) {
 
       wells.add(WellMarker(
+          resultList[i]["id"],
           resultList[i]["name"],
           "green",
           resultList[i]["location"]["latitude"],
@@ -33,7 +35,17 @@ Future<List<Marker>> getMarkers() {
       markers[i] = wells[i].marker;
     }
 
-    return markers;
+    if (markers.length == 0) {
+      print("No markers retrieved, posting dummy.");
+      var dummyMarker = new List(1);
+      dummyMarker.add(WellMarker(1, "TestMarker", "green", 10, 10));
+      List<Marker> dummyMarkers = new List(1);
+      return dummyMarkers;
+    } else {
+      print("Received valid markers.");
+      return markers;
+
+    }
   });
 
 }

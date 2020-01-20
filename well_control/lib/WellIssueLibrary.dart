@@ -31,7 +31,8 @@ Future<List<WellIssue>> getIssues() {
         resultList[i]["confirmedBy"],
         resultList[i]["solvedDate"],
         resultList[i]["repairedBy"],
-        resultList[i]["bill"]));
+        resultList[i]["bill"],
+        resultList[i]["works"]));
   }
 
   return issues;

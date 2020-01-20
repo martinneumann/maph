@@ -7,14 +7,18 @@ import 'package:well_control/WellMap.dart';
 
 import 'RepairInformation.dart';
 import 'Settings.dart';
+import 'WellIssueLibrary.dart';
 import 'WellMarkerLibary.dart' as wellList;
+import 'WellMarkerLibary.dart';
 import 'WellOverview.dart';
 import 'Functions.dart';
+import 'WellIssue.dart';
 
 
 
 class ReportWell extends StatefulWidget {
   ReportWell({Key key, this.title}) : super(key: key);
+
 
   final String title;
 
@@ -48,6 +52,15 @@ class _ReportWellState extends State<ReportWell> {
     for (int i = 0; i < wellList.wells.length; i++) {
       wellNames.add(wellList.wells[i].getMarkerName());
     }
+  }
+
+  final textController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    textController.dispose();
+    super.dispose();
   }
 
   @override
@@ -94,9 +107,10 @@ class _ReportWellState extends State<ReportWell> {
                   TextFormField(
                     keyboardType: TextInputType.multiline,
                     maxLines: 10,
+                    controller: textController,
                     decoration: InputDecoration(
                         alignLabelWithHint: true,
-                        labelText: "Describe the problem:",
+                        labelText: "Describe the Problem",
                         border: new OutlineInputBorder(
                             borderRadius: const BorderRadius.all(
                               const Radius.circular(0.0),
@@ -207,11 +221,38 @@ class _ReportWellState extends State<ReportWell> {
         icon: Icon(Icons.send),
         label: Text('Submit'),
         onPressed: () {
-          postNewIssue('This is a test issue to test the POST request.').then((response) =>
-            print(response)
-          );
+          // see number of issues for this well and add one more to id
+          // @todo add API call for a well's issues (and add issue list to well type)
+          var numberOfIssues = 0;
+          wells.forEach((well) {
+            if (well.name == _selectedWell) {
+              numberOfIssues++;
+            }
+          });
+          print("Controller text: " + textController.text);
 
-          wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
+          var issue = new WellIssue(
+              numberOfIssues,
+              wells
+                  .firstWhere((well) => well.name == _selectedWell)
+                  .wellId,
+              Text(textController.text).toString(),
+              new DateTime.now(),
+              "test",
+              "broken",
+              true,
+              new List(1),
+              "User",
+              new DateTime.now(),
+              "test",
+              "test",
+              false);
+          print("Created issue: " + issue.description.toString());
+          postNewIssue(issue).then((response) {
+            print("Creation response: " + response.body.toString());
+            choiceAction("wellMap");
+          });
+          // wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
           Navigator.pop(context);
         },
       ),

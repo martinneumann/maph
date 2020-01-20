@@ -160,7 +160,9 @@ class _AddWellState extends State<AddWell> {
     } else {
       color = "red";
     }
+    print("Adding well");
     wellList.wells.add(new WellMarker(
+        wellList.wells.length + 1,  // @fixme Change to actual Id or move to API POST call.
         nameController.text,
         color,
         double.parse(latitudeController.text),

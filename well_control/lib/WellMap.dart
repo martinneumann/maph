@@ -7,6 +7,7 @@ import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
 
 import 'WellMarkerLibary.dart' as wellList;
+import 'WellIssueLibrary.dart' as issueList;
 
 class WellMap extends StatefulWidget {
   WellMap({Key key, this.title}) : super(key: key);
@@ -38,7 +39,7 @@ class _WellMapState extends State<WellMap> {
 
   @override
   Widget build(BuildContext context) {
-    // await wellList.getMarkers().then((list) {
+
     return FutureBuilder<List<Marker>>(
       future:_markerList,
       builder: (BuildContext context, AsyncSnapshot<List<Marker>> snapshot) {
@@ -84,45 +85,87 @@ class _WellMapState extends State<WellMap> {
         }
       print("Well list: " + list.toString());
       var mapMarkers = list;
-      return MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-            actions: <Widget>[
-              PopupMenuButton<String>(
-                onSelected: choiceAction,
-                itemBuilder: (BuildContext context) {
-                  return menuChoices.map((String choice) {
-                    return PopupMenuItem<String>(
-                      value: choice,
-                      child: Text(choice),
-                    );
-                  }).toList();
-                },
-              )
-            ],
-          ),
-          body: Center(
-            child: Container(
-              child: FlutterMap(
-                options: MapOptions(
-                  center: LatLng(7.071891, 38.785878),
-                  zoom: 13.0,
-                ),
-                layers: [
-                  TileLayerOptions(
-                    urlTemplate:
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    subdomains: ['a', 'b', 'c'],
-                    additionalOptions: {'access_token': '', 'id': ''},
+      if (list != null) {
+        return MaterialApp(
+          home: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+              actions: <Widget>[
+                PopupMenuButton<String>(
+                  onSelected: choiceAction,
+                  itemBuilder: (BuildContext context) {
+                    return menuChoices.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                )
+              ],
+            ),
+            body: Center(
+              child: Container(
+                child: FlutterMap(
+                  options: MapOptions(
+                    center: LatLng(6.071891, 38.785878),
+                    zoom: 12.0,
                   ),
-                  MarkerLayerOptions(markers: mapMarkers),
-                ],
+                  layers: [
+                    TileLayerOptions(
+                      urlTemplate:
+                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: ['a', 'b', 'c'],
+                      additionalOptions: {'access_token': '', 'id': ''},
+                    ),
+                    MarkerLayerOptions(markers: mapMarkers),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
+      } else {
+        return MaterialApp(
+          home: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+              actions: <Widget>[
+                PopupMenuButton<String>(
+                  onSelected: choiceAction,
+                  itemBuilder: (BuildContext context) {
+                    return menuChoices.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                )
+              ],
+            ),
+            body: Center(
+              child: Container(
+                child: FlutterMap(
+                  options: MapOptions(
+                    center: LatLng(6.071891, 38.785878),
+                    zoom: 12.0,
+                  ),
+                  layers: [
+                    TileLayerOptions(
+                      urlTemplate:
+                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: ['a', 'b', 'c'],
+                      additionalOptions: {'access_token': '', 'id': ''},
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+      }
     });
   }
 

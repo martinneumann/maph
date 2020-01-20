@@ -8,6 +8,7 @@ class WellIssue {
   String image;
   String status;
   bool open;
+  bool works;
   List<String> brokenParts;
   String confirmedBy;
   DateTime solvedDate;
@@ -16,7 +17,7 @@ class WellIssue {
 
   WellIssue(int id, int wellId, String description, DateTime creationDate, String image,
       String status, bool open, List<String> brokenParts, String confirmedBy, DateTime solvedDate,
-      String repairedBy, String bill) {
+      String repairedBy, String bill, bool works) {
     id = id;
     wellId = wellId;
     description = description;
@@ -29,6 +30,7 @@ class WellIssue {
     solvedDate = solvedDate;
     repairedBy = repairedBy;
     bill = bill;
+    works = works;
   }
 
 
