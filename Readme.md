@@ -8,7 +8,10 @@
 | Martin Neumann     | Martin.Neumann@student.htw-berlin.de |
 | Max Karl           | s0554876@htw-berlin.de               |
 
-# Well Application
+Presentation Link:
+https://docs.google.com/presentation/d/1O72cxTc6pDUc0vmxBZK4N8FjJiaNkhScR2-NEgp_-N4/edit?usp=sharing
+
+# WellisWell 
 
 A mobile application that helps disadvantaged communities take care of their water wells.
 
