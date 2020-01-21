@@ -117,6 +117,9 @@ class _WellMapState extends State<WellMap> {
                       options: MapOptions(
                         center: LatLng(6.071891, 38.785878),
                         zoom: 12.0,
+                          plugins: [
+                            MarkerClusterPlugin(),
+                          ]
                       ),
                       layers: [
                         TileLayerOptions(
@@ -138,7 +141,7 @@ class _WellMapState extends State<WellMap> {
                               borderStrokeWidth: 3),
                           builder: (context, markers) {
                             return FloatingActionButton(
-                              child: Text(markers.length.toString()),
+                              child: Text(snapshot.data.length.toString()),
                               onPressed: null,
                             );
                           },

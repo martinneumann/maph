@@ -21,15 +21,11 @@ Future<List<Marker>> getMarkers() {
     print(response.statusCode);
     Iterable result = json.decode(response.body);
     var resultList = result.toList();
-    print('Result ' + resultList.toString());
-    //double test = 0.0;
+    //print('Wells Result ' + resultList.toString());
 
     bool receivedCheck = false;
 
     for (var i = 0; i < resultList.length; i++) {
-      print("ResultList: " + resultList[i].toString());
-      //test = resultList[i]["location"]["latitude"];
-      //print("test was: " + test.toString());
 
       for (int j = 0; j < wells.length; j++) {
         if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
@@ -49,11 +45,11 @@ Future<List<Marker>> getMarkers() {
       }
     }
 
-    print("Markers " + markers[0].toString());
+    //print("Wells Markers " + markers[0].toString());
     for (var i = 0; i < wells.length; i++) {
       markers.add(wells[i].marker);
     }
-    print("Markers " + markers[0].toString());
+    print("Markers " + markers.toString());
 
     return markers;
   }).catchError((error) {
