@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong/latlong.dart';
+import 'package:location/location.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
@@ -19,6 +21,9 @@ class WellMap extends StatefulWidget {
 }
 
 class _WellMapState extends State<WellMap> {
+  MapController mapController = new MapController();
+  Location userLocation = new Location();
+
   static const mapMarkers = null;
   static const listofWells = "List of wells";
   static const addWell = "Add Well";
@@ -120,10 +125,39 @@ class _WellMapState extends State<WellMap> {
                           subdomains: ['a', 'b', 'c'],
                           additionalOptions: {'access_token': '', 'id': ''},
                         ),
-                        MarkerLayerOptions(markers: snapshot.data),
+                        MarkerClusterLayerOptions(
+                          maxClusterRadius: 120,
+                          size: Size(40, 40),
+                          fitBoundsOptions: FitBoundsOptions(
+                            padding: EdgeInsets.all(50),
+                          ),
+                          markers: snapshot.data,
+                          polygonOptions: PolygonOptions(
+                              borderColor: Colors.blueAccent,
+                              color: Colors.black12,
+                              borderStrokeWidth: 3),
+                          builder: (context, markers) {
+                            return FloatingActionButton(
+                              child: Text(markers.length.toString()),
+                              onPressed: null,
+                            );
+                          },
+                        ),
                       ],
+                      mapController: mapController,
                     ),
                   ),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    _getLocation().then((value) {
+                      setState(() {
+                        setUserLocation(value);
+                      });
+                    });
+                  },
+                  child: Icon(Icons.gps_fixed),
+                  backgroundColor: Colors.blue,
                 ),
               ),
             );
@@ -164,6 +198,17 @@ class _WellMapState extends State<WellMap> {
                     ),
                   ),
                 ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    _getLocation().then((value) {
+                      setState(() {
+                        setUserLocation(value);
+                      });
+                    });
+                  },
+                  child: Icon(Icons.gps_fixed),
+                  backgroundColor: Colors.blue,
+                ),
               ),
             );
           }
@@ -188,6 +233,24 @@ class _WellMapState extends State<WellMap> {
           context,
           MaterialPageRoute(
               builder: (context) => ReportWell(title: "Report Malfunction")));
+    }
+  }
+
+  Future<Map<String, double>> _getLocation() async {
+    var currentLocation = <String, double>{};
+    try {
+      currentLocation = await userLocation.getLocation();
+    } catch (e) {
+      currentLocation = null;
+    }
+    return currentLocation;
+  }
+
+  void setUserLocation(Map<String , double> userLocation) {
+    if(userLocation != null) {
+      LatLng location = LatLng(userLocation['latitude'] , userLocation['longitude']);
+      wellList.setUserPositionMarker(location);
+      mapController.move(location, 14);
     }
   }
 }

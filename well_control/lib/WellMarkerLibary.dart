@@ -4,11 +4,14 @@ import 'dart:convert';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:well_control/WellMarker.dart';
+import 'package:latlong/latlong.dart';
+import 'package:flutter/material.dart';
 
 import 'Functions.dart';
 
 /// Well list
 List<WellMarker> wells = <WellMarker>[];
+List<Marker> markers = List<Marker>();
 
 /// Returns all markers requested from DB and saves them in the global
 /// well list.
@@ -46,10 +49,9 @@ Future<List<Marker>> getMarkers() {
       }
     }
 
-    List<Marker> markers = new List(wells.length);
     print("Markers " + markers[0].toString());
     for (var i = 0; i < wells.length; i++) {
-      markers[i] = wells[i].marker;
+      markers.add(wells[i].marker);
     }
     print("Markers " + markers[0].toString());
 
@@ -57,4 +59,21 @@ Future<List<Marker>> getMarkers() {
   }).catchError((error) {
     print(error.toString());
   });
+}
+
+void setUserPositionMarker(LatLng location) {
+  Marker userMarker = Marker(
+      point: location,
+      builder: (ctx) =>
+          Container(
+              child: IconButton(
+                icon: new Icon(Icons.gps_fixed),
+                color: Color.fromARGB(255, 0, 0, 0),
+                iconSize: 45.0,
+                onPressed: () {},
+              )
+          )
+  );
+
+  markers.add(userMarker);
 }

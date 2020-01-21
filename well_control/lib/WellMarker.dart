@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:well_control/WellInfo.dart';
-import 'package:well_control/assets/water_icon.dart';
 
 class WellMarker {
   int wellId;
   String name;
-  static final Icon icon = Icon(WaterIcon.water);
+  static final Icon icon = new Icon(Icons.local_drink);
   static final double iconSize = 45.0;
   Marker marker;
   Color markerColor = Color.fromARGB(255, 0, 255, 0);
