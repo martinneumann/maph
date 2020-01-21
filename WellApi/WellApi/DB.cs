@@ -116,7 +116,7 @@ namespace WellApi
             foreach (SmallWell well in smallWells)
             {
                 GeoCoordinate coordinate = new GeoCoordinate(well.Location.Latitude, well.Location.Longitude);
-                if (position.GetDistanceTo(position) <= searchNearbyWells.SearchRadius)
+                if (position.GetDistanceTo(coordinate) <= searchNearbyWells.SearchRadius)
                 {
                     nearbySmallWells.Add(well);
                 }
