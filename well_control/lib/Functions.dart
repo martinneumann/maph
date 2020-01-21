@@ -60,5 +60,6 @@ Future<http.Response> postUpdateWell(var body) {
 /// Deletes a specific well
 /// @param id The specific well ID
 Future<http.Response> deleteWell(int id) {
-  return http.get('https://wellapi.azurewebsites.net/api/Well/DeleteWell/$id');
+  return http.delete(
+      'https://wellapi.azurewebsites.net/api/Well/DeleteWell/$id');
 }
