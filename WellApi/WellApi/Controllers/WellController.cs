@@ -32,15 +32,19 @@ namespace WellApi.Controllers
         }
 
         /// <summary>
-        /// Get all nearby wells.
+        /// Get all nearby wells. SearchRadius in meter.
         /// </summary>
         /// <param name="searchNearbyWells"></param> 
         [HttpPost]
         [ActionName("GetNearbyWells")]
-        public SmallWell[] GetNearbyWells(SearchNearbyWells searchNearbyWells)
+        [ProducesResponseType(typeof(SmallWell[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public IActionResult GetNearbyWells(SearchNearbyWells searchNearbyWells)
         {
-            //Berechnung fehlt
-            return DB.ExecuteSelectSmallWells();
+            SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(searchNearbyWells);
+            if (smallWells == null)
+                return BadRequest("Something went wrong!");
+            return Ok(smallWells);
         }
 
         /// <summary>

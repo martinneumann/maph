@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Device.Location;
 
 namespace WellApi
 {
@@ -27,7 +28,6 @@ namespace WellApi
         // Well
 
         // Mutiple SQL Querries
-
         public static Well GetCompleteWell(int wellId)
         {
             Well well = ExecuteSelectWell(wellId);
@@ -104,6 +104,25 @@ namespace WellApi
 
         // Single SQL Querry
 
+        public static SmallWell[] ExecuteSelectNearbySmallWells(SearchNearbyWells searchNearbyWells)
+        {
+            if (searchNearbyWells == null && searchNearbyWells.SearchRadius == 0 && searchNearbyWells.Location == null)
+                return null;
+            GeoCoordinate position = new GeoCoordinate(searchNearbyWells.Location.Latitude, searchNearbyWells.Location.Longitude);
+            SmallWell[] smallWells = ExecuteSelectSmallWells();
+            if (smallWells == null)
+                return null;
+            List<SmallWell> nearbySmallWells = new List<SmallWell>();
+            foreach (SmallWell well in smallWells)
+            {
+                GeoCoordinate coordinate = new GeoCoordinate(well.Location.Latitude, well.Location.Longitude);
+                if (position.GetDistanceTo(position) <= searchNearbyWells.SearchRadius)
+                {
+                    nearbySmallWells.Add(well);
+                }
+            }
+            return nearbySmallWells.ToArray();
+        }
         public static SmallWell[] ExecuteSelectSmallWells()
         {
             String sqlSelectSmallWells = SqlQuerry.SelectSmallWells();
