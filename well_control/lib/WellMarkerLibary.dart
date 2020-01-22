@@ -2,10 +2,10 @@ library well_control.well_list;
 
 import 'dart:convert';
 
-import 'package:flutter_map/flutter_map.dart';
-import 'package:well_control/WellMarker.dart';
-import 'package:latlong/latlong.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
+import 'package:well_control/WellMarker.dart';
 
 import 'Functions.dart';
 
@@ -26,7 +26,6 @@ Future<List<Marker>> getMarkers() {
     bool receivedCheck = false;
 
     for (var i = 0; i < resultList.length; i++) {
-
       for (int j = 0; j < wells.length; j++) {
         if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
           receivedCheck = true;
@@ -67,9 +66,7 @@ void setUserPositionMarker(LatLng location) {
                 color: Color.fromARGB(255, 0, 0, 0),
                 iconSize: 45.0,
                 onPressed: () {},
-              )
-          )
-  );
+              )));
 
   markers.add(userMarker);
 }
