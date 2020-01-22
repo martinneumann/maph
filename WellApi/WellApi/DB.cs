@@ -118,30 +118,28 @@ namespace WellApi
         }
         public static SmallWell[] ExecuteSelectSmallWells()
         {
-            String sqlSelectSmallWells = SqlQuerry.SelectSmallWells();
-            if (sqlSelectSmallWells == null)
+            SqlCommand sqlCommand = SqlQuerry.SelectSmallWells();
+            if (sqlCommand == null)
                 return null;
+            sqlCommand.Connection = sqlConnection;
             List<SmallWell> smallWells = new List<SmallWell>();
-            using (SqlCommand command = new SqlCommand(sqlSelectSmallWells, sqlConnection))
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {
-                using (SqlDataReader reader = command.ExecuteReader())
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        SmallWell smallWell = new SmallWell();
-                        if (!reader.IsDBNull(0))
-                            smallWell.Id = reader.GetInt32(0);
-                        if (!reader.IsDBNull(1))
-                            smallWell.Name = reader.GetString(1);
-                        if (!reader.IsDBNull(2))
-                            smallWell.Status = reader.GetString(2);
-                        smallWell.Location = new Location();
-                        if (!reader.IsDBNull(3))
-                            smallWell.Location.Longitude = reader.GetDouble(3);
-                        if (!reader.IsDBNull(0))
-                            smallWell.Location.Latitude = reader.GetDouble(4);
-                        smallWells.Add(smallWell);
-                    }
+                    SmallWell smallWell = new SmallWell();
+                    if (!reader.IsDBNull(0))
+                        smallWell.Id = reader.GetInt32(0);
+                    if (!reader.IsDBNull(1))
+                        smallWell.Name = reader.GetString(1);
+                    if (!reader.IsDBNull(2))
+                        smallWell.Status = reader.GetString(2);
+                    smallWell.Location = new Location();
+                    if (!reader.IsDBNull(3))
+                        smallWell.Location.Longitude = reader.GetDouble(3);
+                    if (!reader.IsDBNull(4))
+                        smallWell.Location.Latitude = reader.GetDouble(4);
+                    smallWells.Add(smallWell);
                 }
             }
             return smallWells.ToArray();

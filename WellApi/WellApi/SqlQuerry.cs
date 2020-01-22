@@ -12,12 +12,13 @@ namespace WellApi
     {
         // Select
 
-        public static string SelectSmallWells()
+        public static SqlCommand SelectSmallWells()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Id, Name, Status, Latitude, Longitude ");
-            sb.Append("FROM [well].[dbo].[Well] ");
-            return sb.ToString();
+            sb.Append("FROM [well].[dbo].[Well];");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            return sqlCommand;
         }
         public static string SelectWell(int wellId)
         {
