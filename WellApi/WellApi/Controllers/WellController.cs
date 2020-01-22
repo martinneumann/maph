@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.Swagger.Annotations;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using WellApi.Models;
 
 namespace WellApi.Controllers
 {
@@ -34,14 +35,14 @@ namespace WellApi.Controllers
         /// <summary>
         /// Get all nearby wells. SearchRadius in meter.
         /// </summary>
-        /// <param name="searchNearbyWells"></param> 
+        /// <param name="locationForSearch"></param> 
         [HttpPost]
         [ActionName("GetNearbyWells")]
         [ProducesResponseType(typeof(SmallWell[]), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        public IActionResult GetNearbyWells(SearchNearbyWells searchNearbyWells)
+        public IActionResult GetNearbyWells(LocationForSearch locationForSearch)
         {
-            SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(searchNearbyWells);
+            SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(locationForSearch);
             if (smallWells == null)
                 return BadRequest("Something went wrong!");
             return Ok(smallWells);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WellApi.Models;
 
 namespace WellApi.Controllers
 {
@@ -96,26 +97,6 @@ namespace WellApi.Controllers
             return Ok();
         }
         /// <summary>
-        /// ExecuteInsertFundingInfo.
-        /// </summary>
-        /// <param name="fundingInfo"></param> 
-        [HttpPost]
-        [ActionName("ExecuteInsertFundingInfo")]
-        public IActionResult ExecuteInsertFundingInfo(FundingInfo fundingInfo)
-        {
-            return Ok(DB.ExecuteInsertFundingInfo(fundingInfo));
-        }
-        /// <summary>
-        /// ExecuteInsertLocation.
-        /// </summary>
-        /// <param name="location"></param> 
-        [HttpPost]
-        [ActionName("ExecuteInsertLocation")]
-        public IActionResult ExecuteInsertLocation(Location location)
-        {
-            return Ok(DB.ExecuteInsertLocation(location));
-        }
-        /// <summary>
         /// ExecuteInsertWell.
         /// </summary>
         /// <param name="well"></param> 
@@ -167,23 +148,23 @@ namespace WellApi.Controllers
         /// <summary>
         /// ExecuteUpdateFundingInfo.
         /// </summary>
-        /// <param name="fundingInfo"></param> 
+        /// <param name="fundingInfoWithWellId"></param> 
         [HttpPost]
         [ActionName("ExecuteUpdateFundingInfo")]
-        public IActionResult ExecuteUpdateFundingInfo(FundingInfo fundingInfo)
+        public IActionResult ExecuteUpdateFundingInfo(FundingInfoWithWellId fundingInfoWithWellId)
         {
-            DB.ExecuteUpdateFundingInfo(fundingInfo);
+            DB.ExecuteUpdateFundingInfo(fundingInfoWithWellId.FundingInfo, fundingInfoWithWellId.WellId);
             return Ok();
         }
         /// <summary>
         /// ExecuteUpdateLocation.
         /// </summary>
-        /// <param name="location"></param> 
+        /// <param name="locationWithWellId"></param> 
         [HttpPost]
         [ActionName("ExecuteUpdateLocation")]
-        public IActionResult ExecuteUpdateLocation(Location location)
+        public IActionResult ExecuteUpdateLocation(LocationWithWellId locationWithWellId)
         {
-            DB.ExecuteUpdateLocation(location);
+            DB.ExecuteUpdateLocation(locationWithWellId.Location, locationWithWellId.WellId);
             return Ok();
         }
         /// <summary>

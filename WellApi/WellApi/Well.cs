@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WellApi.Models;
 
 namespace WellApi
 {
@@ -27,20 +28,9 @@ namespace WellApi
         public DateTime StatusChangedDate { get; set; }
     }
 
-    public class Location
-    {
-        public int Id { get; set; }
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
-    }
+    
 
-    public class FundingInfo
-    {
-        public int Id { get; set; }
-        public string Organisation { get; set; }
-        public DateTime OpeningDate { get; set; }
-        public double Price { get; set; }
-    }
+    
 
     public class WellType
     {
@@ -69,10 +59,6 @@ namespace WellApi
         public Location Location { get; set; }
     }
 
-    public class SearchNearbyWells
-    {
-        public double SearchRadius { get; set; }
-        public Location Location { get; set; }
-    }
+    
 
 }
