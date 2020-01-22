@@ -223,9 +223,8 @@ class _WellInfoState extends State<WellInfo> {
     } else if (choice == wellDelete) {
       print("wellId: " + widget.well.wellId.toString());
       requestDelete(widget.well.wellId);
-      wellList.getMarkers().then((result) {
+      wellList.wells.remove(widget.well);
         Navigator.pop(context);
-      });
     } else if (choice == wellMap) {
       Navigator.push(
           context,
