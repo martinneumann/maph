@@ -99,7 +99,7 @@ class _WellMapState extends State<WellMap> {
                                 borderStrokeWidth: 3),
                             builder: (context, markers) {
                               return FloatingActionButton(
-                                child: Text(snapshot.data.length.toString()),
+                                child: Text(markers.length.toString()),
                                 onPressed: null,
                                 heroTag: "clusterButton",
                               );
