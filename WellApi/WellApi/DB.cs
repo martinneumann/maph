@@ -165,34 +165,38 @@ namespace WellApi
                 {
                     if (reader.Read())
                     {
-                        Well well = new Well
-                        {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Image = null,
-                            Status = reader.GetString(3)
-                        };
-                        Stream real_Image = reader.GetStream(2);
-                        well.Location = new Location
-                        {
-                            Id = reader.GetInt32(4),
-                            Longitude = reader.GetDouble(5),
-                            Latitude = reader.GetDouble(6)
-                        };
-                        well.FundingInfo = new FundingInfo
-                        {
-                            Id = reader.GetInt32(7),
-                            Organisation = reader.GetString(8),
-                            OpeningDate = reader.GetDateTime(9),
-                            Price = reader.GetDouble(10)
-                        };
-                        well.WellType = new WellType
-                        {
-                            Id = reader.GetInt32(11),
-                            Name = reader.GetString(12),
-                            Particularity = reader.GetString(13),
-                            Depth = reader.GetDouble(14)
-                        };
+                        Well well = new Well();
+                        if (!reader.IsDBNull(0))
+                            well.Id = reader.GetInt32(0);
+                        if (!reader.IsDBNull(1))
+                            well.Name = reader.GetString(1);
+                        if (!reader.IsDBNull(2))
+                            well.Status = reader.GetString(2);
+                        well.Location = new Location();
+                        if (!reader.IsDBNull(3))
+                            well.Location.Id = reader.GetInt32(3);
+                        if (!reader.IsDBNull(4))
+                            well.Location.Longitude = reader.GetDouble(4);
+                        if (!reader.IsDBNull(5))
+                            well.Location.Latitude = reader.GetDouble(5);
+                        well.FundingInfo = new FundingInfo();
+                        if (!reader.IsDBNull(6))
+                            well.FundingInfo.Id = reader.GetInt32(6);
+                        if (!reader.IsDBNull(7))
+                            well.FundingInfo.Organisation = reader.GetString(7);
+                        if (!reader.IsDBNull(8))
+                            well.FundingInfo.OpeningDate = reader.GetDateTime(8);
+                        if (!reader.IsDBNull(9))
+                            well.FundingInfo.Price = reader.GetDouble(9);
+                        well.WellType = new WellType();
+                        if (!reader.IsDBNull(10))
+                            well.WellType.Id = reader.GetInt32(10);
+                        if (!reader.IsDBNull(11))
+                            well.WellType.Name = reader.GetString(11);
+                        if (!reader.IsDBNull(12))
+                            well.WellType.Particularity = reader.GetString(12);
+                        if (!reader.IsDBNull(13))
+                            well.WellType.Depth = reader.GetDouble(13);
                         return well;
                     }
                 }
@@ -438,6 +442,17 @@ namespace WellApi
                     ExecuteUpdateWellStatus(issue.WellId, "red");
                 }
             }
+            WellStatus wellStatus = new WellStatus
+            {
+                Description = $"Issue #{issue.Id} Create",
+                Works = issue.Works,
+                Confirmed = false
+            };
+            if (issue.ConfirmedBy != null && issue.ConfirmedBy.Length > 0)
+                wellStatus.Confirmed = true;
+            WellStatus[] statusHistory = new WellStatus[1];
+            statusHistory[0] = wellStatus;
+            ExecuteInsertStatusHistory(statusHistory, issue.Id);
             return true;
         }
         public static void UpdateCompleteIssue(Issue issue)
@@ -446,7 +461,54 @@ namespace WellApi
                 return;
             ExecuteUpdateIssue(issue);
             //Update well
+            if (!issue.Open)
+            {
+                SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
+                bool allClosed = true;
+                foreach (SmallIssue smallIssue in smallIssues)
+                {
+                    Issue otherIssue = ExecuteSelectIssue(smallIssue.Id);
+                    if (otherIssue.Open)
+                    {
+                        allClosed = false;
+                        break;
+                    }
+                }
+                if (allClosed)
+                    ExecuteUpdateWellStatus(issue.WellId, "green");
+            }
+            else if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
+            {
+                SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
+                bool NoConfirmedIssues = true;
+                foreach (SmallIssue smallIssue in smallIssues)
+                {
+                    Issue otherIssue = ExecuteSelectIssue(smallIssue.Id);
+                    if (otherIssue.Works == false && otherIssue.ConfirmedBy != null && otherIssue.ConfirmedBy.Length > 0)
+                    { 
+                        NoConfirmedIssues = false;
+                        break;
+                    }
+                }
+                if (NoConfirmedIssues)
+                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
+            }
+            else if (issue.Works == false)
+            {
+                ExecuteUpdateWellStatus(issue.WellId, "red");
+            }
 
+            WellStatus wellStatus = new WellStatus
+            {
+                Description = $"Issue #{issue.Id} Updated",
+                Works = issue.Works,
+                Confirmed = false
+            };
+            if (issue.ConfirmedBy != null && issue.ConfirmedBy.Length > 0)
+                wellStatus.Confirmed = true;
+            WellStatus[] statusHistory = new WellStatus[1];
+            statusHistory[0] = wellStatus;
+            ExecuteInsertStatusHistory(statusHistory, issue.Id);
         }
 
         // Single SQL Querry
@@ -496,21 +558,18 @@ namespace WellApi
                             issue.Description = reader.GetString(2);
                         if (!reader.IsDBNull(3))
                             issue.CreationDate = reader.GetDateTime(3);
-                        issue.Image = null;
-
+                        if (!reader.IsDBNull(4))
+                            issue.Status = reader.GetString(4);
                         if (!reader.IsDBNull(5))
-                            issue.Status = reader.GetString(5);
+                            issue.Open = reader.GetBoolean(5);
                         if (!reader.IsDBNull(6))
-                            issue.Open = reader.GetBoolean(6);
+                            issue.ConfirmedBy = reader.GetString(6);
                         if (!reader.IsDBNull(7))
-                            issue.ConfirmedBy = reader.GetString(7);
+                            issue.SolvedDate = reader.GetDateTime(7);
                         if (!reader.IsDBNull(8))
-                            issue.SolvedDate = reader.GetDateTime(8);
+                            issue.RepairedBy = reader.GetString(8);
                         if (!reader.IsDBNull(9))
-                            issue.RepairedBy = reader.GetString(9);
-                        issue.Bill = null;
-                        if (!reader.IsDBNull(11))
-                            issue.Works = reader.GetBoolean(11);
+                            issue.Works = reader.GetBoolean(9);
                     }
                 }
             }

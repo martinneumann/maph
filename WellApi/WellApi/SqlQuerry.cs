@@ -24,7 +24,7 @@ namespace WellApi
             if (wellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Image, w.Status, l.Id, l.Longitude, l.Latitude, f.Id, f.Organisation, f.OpeningDate, f.Price, t.Id, t.Name, t.Particularity, t.Depth ");
+            sb.Append("SELECT w.Id, w.Name, w.Status, l.Id, l.Longitude, l.Latitude, f.Id, f.Organisation, f.OpeningDate, f.Price, t.Id, t.Name, t.Particularity, t.Depth ");
             sb.Append("FROM [well].[dbo].[Well] w ");
             sb.Append("JOIN [well].[dbo].[Location] l ");
             sb.Append("ON w.LocationId = l.Id ");
@@ -67,7 +67,7 @@ namespace WellApi
         public static string SelectIssue(int issueId)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT Id, WellId, Description, CreationDate, Image, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Bill, Works ");
+            sb.Append("SELECT Id, WellId, Description, CreationDate, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Works ");
             sb.Append("FROM [well].[dbo].[Issue] ");
             sb.Append($"WHERE Id = {issueId};");
             return sb.ToString();
@@ -142,7 +142,7 @@ namespace WellApi
             if (fundingInfo.OpeningDate == null)
                 sb.Append($"VALUES ('{fundingInfo.Organisation}',CURRENT_TIMESTAMP,{fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)});");
             else
-                sb.Append($"VALUES ('{fundingInfo.Organisation}','{fundingInfo.OpeningDate.ToString("yyyyMMdd")}',{fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)});");
+                sb.Append($"VALUES ('{fundingInfo.Organisation}','{fundingInfo.OpeningDate.ToString("yyyyMMdd HH:mm:ss")}',{fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)});");
             return sb.ToString();
         }
         public static string InsertLocation(Location location)
@@ -176,10 +176,10 @@ namespace WellApi
             List<string> values = new List<string>();
             foreach (WellStatus status in statusHistory)
             {
-                if (status.StatusChangedDate == null)
+                if (status.StatusChangedDate == null || status.StatusChangedDate == new DateTime())
                     values.Add($"('{status.Description}',{status.Works},{status.Confirmed},CURRENT_TIMESTAMP, {wellId}),");
                 else
-                    values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},'{status.StatusChangedDate.ToString("yyyyMMdd")}', {wellId}),");
+                    values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},'{status.StatusChangedDate.ToString("yyyyMMdd HH:mm:ss")}', {wellId}),");
             }
             if (values.Count == 0)
                 return null;
@@ -212,7 +212,7 @@ namespace WellApi
             if (issue.CreationDate != new DateTime())
             {
                 insertColumns += "CreationDate, ";
-                insertColumnValues += $"'{issue.CreationDate.ToString("yyyyMMdd")}', ";
+                insertColumnValues += $"'{issue.CreationDate.ToString("yyyyMMdd HH:mm:ss")}', ";
             }
             else
             {
@@ -234,7 +234,7 @@ namespace WellApi
             if (issue.SolvedDate != new DateTime())
             {
                 insertColumns += "SolvedDate, ";
-                insertColumnValues += $"'{issue.SolvedDate.ToString("yyyyMMdd")}', ";
+                insertColumnValues += $"'{issue.SolvedDate.ToString("yyyyMMdd HH:mm:ss")}', ";
             }
             if (issue.RepairedBy != null)
             {
@@ -300,7 +300,7 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[FundingInfo] ");
-            sb.Append($"SET Organisation = '{fundingInfo.Organisation}', OpeningDate = '{fundingInfo.OpeningDate.ToString("yyyyMMdd")}', Price = {fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} ");
+            sb.Append($"SET Organisation = '{fundingInfo.Organisation}', OpeningDate = '{fundingInfo.OpeningDate.ToString("yyyyMMdd HH:mm:ss")}', Price = {fundingInfo.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)} ");
             sb.Append($"WHERE Id = {fundingInfo.Id};");
             return sb.ToString();
         }
@@ -337,7 +337,7 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[StatusHistory] ");
-            sb.Append($"SET Description = '{statusHistory.Description}', Works = {Convert.ToInt32(statusHistory.Works)}, Confirmed = {Convert.ToInt32(statusHistory.Confirmed)}, StatusChangedDate = '{statusHistory.StatusChangedDate.ToString("yyyyMMdd")}', WellId = {wellId} ");
+            sb.Append($"SET Description = '{statusHistory.Description}', Works = {Convert.ToInt32(statusHistory.Works)}, Confirmed = {Convert.ToInt32(statusHistory.Confirmed)}, StatusChangedDate = '{statusHistory.StatusChangedDate.ToString("yyyyMMdd HH:mm:ss")}', WellId = {wellId} ");
             sb.Append($"WHERE Id = {statusHistory.Id};");
             return sb.ToString();
         }
@@ -347,7 +347,7 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Issue] ");
-            sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.ToString("yyyyMMdd")}', Status = '{issue.Status}', [Open] = {Convert.ToInt32(issue.Open)}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.ToString("yyyyMMdd")}', RepairedBy = '{issue.RepairedBy}', Works = {Convert.ToInt32(issue.Works)} ");
+            sb.Append($"SET WellId = {issue.WellId}, Description = '{issue.Description}', CreationDate = '{issue.CreationDate.ToString("yyyyMMdd HH:mm:ss")}', Status = '{issue.Status}', [Open] = {Convert.ToInt32(issue.Open)}, ConfirmedBy = '{issue.ConfirmedBy}', SolvedDate = '{issue.SolvedDate.ToString("yyyyMMdd HH:mm:ss")}', RepairedBy = '{issue.RepairedBy}', Works = {Convert.ToInt32(issue.Works)} ");
             sb.Append($"WHERE Id = {issue.Id};");
             return sb.ToString();
         }
