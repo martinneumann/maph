@@ -93,22 +93,30 @@ class _AddWellState extends State<AddWell> {
                             children: <Widget>[
                               TextFormField(
                                 controller: latitudeController,
+                                keyboardType: TextInputType.number,
                                 decoration:
                                 InputDecoration(labelText: "Latitude:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter latitude!';
+                                  } else if (double.parse(value) < -90 ||
+                                      double.parse(value) > 90) {
+                                    return 'Latitude has to be between -90 and 90 degrees!';
                                   }
                                   return null;
                                 },
                               ),
                               TextFormField(
                                 controller: longitudeController,
+                                keyboardType: TextInputType.number,
                                 decoration:
                                 InputDecoration(labelText: "Longitude:"),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter longitude';
+                                  } else if (double.parse(value) < -180 ||
+                                      double.parse(value) > 180) {
+                                    return 'Longitude has to be between -180 and 180 degrees!';
                                   }
                                   return null;
                                 },
@@ -156,8 +164,11 @@ class _AddWellState extends State<AddWell> {
                               ),
                               TextFormField(
                                 controller: costsController,
+                                keyboardType: TextInputType.number,
                                 decoration:
-                                InputDecoration(labelText: "Costs:"),
+                                InputDecoration(
+                                  labelText: "Costs:",
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter the building costs of the well.';
