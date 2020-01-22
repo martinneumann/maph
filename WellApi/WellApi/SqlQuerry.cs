@@ -162,7 +162,7 @@ namespace WellApi
             foreach (WellStatus status in statusHistory)
             {
                 if (status.StatusChangedDate == null || status.StatusChangedDate == new DateTime())
-                    values.Add($"('{status.Description}',{status.Works},{status.Confirmed},CURRENT_TIMESTAMP, {wellId}),");
+                    values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},CURRENT_TIMESTAMP, {wellId}),");
                 else
                     values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},'{status.StatusChangedDate.ToString("yyyyMMdd HH:mm:ss")}', {wellId}),");
             }
