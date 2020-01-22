@@ -64,7 +64,7 @@ class _WellUpdateState extends State<WellUpdate> {
   void initState() {
     super.initState();
 
-    nameController.text = widget.well.getMarkerName();
+    nameController.text = widget.well.getWellName();
     latitudeController.text = widget.well.location.latitude.toString();
     longitudeController.text = widget.well.location.longitude.toString();
     fundingController.text = widget.well.fundingOrganisation;

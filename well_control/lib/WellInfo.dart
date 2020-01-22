@@ -76,7 +76,7 @@ class _WellInfoState extends State<WellInfo> {
                               children: <Widget>[
                                 ListTile(
                                   title: Text('Name:'),
-                                  subtitle: Text(wellMarker.getMarkerName()),
+                                  subtitle: Text(wellMarker.getWellName()),
                                 ),
                               ],
                             ),

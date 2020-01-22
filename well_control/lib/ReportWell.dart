@@ -49,7 +49,7 @@ class _ReportWellState extends State<ReportWell> {
     super.initState();
 
     for (int i = 0; i < wellList.wells.length; i++) {
-      wellNames.add(wellList.wells[i].getMarkerName());
+      wellNames.add(wellList.wells[i].getWellName());
     }
   }
 
@@ -98,8 +98,8 @@ class _ReportWellState extends State<ReportWell> {
                     },
                     items: wellList.wells.map((well) {
                       return DropdownMenuItem(
-                        child: new Text(well.getMarkerName()),
-                        value: well.getMarkerName(),
+                        child: new Text(well.getWellName()),
+                        value: well.getWellName(),
                       );
                     }).toList(),
                   ),

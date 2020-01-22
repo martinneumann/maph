@@ -77,12 +77,12 @@ class DisplayWellsState extends State<DisplayWells> {
             return new ListTile(
               leading: ClipOval(
                 child: Container(
-                  color: wellList.wells[index].getMarkerStatus(),
+                  color: wellList.wells[index].getMarkerColor(),
                   height: 20.0,
                   width: 20.0,
                 ),
               ),
-              title: Text(wellList.wells[index].getMarkerName()),
+              title: Text(wellList.wells[index].getWellName()),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -95,7 +95,7 @@ class DisplayWellsState extends State<DisplayWells> {
                     MaterialPageRoute(
                         builder: (context) =>
                             WellInfo(
-                                title: wellList.wells[index].getMarkerName(),
+                                title: wellList.wells[index].getWellName(),
                                 well: wellList.wells[index])));
               },
             );
