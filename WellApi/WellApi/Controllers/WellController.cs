@@ -24,12 +24,20 @@ namespace WellApi.Controllers
         [ActionName("GetAll")]
         [ProducesResponseType(typeof(SmallWell[]), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult GetAll()
         {
-            SmallWell[] smallWells = DB.ExecuteSelectSmallWells();
-            if (smallWells == null)
-                return BadRequest("Something went wrong!");
-            return Ok(smallWells);
+            try
+            {
+                SmallWell[] smallWells = DB.ExecuteSelectSmallWells();
+                if (smallWells == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(smallWells);
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
 
         /// <summary>
@@ -40,12 +48,20 @@ namespace WellApi.Controllers
         [ActionName("GetNearbyWells")]
         [ProducesResponseType(typeof(SmallWell[]), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult GetNearbyWells(LocationForSearch locationForSearch)
         {
-            SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(locationForSearch);
-            if (smallWells == null)
-                return BadRequest("Something went wrong!");
-            return Ok(smallWells);
+            try
+            {
+                SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(locationForSearch);
+                if (smallWells == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(smallWells);
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
 
         /// <summary>
@@ -56,13 +72,20 @@ namespace WellApi.Controllers
         [ActionName("GetWell")]
         [ProducesResponseType(typeof(Well), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult GetWell(int wellId)
         {
-            // get Image sneeded
-            Well well = DB.GetCompleteWell(wellId);
-            if (well == null)
-                return BadRequest("Well with Id not found");
-            return Ok(well);
+            try
+            {
+                Well well = DB.GetCompleteWell(wellId);
+                if (well == null)
+                    return BadRequest("Well with Id not found");
+                return Ok(well);
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
 
         /// <summary>
@@ -73,13 +96,20 @@ namespace WellApi.Controllers
         [ActionName("PostNewWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult PostNewWell(Well well)
         {
-            // Image creation needed
-            int wellId = DB.AddCompleteWell(well);
-            if (wellId == 0)
-                return BadRequest("Well was not inserted!");
-            return Ok(wellId);
+            try
+            {
+                int wellId = DB.AddCompleteWell(well);
+                if (wellId == 0)
+                    return BadRequest("Well was not inserted!");
+                return Ok(wellId);
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
 
         /// <summary>
@@ -90,12 +120,20 @@ namespace WellApi.Controllers
         [ActionName("PostUpdateWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult PostUpdateWell(Well well)
         {
-            int affected = DB.UpdateCompleteWell(well);
-            if (affected > 0)
-                return Ok(affected);
-            return BadRequest("Nothing Updated!");
+            try
+            {
+                int affected = DB.UpdateCompleteWell(well);
+                if (affected > 0)
+                    return Ok(affected);
+                return BadRequest("Nothing Updated!");
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
 
         /// <summary>
@@ -106,11 +144,19 @@ namespace WellApi.Controllers
         [ActionName("DeleteWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult DeleteWell(int Id)
         {
-            if (DB.ExecuteDeleteWell(Id))
-                return Ok(Id);
-            return BadRequest("Id not found!");
+            try
+            {
+                if (DB.ExecuteDeleteWell(Id))
+                    return Ok(Id);
+                return BadRequest("Id not found!");
+            }
+            catch
+            {
+                return Conflict("Server error!");
+            }
         }
     }
 }
