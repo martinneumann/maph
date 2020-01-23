@@ -14,6 +14,16 @@ namespace WellApi.Controllers
     public class DBTestController : ControllerBase
     {
         /// <summary>
+        /// ReconnectToDb.
+        /// </summary>
+        [HttpGet]
+        [ActionName("ReconnectToDb")]
+        public IActionResult ReconnectToDb()
+        {
+            DB.ReconnectToDb();
+            return Ok("reconnect");
+        }
+        /// <summary>
         /// ExecuteSelectSmallWells.
         /// </summary>
         [HttpGet]
@@ -45,7 +55,7 @@ namespace WellApi.Controllers
         [ActionName("ExecuteSelectStatusHistory")]
         public IActionResult ExecuteSelectStatusHistory(int wellId)
         {
-            WellStatus[] statusHistory = DB.ExecuteSelectStatusHistory(wellId);
+            MaintenanceLog[] statusHistory = DB.ExecuteSelectStatusHistory(wellId);
             return Ok(statusHistory);
         }
         /// <summary>
@@ -109,7 +119,7 @@ namespace WellApi.Controllers
 
         public class InsertStatusHistory
         {
-            public WellStatus[] statusHistory { get; set; }
+            public MaintenanceLog[] statusHistory { get; set; }
             public int wellId { get; set; }
         }
         /// <summary>
@@ -170,17 +180,17 @@ namespace WellApi.Controllers
         /// <summary>
         /// ExecuteUpdateWell.
         /// </summary>
-        /// <param name="well"></param> 
+        /// <param name="changedWell"></param> 
         [HttpPost]
         [ActionName("ExecuteUpdateWell")]
-        public IActionResult ExecuteUpdateWell(Well well)
+        public IActionResult ExecuteUpdateWell(ChangedWell changedWell)
         {
-            DB.ExecuteUpdateWell(well);
+            DB.ExecuteUpdateWell(changedWell);
             return Ok();
         }
         public class UpdateStatusHistory
         {
-            public WellStatus statusHistory { get; set; }
+            public MaintenanceLog statusHistory { get; set; }
             public int wellId { get; set; }
         }
         /// <summary>

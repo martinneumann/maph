@@ -34,9 +34,9 @@ namespace WellApi.Controllers
                     return BadRequest("Something went wrong!");
                 return Ok(smallWells);
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
 
@@ -58,9 +58,9 @@ namespace WellApi.Controllers
                     return BadRequest("Something went wrong!");
                 return Ok(smallWells);
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
 
@@ -82,80 +82,81 @@ namespace WellApi.Controllers
                     return BadRequest("Well with Id not found");
                 return Ok(well);
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
 
         /// <summary>
         /// Creates a specific well.
         /// </summary>
-        /// <param name="well"></param> 
+        /// <param name="newWell"></param> 
         [HttpPost]
         [ActionName("PostNewWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostNewWell(Well well)
+        public IActionResult PostNewWell(NewWell newWell)
         {
             try
             {
-                int wellId = DB.AddCompleteWell(well);
+                int wellId = DB.AddCompleteWell(new Well(newWell));
                 if (wellId == 0)
                     return BadRequest("Well was not inserted!");
                 return Ok(wellId);
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
 
         /// <summary>
         /// Updates a specific well.
         /// </summary>
-        /// <param name="well"></param> 
+        /// <param name="changedWell"></param> 
         [HttpPost]
         [ActionName("PostUpdateWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostUpdateWell(Well well)
+        public IActionResult PostUpdateWell(ChangedWell changedWell)
         {
             try
             {
-                int affected = DB.UpdateCompleteWell(well);
+                int affected = DB.UpdateCompleteWell(changedWell);
                 if (affected > 0)
                     return Ok(affected);
                 return BadRequest("Nothing Updated!");
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
 
         /// <summary>
         /// Deletes a specific well.
         /// </summary>
-        /// <param name="Id"></param> 
-        [HttpDelete("{Id}")]
+        /// <param name="id"></param> 
+        [HttpDelete("{id}")]
         [ActionName("DeleteWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult DeleteWell(int Id)
+        public IActionResult DeleteWell(int id)
         {
             try
             {
-                if (DB.ExecuteDeleteWell(Id))
-                    return Ok(Id);
-                return BadRequest("Id not found!");
+                int affected = DB.ExecuteDeleteWell(id);
+                if (affected > 0)
+                    return Ok(id);
+                return BadRequest("Nothing Deleted!");
             }
-            catch
+            catch (Exception e)
             {
-                return Conflict("Server error!");
+                return Conflict("Server error! " + e.Message);
             }
         }
     }

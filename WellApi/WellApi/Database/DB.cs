@@ -12,11 +12,18 @@ namespace WellApi
         // Connection
 
         static SqlConnection sqlConnection = null;
+        static string conn = "";
         public static void ConnectToDb(string connectionString)
         {
+            conn = connectionString;
             sqlConnection = new SqlConnection(connectionString);
             sqlConnection.Open();
-        }      
+        }
+        public static void ReconnectToDb()
+        {
+            sqlConnection = new SqlConnection(conn);
+            sqlConnection.Open();
+        }
         public static void DisconnectFromDb()
         {
             if( sqlConnection != null)
@@ -55,8 +62,8 @@ namespace WellApi
                 return 0;
             if (well.StatusHistory == null || well.StatusHistory.Length == 0)
             {
-                List<WellStatus> statusHistory = new List<WellStatus>();
-                WellStatus status = new WellStatus
+                List<MaintenanceLog> statusHistory = new List<MaintenanceLog>();
+                MaintenanceLog status = new MaintenanceLog
                 {
                     Works = true,
                     Confirmed = true,
@@ -68,30 +75,23 @@ namespace WellApi
             ExecuteInsertStatusHistory(well.StatusHistory, well.Id);
             return well.Id;
         }
-        public static int UpdateCompleteWell(Well well)
+        public static int UpdateCompleteWell(ChangedWell changedWell)
         {
-            if (well == null || well.Id == 0)
+            if (changedWell == null || changedWell.Id == 0)
                 return 0;
-            
             int affected = 0;
-            Well oldWell = ExecuteSelectWell(well.Id);
-            if (well.WellType != null && well.WellType.Parts != null)
+            Well oldWell = ExecuteSelectWell(changedWell.Id);
+            if (changedWell.WellType != null && changedWell.WellType.Parts != null)
             {
-                foreach (Part part in well.WellType.Parts)
+                foreach (Part part in changedWell.WellType.Parts)
                 {
                     affected += ExecuteUpdatePart(part);
                 }
             }
-            if (well.WellType != null && well.WellType.Id == 0)
-                well.WellType.Id = oldWell.WellType.Id;
-            affected += ExecuteUpdateWellType(well.WellType);
-            affected += ExecuteUpdateWell(well);
-            if (well.StatusHistory == null)
-                return affected;
-            foreach (WellStatus status in well.StatusHistory)
-            {
-                affected += ExecuteUpdateStatusHistory(status, well.Id);
-            }
+            if (changedWell.WellType != null && changedWell.WellType.Id == 0)
+                changedWell.WellType.Id = oldWell.WellType.Id;
+            affected += ExecuteUpdateWellType(changedWell.WellType);
+            affected += ExecuteUpdateWell(changedWell);
             return affected;
         }
 
@@ -190,19 +190,19 @@ namespace WellApi
             }
             return null;
         }     
-        public static WellStatus[] ExecuteSelectStatusHistory(int wellId)
+        public static MaintenanceLog[] ExecuteSelectStatusHistory(int wellId)
         {
             string sqlSelectStatusHistory = SqlQuerry.SelectStatusHistory(wellId);
             if (sqlSelectStatusHistory == null)
-                return new WellStatus[0];
-            List<WellStatus> wellStatuses = new List<WellStatus>();
+                return new MaintenanceLog[0];
+            List<MaintenanceLog> wellStatuses = new List<MaintenanceLog>();
             using (SqlCommand command = new SqlCommand(sqlSelectStatusHistory, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        WellStatus wellStatus = new WellStatus
+                        MaintenanceLog wellStatus = new MaintenanceLog
                         {
                             Id = reader.GetInt32(0),
                             Description = reader.GetString(1),
@@ -286,7 +286,7 @@ namespace WellApi
             command.Connection = sqlConnection;
             return (int)command.ExecuteScalar();
         }
-        public static void ExecuteInsertStatusHistory(WellStatus[] statusHistory, int wellId)
+        public static void ExecuteInsertStatusHistory(MaintenanceLog[] statusHistory, int wellId)
         {
             string sqlStatusHistory = SqlQuerry.InsertStatusHistory(statusHistory, wellId);
             if (sqlStatusHistory == null)
@@ -296,18 +296,13 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static bool ExecuteDeleteWell(int wellId)
+        public static int ExecuteDeleteWell(int wellId)
         {
             string sqlDelete = SqlQuerry.DeleteWell(wellId);
             if (sqlDelete == null)
-                return false;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlDelete, sqlConnection))
-            {
-                int affected = command.ExecuteNonQuery();
-                if (affected > 0)
-                    return true;
-            }
-            return false;
+                return command.ExecuteNonQuery();
         }
         public static int ExecuteUpdatePart(Part part)
         {
@@ -347,15 +342,15 @@ namespace WellApi
                 return command.ExecuteNonQuery();
             }
         }
-        public static int ExecuteUpdateWell(Well well)
+        public static int ExecuteUpdateWell(ChangedWell changedWell)
         {
-            SqlCommand sqlCommand = SqlQuerry.UpdateWell(well);
+            SqlCommand sqlCommand = SqlQuerry.UpdateWell(changedWell);
             if (sqlCommand == null)
                 return 0;
             sqlCommand.Connection = sqlConnection;
             return sqlCommand.ExecuteNonQuery();
         }
-        public static int ExecuteUpdateStatusHistory(WellStatus statusHistory, int wellId)
+        public static int ExecuteUpdateStatusHistory(MaintenanceLog statusHistory, int wellId)
         {
             string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(statusHistory, wellId);
             if (sqlStatusHistory == null)
@@ -378,48 +373,40 @@ namespace WellApi
                 issue.BrokenParts = ExecuteSelectBrokenParts(issue.Id);
             return issue;
         }
-        public static bool AddCompleteNewIssue(Issue issue)
+        public static bool AddCompleteNewIssue(NewIssue newIssue)
         {
-            int IssueId = ExecuteInsertIssue(issue);
-            if (IssueId == 0)
+            int issueId = ExecuteInsertIssue(newIssue);
+            if (issueId == 0)
                 return false;
-            if (issue.BrokenParts != null)
-            {
-                List<int> partIds = new List<int>();
-                foreach (Part part in issue.BrokenParts)
-                {
-                    partIds.Add(part.Id);
-                }
-                ExecuteInsertBrokenParts(partIds.ToArray(), issue.Id);
-            }
+            ExecuteInsertBrokenParts(newIssue.BrokenPartIds, issueId);
 
-            string status = ExecuteSelectWellStatus(issue.WellId);
+            string status = ExecuteSelectWellStatus(newIssue.WellId);
             if (status != null && status == "green")
             {
-                if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
-                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
-                else if (issue.Works == false && status != "red")
+                if (newIssue.ConfirmedBy == null || newIssue.ConfirmedBy == "")
+                    ExecuteUpdateWellStatus(newIssue.WellId, "yellow");
+                else if (newIssue.Works == false && status != "red")
                 {
-                    ExecuteUpdateWellStatus(issue.WellId, "red");
+                    ExecuteUpdateWellStatus(newIssue.WellId, "red");
                 }
             }
-            WellStatus wellStatus = new WellStatus
+            MaintenanceLog wellStatus = new MaintenanceLog
             {
-                Description = $"Issue #{issue.Id} Create",
-                Works = issue.Works,
+                Description = $"Issue #{issueId} Create",
+                Works = newIssue.Works,
                 Confirmed = false
             };
-            if (issue.ConfirmedBy != null && issue.ConfirmedBy.Length > 0)
+            if (newIssue.ConfirmedBy != null && newIssue.ConfirmedBy.Length > 0)
                 wellStatus.Confirmed = true;
-            WellStatus[] statusHistory = new WellStatus[1];
+            MaintenanceLog[] statusHistory = new MaintenanceLog[1];
             statusHistory[0] = wellStatus;
-            ExecuteInsertStatusHistory(statusHistory, issue.Id);
+            ExecuteInsertStatusHistory(statusHistory, issueId);
             return true;
         }
-        public static void UpdateCompleteIssue(Issue issue)
+        public static int UpdateCompleteIssue(Issue issue)
         {
             if (issue.Id == 0)
-                return;
+                return 0;
             ExecuteUpdateIssue(issue);
             //Update well
             if (!issue.Open)
@@ -459,7 +446,7 @@ namespace WellApi
                 ExecuteUpdateWellStatus(issue.WellId, "red");
             }
 
-            WellStatus wellStatus = new WellStatus
+            MaintenanceLog wellStatus = new MaintenanceLog
             {
                 Description = $"Issue #{issue.Id} Updated",
                 Works = issue.Works,
@@ -468,9 +455,10 @@ namespace WellApi
             if (issue.ConfirmedBy != null &&
                 issue.ConfirmedBy.Length > 0)
                 wellStatus.Confirmed = true;
-            WellStatus[] statusHistory = new WellStatus[1];
+            MaintenanceLog[] statusHistory = new MaintenanceLog[1];
             statusHistory[0] = wellStatus;
             ExecuteInsertStatusHistory(statusHistory, issue.Id);
+            return 1;
         }
 
         // Single SQL Querry
@@ -598,15 +586,13 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteDeleteIssue(int issueId)
+        public static int ExecuteDeleteIssue(int issueId)
         {
             string sqlDeleteIssue = SqlQuerry.DeleteIssue(issueId);
             if (sqlDeleteIssue == null)
-                return;
+                return 0;
             using (SqlCommand command = new SqlCommand(sqlDeleteIssue, sqlConnection))
-            {
-                command.ExecuteNonQuery();
-            }
+                return command.ExecuteNonQuery();
         }
         public static string ExecuteSelectWellStatus(int wellId)
         {

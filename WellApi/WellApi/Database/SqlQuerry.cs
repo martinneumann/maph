@@ -151,7 +151,7 @@ namespace WellApi
             sqlCommand.Parameters.AddWithValue("@WellTypeId", well.WellType.Id);
             return sqlCommand;
         }
-        public static string InsertStatusHistory(WellStatus[] statusHistory, int wellId)
+        public static string InsertStatusHistory(MaintenanceLog[] statusHistory, int wellId)
         {
             if (statusHistory == null || wellId == 0 || statusHistory.Length == 0)
                 return null;
@@ -159,7 +159,7 @@ namespace WellApi
             // no Image!!!
             sb.Append("INSERT INTO [well].[dbo].[StatusHistory] (Description, Works, Confirmed, StatusChangedDate, WellId) ");
             List<string> values = new List<string>();
-            foreach (WellStatus status in statusHistory)
+            foreach (MaintenanceLog status in statusHistory)
             {
                 if (status.StatusChangedDate == null || status.StatusChangedDate == new DateTime())
                     values.Add($"('{status.Description}',{Convert.ToInt32(status.Works)},{Convert.ToInt32(status.Confirmed)},CURRENT_TIMESTAMP, {wellId}),");
@@ -307,47 +307,47 @@ namespace WellApi
             sb.Append($"WHERE Id = {wellId};");
             return sb.ToString();
         }
-        public static SqlCommand UpdateWell(Well well)
+        public static SqlCommand UpdateWell(ChangedWell changedWell)
         {
-            if (well == null || well.Id == 0)
+            if (changedWell == null || changedWell.Id == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Well] ");
             string setToUpdate = "";
             SqlCommand sqlCommand = new SqlCommand();
-            if (well.Location != null)
+            if (changedWell.Location != null)
             {
                 setToUpdate += "Latitude = @Latitude, ";
+                sqlCommand.Parameters.AddWithValue("@Latitude", changedWell.Location.Latitude);
                 setToUpdate += "Longitude = @Longitude, ";
-                sqlCommand.Parameters.AddWithValue("@Latitude", well.Location.Latitude);
-                sqlCommand.Parameters.AddWithValue("@Longitude", well.Location.Longitude);
+                sqlCommand.Parameters.AddWithValue("@Longitude", changedWell.Location.Longitude);
             }
-            if (well.FundingInfo != null)
+            if (changedWell.FundingInfo != null)
             {
                 setToUpdate += "Organisation = @Organisation, ";
-                setToUpdate += "OpeningDate = @OpeningDate, ";
+                sqlCommand.Parameters.AddWithValue("@Organisation", changedWell.FundingInfo.Organisation);
+                if(changedWell.FundingInfo.OpeningDate != new DateTime())
+                {
+                    setToUpdate += "OpeningDate = @OpeningDate, ";
+                    sqlCommand.Parameters.AddWithValue("@OpeningDate", changedWell.FundingInfo.OpeningDate);
+                }
                 setToUpdate += "Price = @Price, ";
-                sqlCommand.Parameters.AddWithValue("@Organisation", well.FundingInfo.Organisation);
-                if(well.FundingInfo.OpeningDate == new DateTime())
-                    sqlCommand.Parameters.AddWithValue("@OpeningDate", DateTime.Now);
-                else
-                    sqlCommand.Parameters.AddWithValue("@OpeningDate", well.FundingInfo.OpeningDate);
-                sqlCommand.Parameters.AddWithValue("@Price", well.FundingInfo.Price);
+                sqlCommand.Parameters.AddWithValue("@Price", changedWell.FundingInfo.Price);
             }
-            if (well.WellType != null && well.WellType.Id != 0)
+            if (changedWell.WellType != null && changedWell.WellType.Id != 0)
             {
                 setToUpdate += "WellTypeId = @WellTypeId, ";
-                sqlCommand.Parameters.AddWithValue("@WellTypeId", well.WellType.Id);
+                sqlCommand.Parameters.AddWithValue("@WellTypeId", changedWell.WellType.Id);
             }
-            sqlCommand.Parameters.AddWithValue("@Name", well.Name);
-            sqlCommand.Parameters.AddWithValue("@Status", well.Status);
-            sqlCommand.Parameters.AddWithValue("@Id", well.Id);
             sb.Append($"SET Name = @Name, {setToUpdate}Status = @Status ");
+            sqlCommand.Parameters.AddWithValue("@Name", changedWell.Name);
+            sqlCommand.Parameters.AddWithValue("@Status", changedWell.Status);
             sb.Append("WHERE Id = @Id;");
+            sqlCommand.Parameters.AddWithValue("@Id", changedWell.Id);
             sqlCommand.CommandText = sb.ToString();
             return sqlCommand;
         }
-        public static string UpdateStatusHistory(WellStatus statusHistory, int wellId)
+        public static string UpdateStatusHistory(MaintenanceLog statusHistory, int wellId)
         {
             if (statusHistory == null || statusHistory.Id == 0 || wellId == 0)
                 return null;

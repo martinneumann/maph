@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WellApi.Models;
 
 namespace WellApi
 {
     public class Issue
     {
+        public Issue() { }
         public int Id { get; set; }
         public string Description { get; set; }
         public DateTime CreationDate { get; set; }
@@ -21,9 +23,14 @@ namespace WellApi
         public int WellId { get; set; }
     }
 
-    //
-    // For API Controller
-    //
+    public class NewIssue
+    {
+        public string Description { get; set; }
+        public string ConfirmedBy { get; set; }
+        public bool Works { get; set; }
+        public int[] BrokenPartIds { get; set; }
+        public int WellId { get; set; }
+    }
 
     public class SmallIssue
     {
