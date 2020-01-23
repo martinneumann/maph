@@ -4,8 +4,12 @@ import 'package:http/http.dart' as http;
 
 import 'WellIssue.dart';
 
-/// Makes a POST request to save a new issue to the database.
-/// @param issue The issue to be posted.
+/// Defines the api url as const variable [wellApiUrl].
+const wellApiUrl = "https://wellapi.azurewebsites.net/api/";
+
+/// Post request for new well issue
+///
+/// Makes a POST request to save a new [issue] to the database.
 Future<http.Response> postNewIssue(WellIssue issue) {
   print("Param issue description: " + issue.description.toString());
   var query = json.encode(
@@ -14,52 +18,72 @@ Future<http.Response> postNewIssue(WellIssue issue) {
       "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
       ")");
   print(query);
-  return http.post('http://wellapi.azurewebsites.net/api/Issue/PostNewIssue',
+  return http.post(wellApiUrl + 'Issue/PostNewIssue',
       body: query);
 }
 
-/// Gets all issues
+/// Response returns all well issues as [http.Response]
+///
+/// Sends get-request to get all created well issues.
 Future<http.Response> getAllIssues() {
-  return http.get('https://wellapi.azurewebsites.net/api/Issue/GetAll');
+  return http.get(wellApiUrl + 'Issue/GetAll');
 }
 
-/// Gets all wells
+/// Response returns all wells as [http.Response]
+///
+/// Sends get-request to get all wells.
+/// Wells consists name, id, status and location.
 Future<http.Response> getAllWells() {
-  return http.get('https://wellapi.azurewebsites.net/api/Well/GetAll');
+  return http.get(wellApiUrl + 'Well/GetAll');
 }
 
-/// Gets a specific well
-/// @param id The specific well ID
+/// Response returns wells filtered by radius in meter.
+///
+/// Sends post-request to get wells in radius.
+/// Filtering wells by location [latitude], [longitude] and given radius
+/// in meter.
+Future<http.Response> getWellsByRadius(double latitude , double longitude , 
+                                       int radius) {
+  var query = jsonEncode("{" +
+    "searchRadius:" + radius.toString() + "," +
+    "location:{" +
+      "longitude:" + longitude.toString() + "," +
+      "latitude:" + latitude.toString() +
+    "}}");
+
+  return http.post(wellApiUrl + 'Well/GetAll' ,
+      body: query);
+}
+
+/// Response returns specific well by given [id].
+///
+/// Sends get-request to get well once by given [id].
 Future<http.Response> getWell(int id) {
-  return http.get('https://wellapi.azurewebsites.net/api/Well/GetWell/$id');
+  return http.get(wellApiUrl + 'Well/GetWell/$id');
 }
 
-/// Gets nearby wells
-/// @param searchRadius A JSON String including searchRadius and current Position.
-Future<http.Response> getNearbyWells(String searchRadius) {
-  return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/GetNearbyWells/$searchRadius');
-}
-
-/// Saves a new well
-/// @param well A JSON String with all current available well information.
+/// Posts new well to database
+///
+/// The argument [body] includes wells data as JSON-string.
 Future<http.Response> postNewWell(var body) {
-  return http.post('https://wellapi.azurewebsites.net/api/Well/PostNewWell/',
+  return http.post(wellApiUrl + 'Well/PostNewWell/',
       headers: {"Content-Type": "application/json"}, body: body);
 }
 
-/// Updates the information of a specific well
-/// @param well A JSON String including the updated well information.
+/// Posts data to update well data.
+///
+/// The argument [body] includes new wells data as JSON-string.
 Future<http.Response> postUpdateWell(var body) {
   return http.post(
-      'https://wellapi.azurewebsites.net/api/Well/PostUpdateWell/',
+      wellApiUrl + 'Well/PostUpdateWell/',
       headers: {"Content-Type": "application/json"},
       body: body);
 }
 
 /// Deletes a specific well
-/// @param id The specific well ID
+///
+/// Deletes well on database by given [id].
 Future<http.Response> deleteWell(int id) {
   return http.delete(
-      'https://wellapi.azurewebsites.net/api/Well/DeleteWell/$id');
+      wellApiUrl + 'Well/DeleteWell/$id');
 }
