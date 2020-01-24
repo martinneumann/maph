@@ -55,7 +55,7 @@ namespace WellApi.Controllers
         [ActionName("ExecuteSelectStatusHistory")]
         public IActionResult ExecuteSelectStatusHistory(int wellId)
         {
-            MaintenanceLog[] statusHistory = DB.ExecuteSelectStatusHistory(wellId);
+            MaintenanceLog[] statusHistory = DB.ExecuteSelectMaintenanceLogs(wellId);
             return Ok(statusHistory);
         }
         /// <summary>
@@ -109,12 +109,12 @@ namespace WellApi.Controllers
         /// <summary>
         /// ExecuteInsertWell.
         /// </summary>
-        /// <param name="well"></param> 
+        /// <param name="newWell"></param> 
         [HttpPost]
         [ActionName("ExecuteInsertWell")]
-        public IActionResult ExecuteInsertWell(Well well)
+        public IActionResult ExecuteInsertWell(NewWell newWell)
         {
-            return Ok(DB.ExecuteInsertWell(well));
+            return Ok(DB.ExecuteInsertWell(newWell));
         }
 
         public class InsertStatusHistory
@@ -130,7 +130,7 @@ namespace WellApi.Controllers
         [ActionName("ExecuteInsertStatusHistory")]
         public IActionResult ExecuteInsertStatusHistory(InsertStatusHistory insertStatusHistory)
         {
-            DB.ExecuteInsertStatusHistory(insertStatusHistory.statusHistory, insertStatusHistory.wellId);
+            DB.ExecuteInsertMaintenanceLogs(insertStatusHistory.statusHistory, insertStatusHistory.wellId);
             return Ok();
         }
         /// <summary>
@@ -188,20 +188,15 @@ namespace WellApi.Controllers
             DB.ExecuteUpdateWell(changedWell);
             return Ok();
         }
-        public class UpdateStatusHistory
-        {
-            public MaintenanceLog statusHistory { get; set; }
-            public int wellId { get; set; }
-        }
         /// <summary>
-        /// ExecuteUpdateStatusHistory.
+        /// ExecuteUpdateMaintenanceLog.
         /// </summary>
-        /// <param name="updateStatusHistory"></param> 
+        /// <param name="updateMaintenanceLog"></param> 
         [HttpPost]
-        [ActionName("ExecuteUpdateStatusHistory")]
-        public IActionResult ExecuteUpdateStatusHistory(UpdateStatusHistory updateStatusHistory)
+        [ActionName("ExecuteUpdateMaintenanceLog")]
+        public IActionResult ExecuteUpdateMaintenanceLog(UpdateMaintenanceLog updateMaintenanceLog)
         {
-            DB.ExecuteUpdateStatusHistory(updateStatusHistory.statusHistory, updateStatusHistory.wellId);
+            DB.ExecuteUpdateMaintenanceLog(updateMaintenanceLog.MaintenanceLog, updateMaintenanceLog.WellId);
             return Ok();
         }
     }

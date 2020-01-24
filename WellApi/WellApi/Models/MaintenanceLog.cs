@@ -13,4 +13,10 @@ namespace WellApi.Models
         public bool Confirmed { get; set; }
         public DateTime StatusChangedDate { get; set; }
     }
+
+    public class UpdateMaintenanceLog
+    {
+        public MaintenanceLog MaintenanceLog { get; set; }
+        public int WellId { get; set; }
+    }
 }

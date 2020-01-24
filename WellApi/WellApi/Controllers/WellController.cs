@@ -41,6 +41,30 @@ namespace WellApi.Controllers
         }
 
         /// <summary>
+        /// Get all WellTypes.
+        /// </summary>
+        [HttpGet]
+        [ActionName("GetAllWellTypes")]
+        [ProducesResponseType(typeof(WellTypeNoParts[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetAllWellTypes()
+        {
+            try
+            {
+                WellTypeNoParts[] wellTypes = DB.ExecuteSelectWellTypes();
+                if (wellTypes == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(wellTypes);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
+
+
+        /// <summary>
         /// Get all nearby wells. SearchRadius in meter.
         /// </summary>
         /// <param name="locationForSearch"></param> 
@@ -93,15 +117,15 @@ namespace WellApi.Controllers
         /// </summary>
         /// <param name="newWell"></param> 
         [HttpPost]
-        [ActionName("PostNewWell")]
+        [ActionName("CreateWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostNewWell(NewWell newWell)
+        public IActionResult CreateWell(NewWell newWell)
         {
             try
             {
-                int wellId = DB.AddCompleteWell(new Well(newWell));
+                int wellId = DB.AddCompleteWell(newWell);
                 if (wellId == 0)
                     return BadRequest("Well was not inserted!");
                 return Ok(wellId);
@@ -117,11 +141,11 @@ namespace WellApi.Controllers
         /// </summary>
         /// <param name="changedWell"></param> 
         [HttpPost]
-        [ActionName("PostUpdateWell")]
+        [ActionName("UpdateWell")]
         [ProducesResponseType(typeof(int), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostUpdateWell(ChangedWell changedWell)
+        public IActionResult UpdateWell(ChangedWell changedWell)
         {
             try
             {

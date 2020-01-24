@@ -65,11 +65,11 @@ namespace WellApi.Controllers
         /// </summary>
         /// <param name="newIssue"></param> 
         [HttpPost]
-        [ActionName("PostNewIssue")]
+        [ActionName("CreateIssue")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostNewIssue(NewIssue newIssue)
+        public IActionResult CreateIssue(NewIssue newIssue)
         {
             try
             {
@@ -86,17 +86,17 @@ namespace WellApi.Controllers
         /// <summary>
         /// Updates a specific Issue.
         /// </summary>
-        /// <param name="issue"></param> 
+        /// <param name="updateIssue"></param> 
         [HttpPost]
-        [ActionName("PostUpdateIssue")]
+        [ActionName("UpdateIssue")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 409)]
-        public IActionResult PostUpdateIssue(Issue issue)
+        public IActionResult UpdateIssue(UpdateIssue updateIssue)
         {
             try
             {
-                int affected = DB.UpdateCompleteIssue(issue);
+                int affected = DB.UpdateCompleteIssue(updateIssue);
                 if (affected > 0)
                     return Ok(affected);
                 return BadRequest("Nothing Updated!");

@@ -13,4 +13,10 @@ namespace WellApi.Models
         public string Particularity { get; set; }
         public double Depth { get; set; }
     }
+
+    public class WellTypeNoParts
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Device.Location;
 using WellApi.Models;
+using System.Text;
 
 namespace WellApi
 {
@@ -21,6 +22,7 @@ namespace WellApi
         }
         public static void ReconnectToDb()
         {
+            sqlConnection.Close();
             sqlConnection = new SqlConnection(conn);
             sqlConnection.Open();
         }
@@ -41,57 +43,35 @@ namespace WellApi
             Well well = ExecuteSelectWell(wellId);
             if (well == null || well.Id == 0)
                 return null;
-            well.StatusHistory = ExecuteSelectStatusHistory(wellId);
+            well.MaintenanceLogs = ExecuteSelectMaintenanceLogs(wellId);
             if (well.WellType.Id == 0)
                 return well;
             well.WellType.Parts = ExecuteSelectWellParts(well.WellType.Id);
             return well;
         }
-        public static int AddCompleteWell(Well well)
+        public static int AddCompleteWell(NewWell newWell)
         {
-            if (well == null)
+            if (newWell == null || newWell.WellTypeId == 0)
                 return 0;
-            well.WellType.Id = ExecuteInsertWellType(well.WellType);
-            if (well.WellType.Id != 0)
-            {
-                int[] partIds = ExecuteInsertParts(well.WellType.Parts);
-                ExecuteInsertWellParts(well.WellType.Id, partIds);
-            }
-            well.Id = ExecuteInsertWell(well);
-            if (well.Id == 0)
+            int wellId = ExecuteInsertWell(newWell);
+            if (wellId == 0)
                 return 0;
-            if (well.StatusHistory == null || well.StatusHistory.Length == 0)
+            List<MaintenanceLog> maintenanceLogs = new List<MaintenanceLog>();
+            MaintenanceLog maintenanceLog = new MaintenanceLog
             {
-                List<MaintenanceLog> statusHistory = new List<MaintenanceLog>();
-                MaintenanceLog status = new MaintenanceLog
-                {
-                    Works = true,
-                    Confirmed = true,
-                    Description = "new Well created"
-                };
-                statusHistory.Add(status);
-                well.StatusHistory = statusHistory.ToArray();
-            }
-            ExecuteInsertStatusHistory(well.StatusHistory, well.Id);
-            return well.Id;
+                Works = true,
+                Confirmed = true,
+                Description = "new Well created"
+            };
+            maintenanceLogs.Add(maintenanceLog);
+            ExecuteInsertMaintenanceLogs(maintenanceLogs.ToArray(), wellId);
+            return wellId;
         }
         public static int UpdateCompleteWell(ChangedWell changedWell)
         {
-            if (changedWell == null || changedWell.Id == 0)
+            if (changedWell == null || changedWell.Id == 0 || changedWell.WellTypeId == 0)
                 return 0;
-            int affected = 0;
-            Well oldWell = ExecuteSelectWell(changedWell.Id);
-            if (changedWell.WellType != null && changedWell.WellType.Parts != null)
-            {
-                foreach (Part part in changedWell.WellType.Parts)
-                {
-                    affected += ExecuteUpdatePart(part);
-                }
-            }
-            if (changedWell.WellType != null && changedWell.WellType.Id == 0)
-                changedWell.WellType.Id = oldWell.WellType.Id;
-            affected += ExecuteUpdateWellType(changedWell.WellType);
-            affected += ExecuteUpdateWell(changedWell);
+            int affected = ExecuteUpdateWell(changedWell);
             return affected;
         }
 
@@ -118,38 +98,60 @@ namespace WellApi
         }
         public static SmallWell[] ExecuteSelectSmallWells()
         {
-            SqlCommand sqlCommand = SqlQuerry.SelectSmallWells();
+            using (SqlCommand sqlCommand = SqlQuerry.SelectSmallWells())
+            {
+                if (sqlCommand == null)
+                    return null;
+                sqlCommand.Connection = sqlConnection;
+                List<SmallWell> smallWells = new List<SmallWell>();
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        SmallWell smallWell = new SmallWell();
+                        if (!reader.IsDBNull(0))
+                            smallWell.Id = reader.GetInt32(0);
+                        if (!reader.IsDBNull(1))
+                            smallWell.Name = reader.GetString(1);
+                        if (!reader.IsDBNull(2))
+                            smallWell.Status = reader.GetString(2);
+                        smallWell.Location = new Location();
+                        if (!reader.IsDBNull(3))
+                            smallWell.Location.Longitude = reader.GetDouble(3);
+                        if (!reader.IsDBNull(4))
+                            smallWell.Location.Latitude = reader.GetDouble(4);
+                        smallWells.Add(smallWell);
+                    }
+                }
+                return smallWells.ToArray();
+            }
+        }
+        public static WellTypeNoParts[] ExecuteSelectWellTypes()
+        {
+            SqlCommand sqlCommand = SqlQuerry.SelectWellTypes();
             if (sqlCommand == null)
                 return null;
             sqlCommand.Connection = sqlConnection;
-            List<SmallWell> smallWells = new List<SmallWell>();
+            List<WellTypeNoParts> wellTypes = new List<WellTypeNoParts>();
             using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    SmallWell smallWell = new SmallWell();
+                    WellTypeNoParts wellType = new WellTypeNoParts();
                     if (!reader.IsDBNull(0))
-                        smallWell.Id = reader.GetInt32(0);
+                        wellType.Id = reader.GetInt32(0);
                     if (!reader.IsDBNull(1))
-                        smallWell.Name = reader.GetString(1);
-                    if (!reader.IsDBNull(2))
-                        smallWell.Status = reader.GetString(2);
-                    smallWell.Location = new Location();
-                    if (!reader.IsDBNull(3))
-                        smallWell.Location.Longitude = reader.GetDouble(3);
-                    if (!reader.IsDBNull(4))
-                        smallWell.Location.Latitude = reader.GetDouble(4);
-                    smallWells.Add(smallWell);
+                        wellType.Name = reader.GetString(1);
+                    wellTypes.Add(wellType);
                 }
             }
-            return smallWells.ToArray();
+            return wellTypes.ToArray();
         }
         public static Well ExecuteSelectWell(int wellId)
         {
             string sqlSelectWell = SqlQuerry.SelectWell(wellId);
             if (sqlSelectWell == null)
                 return null;
-
             using (SqlCommand command = new SqlCommand(sqlSelectWell, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -190,31 +192,35 @@ namespace WellApi
             }
             return null;
         }     
-        public static MaintenanceLog[] ExecuteSelectStatusHistory(int wellId)
+        public static MaintenanceLog[] ExecuteSelectMaintenanceLogs(int wellId)
         {
-            string sqlSelectStatusHistory = SqlQuerry.SelectStatusHistory(wellId);
-            if (sqlSelectStatusHistory == null)
-                return new MaintenanceLog[0];
-            List<MaintenanceLog> wellStatuses = new List<MaintenanceLog>();
-            using (SqlCommand command = new SqlCommand(sqlSelectStatusHistory, sqlConnection))
+            string sqlSelectMaintenanceLog = SqlQuerry.SelectMaintenanceLog(wellId);
+            if (sqlSelectMaintenanceLog == null)
+                return null;
+            List<MaintenanceLog> maintenanceLogs = new List<MaintenanceLog>();
+            using (SqlCommand command = new SqlCommand(sqlSelectMaintenanceLog, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        MaintenanceLog wellStatus = new MaintenanceLog
-                        {
-                            Id = reader.GetInt32(0),
-                            Description = reader.GetString(1),
-                            Works = reader.GetBoolean(2),
-                            Confirmed = reader.GetBoolean(3),
-                            StatusChangedDate = reader.GetDateTime(4)
-                        };
-                        wellStatuses.Add(wellStatus);
+                        MaintenanceLog maintenanceLog = new MaintenanceLog();
+
+                        if (!reader.IsDBNull(0))
+                            maintenanceLog.Id = reader.GetInt32(0);
+                        if (!reader.IsDBNull(1))
+                            maintenanceLog.Description = reader.GetString(1);
+                        if (!reader.IsDBNull(2))
+                            maintenanceLog.Works = reader.GetBoolean(2);
+                        if (!reader.IsDBNull(3))
+                            maintenanceLog.Confirmed = reader.GetBoolean(3);
+                        if (!reader.IsDBNull(4))
+                            maintenanceLog.StatusChangedDate = reader.GetDateTime(4);
+                        maintenanceLogs.Add(maintenanceLog);
                     }
                 }
             }
-            return wellStatuses.ToArray();
+            return maintenanceLogs.ToArray();
         }
         public static Part[] ExecuteSelectWellParts(int wellTypeId)
         {
@@ -278,20 +284,20 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static int ExecuteInsertWell(Well well)
+        public static int ExecuteInsertWell(NewWell newWell)
         {
-            SqlCommand command = SqlQuerry.InsertWell(well);
+            SqlCommand command = SqlQuerry.InsertWell(newWell);
             if (command == null)
                 return 0;
             command.Connection = sqlConnection;
             return (int)command.ExecuteScalar();
         }
-        public static void ExecuteInsertStatusHistory(MaintenanceLog[] statusHistory, int wellId)
+        public static void ExecuteInsertMaintenanceLogs(MaintenanceLog[] maintenanceLogs, int wellId)
         {
-            string sqlStatusHistory = SqlQuerry.InsertStatusHistory(statusHistory, wellId);
-            if (sqlStatusHistory == null)
+            string sqlMaintenanceLogs = SqlQuerry.InsertMaintenanceLogs(maintenanceLogs, wellId);
+            if (sqlMaintenanceLogs == null)
                 return;
-            using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
+            using (SqlCommand command = new SqlCommand(sqlMaintenanceLogs, sqlConnection))
             {
                 command.ExecuteNonQuery();
             }
@@ -350,12 +356,12 @@ namespace WellApi
             sqlCommand.Connection = sqlConnection;
             return sqlCommand.ExecuteNonQuery();
         }
-        public static int ExecuteUpdateStatusHistory(MaintenanceLog statusHistory, int wellId)
+        public static int ExecuteUpdateMaintenanceLog(MaintenanceLog maintenanceLog, int wellId)
         {
-            string sqlStatusHistory = SqlQuerry.UpdateStatusHistory(statusHistory, wellId);
-            if (sqlStatusHistory == null)
+            string sqlMaintenanceLog = SqlQuerry.UpdateMaintenanceLog(maintenanceLog, wellId);
+            if (sqlMaintenanceLog == null)
                 return 0;
-            using (SqlCommand command = new SqlCommand(sqlStatusHistory, sqlConnection))
+            using (SqlCommand command = new SqlCommand(sqlMaintenanceLog, sqlConnection))
             {
                 return command.ExecuteNonQuery();
             }
@@ -377,6 +383,7 @@ namespace WellApi
         {
             int issueId = ExecuteInsertIssue(newIssue);
             if (issueId == 0)
+
                 return false;
             ExecuteInsertBrokenParts(newIssue.BrokenPartIds, issueId);
 
@@ -390,26 +397,27 @@ namespace WellApi
                     ExecuteUpdateWellStatus(newIssue.WellId, "red");
                 }
             }
-            MaintenanceLog wellStatus = new MaintenanceLog
+            MaintenanceLog maintenanceLog = new MaintenanceLog
             {
                 Description = $"Issue #{issueId} Create",
                 Works = newIssue.Works,
                 Confirmed = false
             };
             if (newIssue.ConfirmedBy != null && newIssue.ConfirmedBy.Length > 0)
-                wellStatus.Confirmed = true;
-            MaintenanceLog[] statusHistory = new MaintenanceLog[1];
-            statusHistory[0] = wellStatus;
-            ExecuteInsertStatusHistory(statusHistory, issueId);
+                maintenanceLog.Confirmed = true;
+            MaintenanceLog[] maintenanceLogs = new MaintenanceLog[1];
+            maintenanceLogs[0] = maintenanceLog;
+            ExecuteInsertMaintenanceLogs(maintenanceLogs, issueId);
             return true;
         }
-        public static int UpdateCompleteIssue(Issue issue)
+        public static int UpdateCompleteIssue(UpdateIssue updateIssue)
         {
-            if (issue.Id == 0)
+            //Update Broken Parts is missing
+            if (updateIssue.Id == 0)
                 return 0;
-            ExecuteUpdateIssue(issue);
+            ExecuteUpdateIssue(updateIssue);
             //Update well
-            if (!issue.Open)
+            if (!updateIssue.Open)
             {
                 SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
                 bool allClosed = true;
@@ -423,9 +431,9 @@ namespace WellApi
                     }
                 }
                 if (allClosed)
-                    ExecuteUpdateWellStatus(issue.WellId, "green");
+                    ExecuteUpdateWellStatus(updateIssue.WellId, "green");
             }
-            else if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
+            else if (updateIssue.ConfirmedBy == null || updateIssue.ConfirmedBy == "")
             {
                 SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
                 bool NoConfirmedIssues = true;
@@ -439,25 +447,25 @@ namespace WellApi
                     }
                 }
                 if (NoConfirmedIssues)
-                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
+                    ExecuteUpdateWellStatus(updateIssue.WellId, "yellow");
             }
-            else if (issue.Works == false)
+            else if (updateIssue.Works == false)
             {
-                ExecuteUpdateWellStatus(issue.WellId, "red");
+                ExecuteUpdateWellStatus(updateIssue.WellId, "red");
             }
 
-            MaintenanceLog wellStatus = new MaintenanceLog
+            MaintenanceLog maintenanceLog = new MaintenanceLog
             {
-                Description = $"Issue #{issue.Id} Updated",
-                Works = issue.Works,
+                Description = $"Issue #{updateIssue.Id} Updated",
+                Works = updateIssue.Works,
                 Confirmed = false
             };
-            if (issue.ConfirmedBy != null &&
-                issue.ConfirmedBy.Length > 0)
-                wellStatus.Confirmed = true;
-            MaintenanceLog[] statusHistory = new MaintenanceLog[1];
-            statusHistory[0] = wellStatus;
-            ExecuteInsertStatusHistory(statusHistory, issue.Id);
+            if (updateIssue.ConfirmedBy != null &&
+                updateIssue.ConfirmedBy.Length > 0)
+                maintenanceLog.Confirmed = true;
+            MaintenanceLog[] maintenanceLogs = new MaintenanceLog[1];
+            maintenanceLogs[0] = maintenanceLog;
+            ExecuteInsertMaintenanceLogs(maintenanceLogs, updateIssue.Id);
             return 1;
         }
 
@@ -549,9 +557,9 @@ namespace WellApi
             }
             return parts.ToArray();
         }      
-        public static int ExecuteInsertIssue(Issue issue)
+        public static int ExecuteInsertIssue(NewIssue newIssue)
         {
-            string sqlInsertIssue = SqlQuerry.InsertIssue(issue);
+            string sqlInsertIssue = SqlQuerry.InsertIssue(newIssue);
             if (sqlInsertIssue == null)
                 return 0;
             using (SqlCommand command = new SqlCommand(sqlInsertIssue, sqlConnection))
@@ -576,9 +584,9 @@ namespace WellApi
                 command.ExecuteNonQuery();
             }
         }
-        public static void ExecuteUpdateIssue(Issue issue)
+        public static void ExecuteUpdateIssue(UpdateIssue updateIssue)
         {
-            string sqlUpdateIssue = SqlQuerry.UpdateIssue(issue);
+            string sqlUpdateIssue = SqlQuerry.UpdateIssue(updateIssue);
             if (sqlUpdateIssue == null)
                 return;
             using (SqlCommand command = new SqlCommand(sqlUpdateIssue, sqlConnection))
