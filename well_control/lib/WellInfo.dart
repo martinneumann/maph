@@ -5,10 +5,12 @@ import 'package:well_control/AddWell.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
+import 'package:well_control/WellIssueLibrary.dart';
 import 'package:well_control/WellMap.dart';
 import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
+import 'WellIssue.dart';
 import 'WellMarker.dart';
 import 'WellUpdate.dart';
 
@@ -62,154 +64,187 @@ class _WellInfoState extends State<WellInfo> {
         ),
         body: Center(
             child: FutureBuilder(
-              future: getWellnfos(widget.well),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  return SingleChildScrollView(
-                    child: Center(
-                      child: Column(
-                        children: [
-                          image,
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Name:'),
-                                  subtitle: Text(wellMarker.getWellName()),
-                                ),
-                              ],
+          future: getWellInfos(widget.well),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return SingleChildScrollView(
+                child: Center(
+                  child: Column(
+                    children: [
+                      image,
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text('Name:'),
+                              subtitle: Text(wellMarker.getWellName()),
                             ),
-                          ),
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Type:'),
-                                  subtitle: Text(wellMarker.type),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Geolaction:'),
-                                  subtitle: Text("Longitude: " +
-                                      wellMarker.location.longitude.toString() +
-                                      "\n" +
-                                      "Latitude: " +
-                                      wellMarker.location.latitude.toString()),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Funding Info:'),
-                                  subtitle: Text(
-                                      wellMarker.fundingOrganisation),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Price:'),
-                                  subtitle: Text(wellMarker.costs + "\$"),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Card(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: Text('Status:'),
-                                  subtitle: Text(wellMarker.status
-
-                                    /// getAllIssues();
-
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          //  infoSection,
-                          // listSection,
-                          Container(
-                            margin: EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                IconButton(
-                                  tooltip: 'call',
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor,
-                                  icon: Icon(Icons.call),
-                                  onPressed: () {
-                                    //add function to call
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.near_me),
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor,
-                                  onPressed: () {},
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.report),
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor,
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReportWell(
-                                                    title: "Report malfunction")));
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.build),
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor,
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                RepairInformation(
-                                                    title: "Repair Help")));
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  return Text('loading information');
-                }
-              },
-            )));
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text('Type:'),
+                              subtitle: Text(wellMarker.type),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text('Geolaction:'),
+                              subtitle: Text("Longitude: " +
+                                  wellMarker.location.longitude.toString() +
+                                  "\n" +
+                                  "Latitude: " +
+                                  wellMarker.location.latitude.toString()),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text('Funding Info:'),
+                              subtitle: Text(wellMarker.fundingOrganisation),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text('Price:'),
+                              subtitle: Text(wellMarker.costs + "\$"),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            FutureBuilder<List<WellIssue>>(
+                                future: getIssuesOfWell(wellMarker.wellId.toString()),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<List<WellIssue>> snapshot) {
+                                  List<Widget> children;
+                                  if (snapshot.hasData) {
+                                    print("Snapshot for issues: " + snapshot.toString());
+                                    children = <Widget>[
+                                      Icon(
+                                        Icons.check_circle_outline,
+                                        color: Colors.green,
+                                        size: 60,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 16),
+                                        child: Text('Result: ${snapshot.data}'),
+                                      )
+                                    ];
+                                  } else if (snapshot.hasError) {
+                                    print("Snapshot for issues (error): " + snapshot.toString());
+                                    children = <Widget>[
+                                      Icon(
+                                        Icons.error_outline,
+                                        color: Colors.red,
+                                        size: 60,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 16),
+                                        child: Text('Error: ${snapshot.error}'),
+                                      )
+                                    ];
+                                  } else {
+                                    children = <Widget>[
+                                      SizedBox(
+                                        child: CircularProgressIndicator(),
+                                        width: 60,
+                                        height: 60,
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.only(top: 16),
+                                        child: Text('Awaiting result...'),
+                                      )
+                                    ];
+                                  }
+                                  return Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: children,
+                                    ),
+                                  );
+                                })
+                          ],
+                        ),
+                      ),
+
+                      //  infoSection,
+                      // listSection,
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            IconButton(
+                              tooltip: 'call',
+                              color: Theme.of(context).primaryColor,
+                              icon: Icon(Icons.call),
+                              onPressed: () {
+                                //add function to call
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.near_me),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.report),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ReportWell(
+                                            title: "Report malfunction")));
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.build),
+                              color: Theme.of(context).primaryColor,
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RepairInformation(
+                                            title: "Repair Help")));
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return Text('loading');
+            }
+          },
+        )));
   }
 
   void choiceAction(String choice) {
@@ -217,14 +252,13 @@ class _WellInfoState extends State<WellInfo> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  WellUpdate(
-                      title: "Change well information", well: widget.well)));
+              builder: (context) => WellUpdate(
+                  title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
       print("wellId: " + widget.well.wellId.toString());
       requestDelete(widget.well.wellId);
       wellList.wells.remove(widget.well);
-        Navigator.pop(context);
+      Navigator.pop(context);
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -241,7 +275,12 @@ class _WellInfoState extends State<WellInfo> {
     }
   }
 
-  Future<String> getWellnfos(WellMarker well) async {
+  ///
+  /// Future for well issue list.
+  ///
+
+  /// Future for well infos.
+  Future<String> getWellInfos(WellMarker well) async {
     var result;
 
     await getWell(well.wellId).then((response) {

@@ -40,8 +40,7 @@ class WellIssue {
   String name;
   String description;
   String status;
-  StatusHistory _statusHistory;
-  DateTime creationDate;
+  String creationDate;
   String image;
   bool open;
   bool works;
@@ -49,7 +48,7 @@ class WellIssue {
   WellType wellType;
   String confirmedBy;
   FundingInfo fundingInfo;
-  DateTime solvedDate;
+  String solvedDate;
   String repairedBy;
   String bill;
 
@@ -59,5 +58,17 @@ class WellIssue {
   WellIssue.detailed(this.brokenParts, this.confirmedBy, this.solvedDate,
       this.repairedBy, this.works);
 
-
+  WellIssue.fromJson(Map<String, dynamic> json)
+      : this.id = json['id'],
+        this.name = json['name'],
+        this.description = json['description'],
+        this.status = json['status'],
+        this.creationDate = json['creationDate'],
+        this.open = json['open'],
+        this.works = json['works'],
+        this.brokenParts = json['brokenParts'],
+        this.confirmedBy = json['confirmedBy'],
+        this.solvedDate = json['solvedDate'],
+        this.repairedBy = json['repairedBy'];
 }
+

@@ -239,7 +239,7 @@ class _ReportWellState extends State<ReportWell> {
             numberOfIssues,
               wells.firstWhere((a) => a.name == _selectedWell).wellId,
               textController.text,
-              new DateTime.now(),
+              new DateTime.now().toString(),
               "broken",
               true
               );
