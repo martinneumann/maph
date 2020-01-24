@@ -23,7 +23,10 @@ class WellInfo extends StatefulWidget {
 }
 
 class _WellInfoState extends State<WellInfo> {
+  Future<String> wellInfos;
+
   WellMarker wellMarker;
+
 
   _WellInfoState(this.wellMarker);
 
@@ -42,7 +45,15 @@ class _WellInfoState extends State<WellInfo> {
   ];
 
   @override
+  void initState() {
+    wellInfos = getWellInfos(widget.well);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -62,7 +73,7 @@ class _WellInfoState extends State<WellInfo> {
         ),
         body: Center(
             child: FutureBuilder(
-              future: getWellnfos(widget.well),
+              future: wellInfos,
               builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                 if (snapshot.hasData) {
                   return SingleChildScrollView(
@@ -251,11 +262,12 @@ class _WellInfoState extends State<WellInfo> {
     }
   }
 
-  Future<String> getWellnfos(WellMarker well) async {
+  Future<String> getWellInfos(WellMarker well) {
     var result;
 
-    await getWell(well.wellId).then((response) {
+    return getWell(well.wellId).then((response) {
       print("response:" + response.statusCode.toString());
+      print("response:" + response.body.toString());
       result = json.decode(response.body);
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
@@ -265,9 +277,11 @@ class _WellInfoState extends State<WellInfo> {
         price += ".00";
       }
       well.setWellCosts(price);
+
+      return 'OK';
     });
 
-    return 'OK';
+
   }
 
   Future<String> requestDelete(int wellId) async {
