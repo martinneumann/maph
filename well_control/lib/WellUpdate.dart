@@ -93,7 +93,8 @@ class _WellUpdateState extends State<WellUpdate> {
                 )
               ],
             ),
-            body: Center(
+            body: new Container(
+                margin: const EdgeInsets.all(18.0),
                 child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
@@ -314,15 +315,12 @@ class _WellUpdateState extends State<WellUpdate> {
     }
 
     var location = {};
-    location["longitude"] = double.parse(longitudeController.text);
     location["latitude"] = double.parse(latitudeController.text);
+    location["longitude"] = double.parse(longitudeController.text);
 
     var fundingInfo = {};
     fundingInfo["organisation"] = fundingController.text;
     fundingInfo["price"] = double.parse(costsController.text);
-
-    var wellType = {};
-    wellType["name"] = type;
 
     var data = {};
     data["id"] = widget.well.wellId;
@@ -330,7 +328,7 @@ class _WellUpdateState extends State<WellUpdate> {
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
-    data["wellType"] = wellType;
+    data["wellTypeId"] = 10;
 
     widget.well.name = nameController.text;
     widget.well.location.longitude = double.parse(longitudeController.text);

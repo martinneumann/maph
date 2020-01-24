@@ -18,7 +18,7 @@ Future<http.Response> postNewIssue(WellIssue issue) {
       "creationDate: ${issue.creationDate.toIso8601String()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
       ")");
   print(query);
-  return http.post(wellApiUrl + 'Issue/PostNewIssue',
+  return http.post(wellApiUrl + 'Issue/CreateIssue',
       body: query);
 }
 
@@ -47,11 +47,11 @@ Future<http.Response> getWellsByRadius(double latitude , double longitude ,
   var query = jsonEncode("{" +
     "searchRadius:" + radius.toString() + "," +
     "location:{" +
-      "longitude:" + longitude.toString() + "," +
-      "latitude:" + latitude.toString() +
+      "latitude:" + latitude.toString() + "," +
+      "longitude:" + longitude.toString() +
     "}}");
 
-  return http.post(wellApiUrl + 'Well/GetAll' ,
+  return http.post(wellApiUrl + 'Well/GetNearbyWells',
       body: query);
 }
 
@@ -66,7 +66,7 @@ Future<http.Response> getWell(int id) {
 ///
 /// The argument [body] includes wells data as JSON-string.
 Future<http.Response> postNewWell(var body) {
-  return http.post(wellApiUrl + 'Well/PostNewWell/',
+  return http.post(wellApiUrl + 'Well/CreateWell/',
       headers: {"Content-Type": "application/json"}, body: body);
 }
 
@@ -75,7 +75,7 @@ Future<http.Response> postNewWell(var body) {
 /// The argument [body] includes new wells data as JSON-string.
 Future<http.Response> postUpdateWell(var body) {
   return http.post(
-      wellApiUrl + 'Well/PostUpdateWell/',
+      wellApiUrl + 'Well/UpdateWell/',
       headers: {"Content-Type": "application/json"},
       body: body);
 }
@@ -86,4 +86,11 @@ Future<http.Response> postUpdateWell(var body) {
 Future<http.Response> deleteWell(int id) {
   return http.delete(
       wellApiUrl + 'Well/DeleteWell/$id');
+}
+
+/// Response returns all wellTypes [http.Response]
+///
+/// Sends get-request to get all wellTypes.
+Future<http.Response> getAllWellTypes() {
+  return http.get(wellApiUrl + 'Well/GetAllWellTypes');
 }

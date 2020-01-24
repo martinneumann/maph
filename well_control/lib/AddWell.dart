@@ -293,22 +293,19 @@ class _AddWellState extends State<AddWell> {
     }
 
     var location = {};
-    location["longitude"] = double.parse(longitudeController.text);
     location["latitude"] = double.parse(latitudeController.text);
+    location["longitude"] = double.parse(longitudeController.text);
 
     var fundingInfo = {};
     fundingInfo["organisation"] = fundingController.text;
     fundingInfo["price"] = double.parse(costsController.text);
-
-    var wellType = {};
-    wellType["name"] = type;
 
     var data = {};
     data["name"] = nameController.text;
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
-    data["wellType"] = wellType;
+    data["wellTypeId"] = 10;
 
     await postNewWell(json.encode(data)).then(
             (response) => print("Response: " + response.statusCode.toString()));
