@@ -135,7 +135,17 @@ class _WellMapState extends State<WellMap> {
                       ),
                     ));
               } else {
-                return Text("Loading...");
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      CircularProgressIndicator(),
+                      SizedBox(height: 50),
+                      Text("Loading..."),
+                    ],
+                  ),
+                );
               }
             },
           ),

@@ -206,7 +206,17 @@ class _WellInfoState extends State<WellInfo> {
                     ),
                   );
                 } else {
-                  return Text('loading information');
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        CircularProgressIndicator(),
+                        SizedBox(height: 50),
+                        Text("Loading..."),
+                      ],
+                    ),
+                  );
                 }
               },
             )));
@@ -224,7 +234,7 @@ class _WellInfoState extends State<WellInfo> {
       print("wellId: " + widget.well.wellId.toString());
       requestDelete(widget.well.wellId);
       wellList.wells.remove(widget.well);
-        Navigator.pop(context);
+      Navigator.pop(context);
     } else if (choice == wellMap) {
       Navigator.push(
           context,
