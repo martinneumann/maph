@@ -8,7 +8,6 @@ import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:map_controller/map_controller.dart';
 import 'package:well_control/AddWell.dart';
-import 'package:well_control/Functions.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
@@ -47,6 +46,10 @@ class _WellMapState extends State<WellMap> {
 
   /// Checks [statefulMapController] is ready for update.
   bool ready = false;
+
+  /// Variable is necessary to create several [FloatingActionButton]
+  /// with unique hero tag name.
+  int floatingButtonNumber = 0;
 
   /// Stores well markers and user location marker to show these on map.
   Future<Map<String,Marker>> markerMap = wellList.getMarkersMap();
@@ -105,9 +108,7 @@ class _WellMapState extends State<WellMap> {
         body: Center(
           child: FutureBuilder<Map<String,Marker>>(
             future: markerMap,
-            builder:
-                (BuildContext context, AsyncSnapshot<Map<String,Marker>> snapshot) {
-              //print("WellMap data: " + snapshot.data.toString());
+            builder: (BuildContext context, AsyncSnapshot<Map<String,Marker>> snapshot) {
               if (snapshot.hasData) {
                 statefulMapController.addMarkers(markers: snapshot.data);
                 return Center(
@@ -138,10 +139,11 @@ class _WellMapState extends State<WellMap> {
                                 color: Colors.black12,
                                 borderStrokeWidth: 3),
                             builder: (context, markers) {
+                              floatingButtonNumber++;
                               return FloatingActionButton(
                                 child: Text(markers.length.toString()),
                                 onPressed: null,
-                                heroTag: "clusterButton",
+                                heroTag: "clusterButton" + floatingButtonNumber.toString(),
                               );
                             },
                           ),
@@ -165,7 +167,7 @@ class _WellMapState extends State<WellMap> {
             },
           ),
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton (
           onPressed: () {
             _getLocation().then((value) {
               setState(() {
