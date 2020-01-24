@@ -364,7 +364,7 @@ namespace WellApi
         public static Issue GetCompleteIssue(int issueId)
         {
             Issue issue = ExecuteSelectIssue(issueId);
-            if (issue != null || issue.Id != 0)
+            if (issue != null || issue.Id != null)
                 issue.BrokenParts = ExecuteSelectBrokenParts(issue.Id);
             return issue;
         }
@@ -389,7 +389,7 @@ namespace WellApi
             {
                 foreach (int brokenPartId in newIssue.BrokenPartIds)
                 {
-                    ExecuteInsertBrokenParts(brokenPartId, issueId);
+                    ExecuteInsertBrokenPart(brokenPartId, issueId);
                 }
             }
             string status = ExecuteSelectWellStatus(newIssue.WellId);
@@ -415,12 +415,56 @@ namespace WellApi
         }
         public static int UpdateCompleteIssue(UpdateIssue updateIssue)
         {
-            //Update Broken Parts is missing
-            if (updateIssue.Id == 0)
+            if (updateIssue.Id == null)
                 return 0;
-            ExecuteUpdateIssue(updateIssue);
+            int affected = ExecuteUpdateIssue(updateIssue);
+            if (updateIssue.BrokenPartIds != null)
+            {
+                List<int> newBrokenPartIds = new List<int>();
+                Part[] oldBrokenParts = ExecuteSelectBrokenParts(updateIssue.Id);
+                if (oldBrokenParts != null)
+                {
+                    foreach (Part part in oldBrokenParts)
+                    {
+                        bool foundId = false;
+                        foreach (int brokenPartId in updateIssue.BrokenPartIds)
+                        {
+                            if (part.Id == brokenPartId)
+                            {
+                                foundId = true;
+                                break;
+                            }
+                        }
+                        if (!foundId)
+                        {
+                            affected += DB.ExecuteDeleteBrokenPart(part.Id,updateIssue.Id);
+                        }
+                    }
+                    foreach (int brokenPartId in updateIssue.BrokenPartIds)
+                    {
+                        bool foundId = false;
+                        foreach (Part part in oldBrokenParts)
+                        {
+                            if (part.Id == brokenPartId)
+                            {
+                                foundId = true;
+                                break;
+                            }
+                        }
+                        if (!foundId)
+                        {
+                            DB.ExecuteInsertBrokenPart(brokenPartId, updateIssue.Id);
+                            affected++;
+                        }
+                    }
+                }
+            }
+            if (affected == 0)
+                return 0;
+            // Get complete Issue
+            Issue issue = ExecuteSelectIssue(updateIssue.Id);
             //Update well
-            if (updateIssue.Open == false)
+            if (issue.Open == false)
             {
                 SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
                 bool allClosed = true;
@@ -434,9 +478,9 @@ namespace WellApi
                     }
                 }
                 if (allClosed)
-                    ExecuteUpdateWellStatus(updateIssue.WellId, "green");
+                    ExecuteUpdateWellStatus(issue.WellId, "green");
             }
-            else if (updateIssue.ConfirmedBy == null || updateIssue.ConfirmedBy == "")
+            else if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
             {
                 SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
                 bool NoConfirmedIssues = true;
@@ -450,24 +494,24 @@ namespace WellApi
                     }
                 }
                 if (NoConfirmedIssues)
-                    ExecuteUpdateWellStatus(updateIssue.WellId, "yellow");
+                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
             }
-            else if (updateIssue.Works == false)
+            else if (issue.Works == false)
             {
-                ExecuteUpdateWellStatus(updateIssue.WellId, "red");
+                ExecuteUpdateWellStatus(issue.WellId, "red");
             }
 
             MaintenanceLog maintenanceLog = new MaintenanceLog
             {
-                Description = $"Issue #{updateIssue.Id} updated",
-                Works = updateIssue.Works,
+                Description = $"Issue #{issue.Id} updated",
+                Works = issue.Works,
                 Confirmed = false
             };
-            if (updateIssue.ConfirmedBy != null &&
-                updateIssue.ConfirmedBy.Length > 0)
+            if (issue.ConfirmedBy != null &&
+                issue.ConfirmedBy.Length > 0)
                 maintenanceLog.Confirmed = true;
-            ExecuteInsertMaintenanceLog(maintenanceLog, updateIssue.WellId);
-            return 1;
+            ExecuteInsertMaintenanceLog(maintenanceLog, issue.WellId);
+            return affected;
         }
 
         // Single SQL Querry
@@ -565,7 +609,7 @@ namespace WellApi
             sqlCommand.Connection.Close();
             return id;
         }
-        public static int? ExecuteInsertBrokenParts(int? partId, int? issueId)
+        public static int? ExecuteInsertBrokenPart(int? partId, int? issueId)
         {
             SqlCommand sqlCommand = SqlQuerry.InsertBrokenPart(partId, issueId);
             if (sqlCommand == null)
@@ -574,6 +618,16 @@ namespace WellApi
             int? id = (int?)sqlCommand.ExecuteScalar();
             sqlCommand.Connection.Close();
             return id;
+        }
+        public static int ExecuteDeleteBrokenPart(int? partId, int? issueId)
+        {
+            SqlCommand sqlCommand = SqlQuerry.DeleteBrokenPart(partId, issueId);
+            if (sqlCommand == null)
+                return 0;
+            sqlCommand.Connection = ConnectToDb();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlCommand.Connection.Close();
+            return affected;
         }
         public static int ExecuteUpdateIssue(UpdateIssue updateIssue)
         {

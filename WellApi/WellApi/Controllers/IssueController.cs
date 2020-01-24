@@ -74,7 +74,7 @@ namespace WellApi.Controllers
             try
             {
                 Issue issue = DB.GetCompleteIssue(id);
-                if (issue == null || issue.Id == 0)
+                if (issue == null || issue.Id == null)
                     return BadRequest("Id not found!");
                 return Ok(issue);
             }

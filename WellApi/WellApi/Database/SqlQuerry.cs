@@ -206,7 +206,7 @@ namespace WellApi
         }
         public static SqlCommand InsertIssue(NewIssue newIssue)
         {
-            if (newIssue == null || newIssue.WellId == 0)
+            if (newIssue == null || newIssue.WellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append($"INSERT INTO [well].[dbo].[Issue] (WellId, Description, CreationDate, Status, [Open], ConfirmedBy, Works) ");
@@ -541,6 +541,19 @@ namespace WellApi
             sb.Append($"WHERE Id = @IssueId;");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
             sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            return sqlCommand;
+        }
+        public static SqlCommand DeleteBrokenPart(int? partId, int? issueId)
+        {
+            if (issueId == null || partId == null)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("DELETE ");
+            sb.Append("FROM [well].[dbo].[BrokenParts] ");
+            sb.Append($"WHERE (IssueId = @IssueId AND PartId = @PartId);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            sqlCommand.Parameters.AddWithValue("@PartId", partId);
             return sqlCommand;
         }
     }
