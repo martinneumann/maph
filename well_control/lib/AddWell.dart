@@ -232,7 +232,7 @@ class _AddWellState extends State<AddWell> {
 
     await postNewWell(json.encode(data)).then(
             (response) => print("Response: " + response.statusCode.toString()));
-    await wellList.getMarkers();
+    await wellList.getMarkersMap();
     Navigator.pop(context);
   }
 }

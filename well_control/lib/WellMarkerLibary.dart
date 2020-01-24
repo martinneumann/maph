@@ -9,54 +9,86 @@ import 'package:flutter/material.dart';
 
 import 'Functions.dart';
 
-/// Well list
+/// Stores list of all existing wells as [WellMarker] object.
 List<WellMarker> wells = <WellMarker>[];
-List<Marker> markers = List<Marker>();
+/// Map stores wells as key value pair of name and marker.
+/// This map is necessary to update UI of map.
+Map<String,Marker> wellMarkersMap = Map<String,Marker>();
 
-/// Returns all markers requested from DB and saves them in the global
-/// well list.
-Future<List<Marker>> getMarkers() {
-  // request wells
-  return getAllWells().then((response) {
+/// Loads existing wells from external database.
+///
+/// Loads wells async because data comes from webservice-api.
+void loadWellList() async {
+  getAllWells().then((response) {
     print(response.statusCode);
-    Iterable result = json.decode(response.body);
-    var resultList = result.toList();
-    //print('Wells Result ' + resultList.toString());
+    if(response.statusCode == 200) {
+      Iterable result = json.decode(response.body);
+      var resultList = result.toList();
+      bool receivedCheck = false;
 
-    bool receivedCheck = false;
-
-    for (var i = 0; i < resultList.length; i++) {
-
-      for (int j = 0; j < wells.length; j++) {
-        if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
-          receivedCheck = true;
-          break;
-        } else {
-          receivedCheck = false;
+      for (var i = 0; i < resultList.length; i++) {
+        for (int j = 0; j < wells.length; j++) {
+          if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
+            receivedCheck = true;
+            break;
+          } else {
+            receivedCheck = false;
+          }
+        }
+        if (!receivedCheck) {
+          wells.add(WellMarker(
+              resultList[i]["name"].toString(),
+              resultList[i]["id"],
+              resultList[i]["status"].toString(),
+              resultList[i]["location"]["latitude"].toDouble(),
+              resultList[i]["location"]["longitude"].toDouble()));
         }
       }
-      if (!receivedCheck) {
-        wells.add(WellMarker(
-            resultList[i]["name"].toString(),
-            resultList[i]["id"],
-            resultList[i]["status"].toString(),
-            resultList[i]["location"]["latitude"].toDouble(),
-            resultList[i]["location"]["longitude"].toDouble()));
+    }
+  }).catchError((error) {
+    print(error.toString());
+  });
+}
+/// Function loads well marker and updates well list.
+///
+/// Returns well markers as map to update this list on open street map.
+Future<Map<String, Marker>> getMarkersMap() {
+  print("Request getAllWells");
+  return getAllWells().then((response) {
+    if(response.statusCode == 200) {
+      Iterable result = json.decode(response.body);
+      var resultList = result.toList();
+      bool receivedCheck = false;
+
+      for (var i = 0; i < resultList.length; i++) {
+        for (int j = 0; j < wells.length; j++) {
+          if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
+            receivedCheck = true;
+            break;
+          } else {
+            receivedCheck = false;
+          }
+        }
+        if (!receivedCheck) {
+          wells.add(WellMarker(
+              resultList[i]["name"].toString(),
+              resultList[i]["id"],
+              resultList[i]["status"].toString(),
+              resultList[i]["location"]["latitude"].toDouble(),
+              resultList[i]["location"]["longitude"].toDouble()));
+
+          wellMarkersMap[resultList[i]["name"].toString()] = wells[i].marker;
+        }
       }
     }
 
-    //print("Wells Markers " + markers[0].toString());
-    for (var i = 0; i < wells.length; i++) {
-      markers.add(wells[i].marker);
-    }
-    print("Markers " + markers.toString());
-
-    return markers;
+    return wellMarkersMap;
   }).catchError((error) {
     print(error.toString());
   });
 }
 
+/// Add user location marker to map marker.
 void setUserPositionMarker(LatLng location) {
   Marker userMarker = Marker(
       point: location,
@@ -71,5 +103,47 @@ void setUserPositionMarker(LatLng location) {
           )
   );
 
-  markers.add(userMarker);
+  wellMarkersMap["user"] = userMarker;
+}
+
+/// Function loads well marker and updates well list by radius search.
+///
+/// Gets well marker by given [latitude], [longitude] and radius in meter.
+Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
+    double longitude , int searchRadius) {
+
+  return getWellsByRadius(latitude, longitude, searchRadius).then((response) {
+    if(response.statusCode == 200) {
+      wells.clear();
+      wellMarkersMap.clear();
+
+      Iterable result = json.decode(response.body);
+      var resultList = result.toList();
+      bool receivedCheck = false;
+
+      for (var i = 0; i < resultList.length; i++) {
+        for (int j = 0; j < wells.length; j++) {
+          if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
+            receivedCheck = true;
+            break;
+          } else {
+            receivedCheck = false;
+          }
+        }
+        if (!receivedCheck) {
+          wells.add(WellMarker(
+              resultList[i]["name"].toString(),
+              resultList[i]["id"],
+              resultList[i]["status"].toString(),
+              resultList[i]["location"]["latitude"].toDouble(),
+              resultList[i]["location"]["longitude"].toDouble()));
+
+          wellMarkersMap[resultList[i]["name"].toString()] = wells[i].marker;
+        }
+      }
+    }
+    return wellMarkersMap;
+  }).catchError((error) {
+    print(error.toString());
+  });
 }

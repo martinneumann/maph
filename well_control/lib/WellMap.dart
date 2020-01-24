@@ -154,6 +154,7 @@ class _WellMapState extends State<WellMap> {
       ),
     );
   }
+
   /// Methods defines action of clicked menu item.
   ///
   /// Opens certain view by comparing clicked [choice] with menu list names.
