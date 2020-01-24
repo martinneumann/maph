@@ -229,7 +229,7 @@ class _ReportWellState extends State<ReportWell> {
             }
           });
           print("Controller text: " + textController.text);
-          print("Selceted well: " + _selectedWell);
+          print("Selected well: " + _selectedWell);
           print("Wells: " + wells[1].name.toString());
           print("Search: " + wells
               .firstWhere((a) => a.name == _selectedWell)
@@ -248,8 +248,7 @@ class _ReportWellState extends State<ReportWell> {
             print("Creation response: " + response.body.toString());
             choiceAction(wellMap);
           }).catchError((error)  {
-            print("Error on creating issue.");
-            print(error);
+            print("Error on creating issue: " + error);
           });
           wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
           Navigator.pop(context);

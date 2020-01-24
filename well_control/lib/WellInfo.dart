@@ -252,7 +252,19 @@ class _WellInfoState extends State<WellInfo> {
                   ],
                 ),
               ));
-            } else {
+            } else if(snapshot.hasError) {
+              print("Error when getting data!");
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(height: 50),
+                  Text("Error: " + snapshot.error.toString()),
+                  ],
+                ),
+              );
+          } else  {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

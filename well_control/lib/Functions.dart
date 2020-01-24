@@ -15,7 +15,7 @@ Future<http.Response> postNewIssue(WellIssue issue) {
   var query = json.encode(
       "{ id: ${issue.id.toString()}, description: ${issue.description
           .toString()},"
-      "creationDate: ${issue.creationDate}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
+      "creationDate: ${issue.creationDate.toString()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
       ")");
   print(query);
   return http.post(wellApiUrl + 'Issue/CreateIssue',
@@ -33,7 +33,7 @@ Future<http.Response> getAllIssues() {
 /// Gets one well's issues
 Future<http.Response> getWellIssues(String wellId) {
   print("Getting issue with: "  + wellId.toString());
-  return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssue/$wellId');
+  return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
 }
 
 /// Gets all wells
