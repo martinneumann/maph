@@ -35,6 +35,30 @@ namespace WellApi.Controllers
                 return Conflict("Server error! " + e.Message);
             }
         }
+        
+        /// <summary>
+        /// Get all issues of a well.
+        /// </summary>
+        /// <param name="wellId"></param> 
+        [HttpGet("{wellId}")]
+        [ActionName("GetIssuesFromWell")]
+        [ProducesResponseType(typeof(Issue[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetIssuesFromWell(int wellId)
+        {
+            try
+            {
+                Issue[] issues = DB.GetIssuesFromWell(wellId);
+                if (issues == null)
+                    return BadRequest("Something went wrong");
+                return Ok(issues);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
 
         /// <summary>
         /// Get a specific issue.

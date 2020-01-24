@@ -95,6 +95,15 @@ namespace WellApi
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
             return sqlCommand;
         }
+        public static SqlCommand SelectIssuesFromWell(int wellId)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Id, WellId, Description, CreationDate, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Works ");
+            sb.Append("FROM [well].[dbo].[Issue] ");
+            sb.Append($"WHERE WellId = {wellId};");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            return sqlCommand;
+        }
 
         // Insert
 

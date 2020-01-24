@@ -379,6 +379,18 @@ namespace WellApi
                 issue.BrokenParts = ExecuteSelectBrokenParts(issue.Id);
             return issue;
         }
+        public static Issue[] GetIssuesFromWell(int wellId)
+        {
+            Issue[] issues = ExecuteSelectIssuesFromWell(wellId);
+            if (issues != null)
+            {
+                for (int i = 0; i < issues.Length; i++)
+                {
+                    issues[i].BrokenParts = ExecuteSelectBrokenParts(issues[i].Id);
+                }
+            }
+            return issues;
+        }
         public static bool AddCompleteNewIssue(NewIssue newIssue)
         {
             int issueId = ExecuteInsertIssue(newIssue);
@@ -621,6 +633,42 @@ namespace WellApi
             {
                 return command.ExecuteNonQuery();
             }
+        }
+        public static Issue[] ExecuteSelectIssuesFromWell(int wellId)
+        {
+            SqlCommand sqlCommand = SqlQuerry.SelectIssuesFromWell(wellId);
+            if (sqlCommand == null)
+                return null;
+            sqlCommand.Connection = sqlConnection;
+            List<Issue> issues = new List<Issue>();
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Issue issue = new Issue();
+                    issue.Id = reader.GetInt32(0);
+                    if (!reader.IsDBNull(1))
+                        issue.WellId = reader.GetInt32(1);
+                    if (!reader.IsDBNull(2))
+                        issue.Description = reader.GetString(2);
+                    if (!reader.IsDBNull(3))
+                        issue.CreationDate = reader.GetDateTime(3);
+                    if (!reader.IsDBNull(4))
+                        issue.Status = reader.GetString(4);
+                    if (!reader.IsDBNull(5))
+                        issue.Open = reader.GetBoolean(5);
+                    if (!reader.IsDBNull(6))
+                        issue.ConfirmedBy = reader.GetString(6);
+                    if (!reader.IsDBNull(7))
+                        issue.SolvedDate = reader.GetDateTime(7);
+                    if (!reader.IsDBNull(8))
+                        issue.RepairedBy = reader.GetString(8);
+                    if (!reader.IsDBNull(9))
+                        issue.Works = reader.GetBoolean(9);
+                    issues.Add(issue);
+                }
+            }
+            return issues.ToArray();
         }
     }
 }

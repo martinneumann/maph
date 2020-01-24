@@ -10,6 +10,7 @@ namespace WellApi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
+        public DateTime PredictedMaintenance { get; set; }
         public MaintenanceLog[] MaintenanceLogs { get; set; }
         public Location Location { get; set; }
         public FundingInfo FundingInfo { get; set; }
