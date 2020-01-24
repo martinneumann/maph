@@ -7,8 +7,14 @@ namespace WellApi.Models
 {
     public class Part
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+    }
+
+    public class InsertWellParts
+    {
+        public int? WellTypeId { get; set; }
+        public int?[] PartId { get; set; }
     }
 }

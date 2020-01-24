@@ -90,11 +90,7 @@ namespace WellApi.Controllers
             return Ok(DB.ExecuteInsertWellType(wellType));
         }
 
-        public class InsertWellParts
-        {
-            public int wellTypeId { get; set; }
-            public int[] partId { get; set; }
-        }
+        
         /// <summary>
         /// ExecuteInsertWellParts.
         /// </summary>
@@ -103,7 +99,7 @@ namespace WellApi.Controllers
         [ActionName("ExecuteInsertWellParts")]
         public IActionResult ExecuteInsertWellParts(InsertWellParts insertWellParts)
         {
-            DB.ExecuteInsertWellParts(insertWellParts.wellTypeId, insertWellParts.partId);
+            DB.ExecuteInsertWellParts(insertWellParts.WellTypeId, insertWellParts.PartId);
             return Ok();
         }
         /// <summary>
@@ -117,20 +113,16 @@ namespace WellApi.Controllers
             return Ok(DB.ExecuteInsertWell(newWell));
         }
 
-        public class InsertStatusHistory
-        {
-            public MaintenanceLog[] statusHistory { get; set; }
-            public int wellId { get; set; }
-        }
+
         /// <summary>
-        /// ExecuteInsertStatusHistory.
+        /// ExecuteInsertMaintenanceLog.
         /// </summary>
-        /// <param name="insertStatusHistory"></param> 
+        /// <param name="insertMaintenanceLog"></param> 
         [HttpPost]
-        [ActionName("ExecuteInsertStatusHistory")]
-        public IActionResult ExecuteInsertStatusHistory(InsertStatusHistory insertStatusHistory)
+        [ActionName("ExecuteInsertMaintenanceLog")]
+        public IActionResult ExecuteInsertMaintenanceLog(InsertMaintenanceLog insertMaintenanceLog)
         {
-            DB.ExecuteInsertMaintenanceLogs(insertStatusHistory.statusHistory, insertStatusHistory.wellId);
+            DB.ExecuteInsertMaintenanceLog(insertMaintenanceLog.MaintenanceLog, insertMaintenanceLog.WellId);
             return Ok();
         }
         /// <summary>
