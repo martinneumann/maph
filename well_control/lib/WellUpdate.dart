@@ -102,76 +102,144 @@ class _WellUpdateState extends State<WellUpdate> {
                         children: <Widget>[
                           TextFormField(
                             controller: nameController,
-                            decoration:
-                                InputDecoration(labelText: "Name of well:"),
+                            decoration: InputDecoration(
+                              labelText: "Name of well:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.title),
+                              ),
+                            ),
                             validator: (value) {
                               if (value.isEmpty) {
-                                return "Enter well name";
+                                return 'Please enter some text';
                               }
                               return null;
                             },
                           ),
+                          Divider(color: Colors.black87),
                           Column(
                             children: <Widget>[
                               TextFormField(
                                 controller: latitudeController,
-                                decoration:
-                                    InputDecoration(labelText: "Latitude:"),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Latitude:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.gps_fixed),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return "Enter latitude";
+                                    return 'Please enter latitude!';
+                                  } else if (double.parse(value) < -90 ||
+                                      double.parse(value) > 90) {
+                                    return 'Latitude has to be between -90 and 90 degrees!';
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (value) {
-                                  latitudeController..text = value.toString();
-                                },
                               ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: longitudeController,
-                                decoration:
-                                    InputDecoration(labelText: "Longitude:"),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Longitude:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.gps_fixed),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
-                                    return "Enter longitude";
+                                    return 'Please enter longitude';
+                                  } else if (double.parse(value) < -180 ||
+                                      double.parse(value) > 180) {
+                                    return 'Longitude has to be between -180 and 180 degrees!';
                                   }
                                   return null;
                                 },
                               ),
-                              DropdownButton<String>(
-                                value: status,
-                                hint: Text("Select a well status"),
-                                onChanged: (String value) {
-                                  setState(() {
-                                    status = value;
-                                  });
-                                },
-                                items: _wellStatus.map((stat) {
-                                  return DropdownMenuItem(
-                                    child: new Text(stat),
-                                    value: stat,
-                                  );
-                                }).toList(),
+                              Divider(color: Colors.black87),
+                              Row(children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 15.0),
+                                  child: Icon(
+                                    Icons.build,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Container(
+                                  child: Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: status,
+                                        hint: Text("Select a well status"),
+                                        onChanged: (String value) {
+                                          setState(() {
+                                            status = value;
+                                          });
+                                        },
+                                        items: _wellStatus.map((stat) {
+                                          return DropdownMenuItem(
+                                            child: new Text(stat),
+                                            value: stat,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                              Divider(color: Colors.black87),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 10.0, right: 15.0),
+                                    child: Icon(Icons.settings,
+                                        color: Colors.grey),
+                                  ),
+                                  Container(
+                                    child: Expanded(
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          value: type,
+                                          hint: Text("Select the well type"),
+                                          onChanged: (String value) {
+                                            setState(() {
+                                              type = value;
+                                            });
+                                          },
+                                          items: _wellTypes.map((type) {
+                                            return DropdownMenuItem(
+                                              child: new Text(type),
+                                              value: type,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              DropdownButton<String>(
-                                value: type,
-                                hint: Text("Select the well type"),
-                                onChanged: (String value) {
-                                  setState(() {
-                                    type = value;
-                                  });
-                                },
-                                items: _wellTypes.map((type) {
-                                  return DropdownMenuItem(
-                                    child: new Text(type),
-                                    value: type,
-                                  );
-                                }).toList(),
-                              ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: fundingController,
-                                decoration:
-                                    InputDecoration(labelText: "Funded by:"),
+                                decoration: InputDecoration(
+                                  labelText: "Funded by:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.account_balance),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter funding organisation.';
@@ -179,10 +247,18 @@ class _WellUpdateState extends State<WellUpdate> {
                                   return null;
                                 },
                               ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: costsController,
-                                decoration:
-                                    InputDecoration(labelText: "Costs:"),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: "Costs:",
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.monetization_on),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter the building costs of the well.';
@@ -190,9 +266,9 @@ class _WellUpdateState extends State<WellUpdate> {
                                   return null;
                                 },
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16.0),
+                              Divider(color: Colors.black87),
+                              new Container(
+                                padding: const EdgeInsets.all(18.0),
                                 child: RaisedButton(
                                   onPressed: () {
                                     // Validate returns true if the form is valid, or false
