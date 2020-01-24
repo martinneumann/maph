@@ -153,16 +153,31 @@ class _WellInfoState extends State<WellInfo> {
                                 if (snapshot.hasData) {
                                   print("Snapshot for issues: " +
                                       snapshot.toString());
+                                  if (snapshot.data.length == 0) {
+                                    children = <Widget>[
+                                Icon(
+                                Icons.check_circle_outline,
+                                color: Colors.green,
+                                size: 60,
+                                ),
+                                ];
+                                  }
                                   children = <Widget>[
-                                    Icon(
-                                      Icons.check_circle_outline,
-                                      color: Colors.green,
-                                      size: 60,
-                                    ),
+                                  Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: 60,
+                                  ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 16),
-                                      child: Text('Result: ${snapshot.data}'),
-                                    )
+                                      child: Card (
+                                        child: Column(
+                                      children: <Widget>[
+                                        for (var item in snapshot.data) Text(item.description.toString())
+                                ],
+                                ),
+                                ),
+                                    ),
                                   ];
                                 } else if (snapshot.hasError) {
                                   print("Snapshot for issues (error): " +

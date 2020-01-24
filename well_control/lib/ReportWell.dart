@@ -245,7 +245,7 @@ class _ReportWellState extends State<ReportWell> {
               );
           print("Created issue: " + issue.description.toString());
           postNewIssue(issue).then((response) {
-            print("Creation response: " + response.body.toString());
+            print("Creation response: " + response.statusCode.toString());
             choiceAction(wellMap);
           }).catchError((error)  {
             print("Error on creating issue: " + error);
