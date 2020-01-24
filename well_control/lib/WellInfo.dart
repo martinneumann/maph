@@ -74,7 +74,7 @@ class _WellInfoState extends State<WellInfo> {
         ),
         body: Center(
             child: FutureBuilder(
-          future: getWellInfos(widget.well),
+          future: wellInfos,
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (snapshot.hasData) {
               return SingleChildScrollView(

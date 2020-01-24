@@ -35,28 +35,14 @@ Future<List<WellIssue>> getIssues() {
 /// Get issues of specific well
 Future <List<WellIssue>> getIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
-    print('Response in getIssuesOfWell ' + response.body);
+    print('Response with code ' + response.statusCode.toString() + ' in getIssuesOfWell ' + response.body);
     List<WellIssue> testing;
-
 
     testing = (json.decode(response.body) as List).map((i) =>
         WellIssue.fromJson(i)).toList();
 
-
-
-
-    Iterable dataTest = json.decode(response.body);
-    // print("hi: " + dataTest.runtimeType.toString());
-    // var issue = WellIssue.fromJson(dataTest);
-    // print("test: " + issue.toString());
-    for (var element in dataTest) {
-      print(element.toString());
-    }
-    // print(dataTest["id"]);
-    var testlist = (dataTest as List).map((i) => WellIssue.fromJson(i)).toList();
-
-    print("List: " + testlist.toString());
-    return testlist;
+    print("List: " + testing.toString());
+    return testing;
   }).catchError((error) {
     print("An error happened while fetching issue data: " + error);
     return error;
