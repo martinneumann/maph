@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -20,72 +21,91 @@ namespace WellApi
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
             return sqlCommand;
         }
-        public static string SelectWell(int? wellId)
+        public static SqlCommand SelectWell(int? wellId)
         {
-            if (wellId == 0)
+            if (wellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("SELECT w.Id, w.Name, w.Status, w.Latitude, w.Longitude, w.Organisation, w.OpeningDate, w.Price, t.Id, t.Name, t.Particularity, t.Depth ");
+            sb.Append("SELECT w.Id, w.Name, w.Status, w.Latitude, w.Longitude, w.Organisation, w.OpeningDate, w.Price, t.Id, t.Name, t.Particularity ");
             sb.Append("FROM [well].[dbo].[Well] w ");
             sb.Append("JOIN [well].[dbo].[WellType] t ");
             sb.Append("ON w.WellTypeId = t.Id ");
-            sb.Append($"WHERE w.Id = {wellId};");
-            return sb.ToString();
+            sb.Append($"WHERE w.Id = @WellId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
         }
-        public static string SelectMaintenanceLog(int? wellId)
+        public static SqlCommand SelectMaintenanceLog(int? wellId)
         {
-            if (wellId == 0)
+            if (wellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Id, Description, Works, Confirmed, StatusChangedDate ");
-            sb.Append("FROM [well].[dbo].[StatusHistory] ");
-            sb.Append($"WHERE Id = {wellId};");
-            return sb.ToString();
+            sb.Append("FROM [well].[dbo].[MaintenanceLog] ");
+            sb.Append($"WHERE WellId = @WellId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
         }
-        public static string SelectWellParts(int? wellTypeId)
+        public static SqlCommand SelectWellParts(int? wellTypeId)
         {
-            if (wellTypeId == 0)
+            if (wellTypeId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT p.Id, p.Name, p.Description ");
             sb.Append("FROM [well].[dbo].[Part] p ");
             sb.Append("JOIN [well].[dbo].[WellParts] w ");
             sb.Append("On w.PartId = p.Id ");
-            sb.Append($"WHERE w.WellTypeId = {wellTypeId};");
-            return sb.ToString();
+            sb.Append($"WHERE w.WellTypeId = @WellTypeId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellTypeId", wellTypeId);
+            return sqlCommand;
         }
-        public static string SelectSmallIssue()
+        public static SqlCommand SelectSmallIssue()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Id, CreationDate, WellId ");
             sb.Append("FROM [well].[dbo].[Issue];");
-            return sb.ToString();
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            return sqlCommand;
         }
-        public static string SelectIssue(int? issueId)
+        public static SqlCommand SelectIssue(int? issueId)
         {
+            if (issueId == null)
+                return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Id, WellId, Description, CreationDate, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Works ");
             sb.Append("FROM [well].[dbo].[Issue] ");
-            sb.Append($"WHERE Id = {issueId};");
-            return sb.ToString();
+            sb.Append($"WHERE Id = @IssueId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            return sqlCommand;
         }
-        public static string SelectBrokenParts(int? issueId)
+        public static SqlCommand SelectBrokenParts(int? issueId)
         {
+            if (issueId == null)
+                return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT p.Id, p.Name, p.Description ");
             sb.Append("FROM [well].[dbo].[BrokenParts] b ");
             sb.Append("JOIN [well].[dbo].[Part] p ");
             sb.Append("ON b.PartId = p.id ");
-            sb.Append($"WHERE b.IssueId = {issueId};");
-            return sb.ToString();
+            sb.Append($"WHERE b.IssueId = @IssueId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            return sqlCommand;
         }
-        public static string SelectWellStatus(int? wellId)
+        public static SqlCommand SelectWellStatus(int? wellId)
         {
+            if (wellId == null)
+                return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Status ");
             sb.Append("FROM [well].[dbo].[Well] ");
-            sb.Append($"WHERE Id = {wellId};");
-            return sb.ToString();
+            sb.Append($"WHERE Id = @WellId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
         }
         public static SqlCommand SelectWellTypes()
         {
@@ -97,74 +117,74 @@ namespace WellApi
         }
         public static SqlCommand SelectIssuesFromWell(int? wellId)
         {
+            if (wellId == null)
+                return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT Id, WellId, Description, CreationDate, Status, [Open], ConfirmedBy, SolvedDate, RepairedBy, Works ");
             sb.Append("FROM [well].[dbo].[Issue] ");
-            sb.Append($"WHERE WellId = {wellId};");
+            sb.Append($"WHERE WellId = @WellId;");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
             return sqlCommand;
         }
 
         // Insert
 
-        public static string InsertParts(Part[] parts)
+        public static SqlCommand InsertPart(NewPart insertPart)
         {
-            if (parts == null || parts.Length == 0)
+            if (insertPart == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("INSERT INTO [well].[dbo].[Part] (Name, Description) ");
             sb.Append("OUTPUT inserted.Id ");
-            for (int i = 0; i < parts.Length - 1; i++)
-            {
-                sb.Append($"VALUES ('{parts[i].Name}','{parts[i].Description}'),");
-            }
-            sb.Append($"VALUES ('{parts[parts.Length - 1].Name}','{parts[parts.Length - 1].Description}');");
-            return sb.ToString();
+            sb.Append($"VALUES (@Name, @Description);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@Name", (object)insertPart.Name ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Description", (object)insertPart.Description ?? DBNull.Value);
+            return sqlCommand;
         }
-        public static SqlCommand InsertWellType(WellType wellType)
+        public static SqlCommand InsertWellType(NewWellType insertWellType)
         {
-            if (wellType == null)
+            if (insertWellType == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("INSERT INTO [well].[dbo].[WellType] (Name, Particularity) ");
             sb.Append("OUTPUT INSERTED.Id ");
-            sb.Append($"VALUES (@Name, @Particularity, @Depth);");
+            sb.Append($"VALUES (@Name, @Particularity);");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
-            sqlCommand.Parameters.AddWithValue("@Name", wellType.Name);
-            sqlCommand.Parameters.AddWithValue("@Particularity", wellType.Particularity);
+            sqlCommand.Parameters.AddWithValue("@Name", (object)insertWellType.Name ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Particularity", (object)insertWellType.Particularity ?? DBNull.Value);
             return sqlCommand;
         }
-        public static string InsertWellParts(int? wellTypeId, int?[] partId)
+        public static SqlCommand InsertWellPart(int? wellTypeId, int? partId)
         {
-            if (partId == null)
-                return null;
-            if (partId.Length == 0 || wellTypeId == 0)
+            if (partId == null || wellTypeId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[WellParts] (WellTypeId, PartId) VALUES ");
-            for (int i = 0; i < partId.Length - 1; i++)
-            {
-                sb.Append($"({wellTypeId},{partId[i]}),");
-            }
-            sb.Append($" ({wellTypeId},{partId[partId.Length - 1]});");
-            return sb.ToString();
+            sb.Append("INSERT INTO [well].[dbo].[WellParts] (WellTypeId, PartId) ");
+            sb.Append("OUTPUT INSERTED.Id ");
+            sb.Append($"VALUES (@WellTypeId, @PartId);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellTypeId", wellTypeId);
+            sqlCommand.Parameters.AddWithValue("@PartId", partId);
+            return sqlCommand;
         }
         public static SqlCommand InsertWell(NewWell newWell)
         {
-            if (newWell == null || newWell.WellTypeId == 0 || newWell.FundingInfo == null || newWell.Location == null)
+            if (newWell == null || newWell.WellTypeId == null || newWell.FundingInfo == null || newWell.Location == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("INSERT INTO [well].[dbo].[Well] (Name, Status, Latitude, Longitude, Organisation, OpeningDate, Price , WellTypeId) ");
             sb.Append("OUTPUT INSERTED.Id ");
             sb.Append($"VALUES (@Name, @Status, @Latitude, @Longitude, @Organisation, @OpeningDate, @Price , @WellTypeId);");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
-            sqlCommand.Parameters.AddWithValue("@Name", newWell.Name);
-            sqlCommand.Parameters.AddWithValue("@Status", newWell.Status);
-            sqlCommand.Parameters.AddWithValue("@Latitude", newWell.Location.Latitude);
-            sqlCommand.Parameters.AddWithValue("@Longitude", newWell.Location.Longitude);
-            sqlCommand.Parameters.AddWithValue("@Organisation", newWell.FundingInfo.Organisation);
+            sqlCommand.Parameters.AddWithValue("@Name", (object)newWell.Name ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Status", (object)newWell.Status ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Latitude", (object)newWell.Location.Latitude ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Longitude", (object)newWell.Location.Longitude ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Organisation", (object)newWell.FundingInfo.Organisation ?? DBNull.Value);
             sqlCommand.Parameters.AddWithValue("@OpeningDate", DateTime.Now);
-            sqlCommand.Parameters.AddWithValue("@Price", newWell.FundingInfo.Price);
+            sqlCommand.Parameters.AddWithValue("@Price", (object)newWell.FundingInfo.Price ?? DBNull.Value);
             sqlCommand.Parameters.AddWithValue("@WellTypeId", newWell.WellTypeId);
             return sqlCommand;
         }
@@ -173,110 +193,127 @@ namespace WellApi
             if (maintenanceLog == null || wellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
-            sb.Append("INSERT INTO [well].[dbo].[StatusHistory] (Description, Works, Confirmed, StatusChangedDate, WellId) ");
+            sb.Append("INSERT INTO [well].[dbo].[MaintenanceLog] (Description, Works, Confirmed, StatusChangedDate, WellId) ");
             sb.Append("OUTPUT INSERTED.Id ");
             sb.Append($"VALUES (@Description, @Works, @Confirmed, @StatusChangedDate, @WellId);");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
-            sqlCommand.Parameters.AddWithValue("@Description", maintenanceLog.Description);
-            sqlCommand.Parameters.AddWithValue("@Works", maintenanceLog.Works);
-            sqlCommand.Parameters.AddWithValue("@Confirmed", maintenanceLog.Confirmed);
+            sqlCommand.Parameters.AddWithValue("@Description", (object)maintenanceLog.Description ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Works", (object)maintenanceLog.Works ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Confirmed", (object)maintenanceLog.Confirmed ?? DBNull.Value);
             sqlCommand.Parameters.AddWithValue("@StatusChangedDate", DateTime.Now);
             sqlCommand.Parameters.AddWithValue("@WellId", wellId);
             return sqlCommand;
         }
-        public static string InsertIssue(NewIssue newIssue)
+        public static SqlCommand InsertIssue(NewIssue newIssue)
         {
             if (newIssue == null || newIssue.WellId == 0)
                 return null;
             StringBuilder sb = new StringBuilder();
-            string insertColumns = "";
-            string insertColumnValues = "";
-            insertColumns += "WellId, ";
-            insertColumnValues += $"{newIssue.WellId}, ";
-            if (newIssue.Description != null)
-            {
-                insertColumns += "Description, ";
-                insertColumnValues += $"'{newIssue.Description}', ";
-            }
-            insertColumns += "CreationDate, ";
-            insertColumnValues += $"'{DateTime.Now.ToString("yyyyMMdd HH:mm:ss")}', ";
-            insertColumns += "Status, ";
-            insertColumnValues += $"'Issue created', ";
-            insertColumns += "[Open], ";
-            insertColumnValues += $"{1}, ";
-            if (newIssue.ConfirmedBy != null)
-            {
-                insertColumns += "ConfirmedBy, ";
-                insertColumnValues += $"'{newIssue.ConfirmedBy}', ";
-            }
-            insertColumns += "Works";
-            insertColumnValues += $"{Convert.ToInt32(newIssue.Works)}";
-            sb.Append($"INSERT INTO [well].[dbo].[Issue] ({insertColumns}) ");
+            sb.Append($"INSERT INTO [well].[dbo].[Issue] (WellId, Description, CreationDate, Status, [Open], ConfirmedBy, Works) ");
             sb.Append("OUTPUT inserted.Id ");
-            sb.Append($"VALUES ({insertColumnValues});");
-            return sb.ToString();
+            sb.Append($"VALUES (@WellId, @Description, @CreationDate, @Status, @Open, @ConfirmedBy, @Works);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", (object)newIssue.WellId ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Description", (object)newIssue.Description ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@CreationDate", DateTime.Now);
+            sqlCommand.Parameters.AddWithValue("@Status", "Issue created");
+            sqlCommand.Parameters.AddWithValue("@Open", true);
+            sqlCommand.Parameters.AddWithValue("@ConfirmedBy", (object)newIssue.ConfirmedBy ?? DBNull.Value);
+            sqlCommand.Parameters.AddWithValue("@Works", (object)newIssue.Works ?? DBNull.Value);
+            return sqlCommand;
         }
-        public static string InsertBrokenParts(int?[] partIds, int? issueId)
+        public static SqlCommand InsertBrokenPart(int? partId, int? issueId)
         {
-            if (issueId == 0 || partIds.Length == 0)
+            if (issueId == null || partId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("INSERT INTO [well].[dbo].[BrokenParts] (IssueId, PartId) ");
-            List<string> values = new List<string>();
-            foreach (int partId in partIds)
-            {
-                if (partId != 0)
-                    values.Add($"({issueId}, {partId}),");
-            }
-            if (values.Count == 0)
-                return null;
-            values[0] = "VALUES " + values[0];
-            values[values.Count - 1].TrimEnd(',');
-            values[values.Count - 1].Append(';');
-            foreach (string value in values)
-            {
-                sb.Append(value);
-            }
-            return sb.ToString();
+            sb.Append("OUTPUT inserted.Id ");
+            sb.Append($"VALUES (@IssueId, @PartId);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            sqlCommand.Parameters.AddWithValue("@PartId", partId);
+            return sqlCommand;
         }
 
         // Update
 
-        public static string UpdatePart(Part part)
+        public static SqlCommand UpdatePart(Part part)
         {
-            if (part == null || part.Id == 0)
+            if (part == null || part.Id == 0 || part.Name == null && part.Description == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Part] ");
-            sb.Append($"SET Name = '{part.Name}', Description = '{part.Description}' ");
-            sb.Append($"WHERE Id = {part.Id};");
-            return sb.ToString();
+            SqlCommand sqlCommand = new SqlCommand();
+            string values = "";
+            if (part.Name != null)
+            {
+                values += "Name = @Name, ";
+                sqlCommand.Parameters.AddWithValue("@Name", part.Name);
+            }
+            if (part.Description != null)
+            {
+                values += "Description = @Description, ";
+                sqlCommand.Parameters.AddWithValue("@Description", part.Description);
+            }
+            values = values.Remove(values.Length - 2);
+            sb.Append($"SET {values} ");
+            sb.Append($"WHERE Id = @Id;");
+            sqlCommand.Parameters.AddWithValue("@Id", part.Id);
+            sqlCommand.CommandText = sb.ToString();
+            return sqlCommand;
         }
-        public static string UpdateWellType(WellType wellType)
+        public static SqlCommand UpdateWellType(WellType wellType)
         {
-            if (wellType == null || wellType.Id == 0)
+            if (wellType == null || wellType.Id == null || wellType.Name == null && wellType.Particularity == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[WellType] ");
-            sb.Append($"SET Name = '{wellType.Name}', Particularity = '{wellType.Particularity}' ");
-            sb.Append($"WHERE Id = {wellType.Id};");
-            return sb.ToString();
+            SqlCommand sqlCommand = new SqlCommand();
+            string values = "";
+            if (wellType.Name != null)
+            {
+                values += "Name = @Name, ";
+                sqlCommand.Parameters.AddWithValue("@Name", wellType.Name);
+            }
+            if (wellType.Particularity != null)
+            {
+                values += "Particularity = @Particularity, ";
+                sqlCommand.Parameters.AddWithValue("@Particularity", wellType.Particularity);
+            }
+            values = values.Remove(values.Length - 2);
+            sb.Append($"SET {values} ");
+            sb.Append($"WHERE Id = @Id;");
+            sqlCommand.Parameters.AddWithValue("@Id", wellType.Id);
+            sqlCommand.CommandText = sb.ToString();
+            return sqlCommand;
         }
         public static SqlCommand UpdateFundingInfo(FundingInfo fundingInfo, int? wellId)
         {
-            if (fundingInfo == null || wellId == 0)
+            if (fundingInfo == null || wellId == null || fundingInfo.OpeningDate == null && fundingInfo.Organisation == null && fundingInfo.Price == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Well] ");
-            sb.Append("SET Organisation = @Organisation, OpeningDate = @OpeningDate, Price = @Price ");
-            sb.Append("WHERE Id = @WellId;");
-            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
-            sqlCommand.Parameters.AddWithValue("@Organisation", fundingInfo.Organisation);
-            if (fundingInfo.OpeningDate == new DateTime())
-                sqlCommand.Parameters.AddWithValue("@OpeningDate", DateTime.Now);
-            else
+            SqlCommand sqlCommand = new SqlCommand();
+            string values = "";
+            if (fundingInfo.Organisation != null)
+            {
+                values += "Organisation = @Organisation, ";
+                sqlCommand.Parameters.AddWithValue("@Organisation", fundingInfo.Organisation);
+            }
+            if (fundingInfo.OpeningDate != null)
+            {
+                values += "OpeningDate = @OpeningDate, ";
                 sqlCommand.Parameters.AddWithValue("@OpeningDate", fundingInfo.OpeningDate);
-            sqlCommand.Parameters.AddWithValue("@Price", fundingInfo.Price);
+            }
+            if (fundingInfo.Price != null)
+            {
+                values += "Price = @Price, ";
+                sqlCommand.Parameters.AddWithValue("@Price", fundingInfo.Price);
+            }
+            values = values.Remove(values.Length - 2);
+            sb.Append($"SET {values} ");
+            sb.Append("WHERE Id = @WellId;");
             sqlCommand.Parameters.AddWithValue("@WellId", wellId);
             return sqlCommand;
         }
@@ -298,7 +335,7 @@ namespace WellApi
                 values += "Longitude = @Longitude, ";
                 sqlCommand.Parameters.AddWithValue("@Longitude", location.Longitude);
             }
-            values = values.TrimEnd(',');
+            values = values.Remove(values.Length - 2);
             sb.Append($"SET {values} ");
             sb.Append($"WHERE Id = @WellId;");
             sqlCommand.Parameters.AddWithValue("@WellId", wellId);
@@ -307,36 +344,61 @@ namespace WellApi
         }
         public static SqlCommand UpdateWell(ChangedWell changedWell)
         {
-            if (changedWell == null || changedWell.Id == 0 || changedWell.WellTypeId == 0)
+            if (changedWell == null || changedWell.Id == null || changedWell.WellTypeId == null && changedWell.Name == null && changedWell.Location == null && changedWell.FundingInfo == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Well] ");
-            string setToUpdate = "";
             SqlCommand sqlCommand = new SqlCommand();
+            string values = "";
             if (changedWell.Location != null)
             {
-                setToUpdate += "Latitude = @Latitude, ";
-                sqlCommand.Parameters.AddWithValue("@Latitude", changedWell.Location.Latitude);
-                setToUpdate += "Longitude = @Longitude, ";
-                sqlCommand.Parameters.AddWithValue("@Longitude", changedWell.Location.Longitude);
+                if (changedWell.Location.Latitude != null)
+                {
+                    values += "Latitude = @Latitude, ";
+                    sqlCommand.Parameters.AddWithValue("@Latitude", changedWell.Location.Latitude);
+                }
+                if (changedWell.Location.Longitude != null)
+                {
+                    values += "Longitude = @Longitude, ";
+                    sqlCommand.Parameters.AddWithValue("@Longitude", changedWell.Location.Longitude);
+                }
             }
             if (changedWell.FundingInfo != null)
             {
-                setToUpdate += "Organisation = @Organisation, ";
-                sqlCommand.Parameters.AddWithValue("@Organisation", changedWell.FundingInfo.Organisation);
-                if(changedWell.FundingInfo.OpeningDate != new DateTime())
+                if (changedWell.FundingInfo.Organisation != null)
                 {
-                    setToUpdate += "OpeningDate = @OpeningDate, ";
+                    values += "Organisation = @Organisation, ";
+                    sqlCommand.Parameters.AddWithValue("@Organisation", changedWell.FundingInfo.Organisation);
+                }
+                if (changedWell.FundingInfo.OpeningDate != null)
+                {
+                    values += "OpeningDate = @OpeningDate, ";
                     sqlCommand.Parameters.AddWithValue("@OpeningDate", changedWell.FundingInfo.OpeningDate);
                 }
-                setToUpdate += "Price = @Price, ";
-                sqlCommand.Parameters.AddWithValue("@Price", changedWell.FundingInfo.Price);
+                if (changedWell.FundingInfo.Price != null)
+                {
+                    values += "Price = @Price, ";
+                    sqlCommand.Parameters.AddWithValue("@Price", changedWell.FundingInfo.Price);
+                }
             }
-            setToUpdate += "WellTypeId = @WellTypeId, ";
-            sqlCommand.Parameters.AddWithValue("@WellTypeId", changedWell.WellTypeId);
-            sb.Append($"SET Name = @Name, {setToUpdate}Status = @Status ");
-            sqlCommand.Parameters.AddWithValue("@Name", changedWell.Name);
-            sqlCommand.Parameters.AddWithValue("@Status", changedWell.Status);
+
+            if (changedWell.WellTypeId != null)
+            {
+                values += "WellTypeId = @WellTypeId, ";
+                sqlCommand.Parameters.AddWithValue("@WellTypeId", changedWell.WellTypeId);
+            }
+            if (changedWell.Name != null)
+            {
+                values += "Name = @Name, ";
+                sqlCommand.Parameters.AddWithValue("@Name", changedWell.Name);
+            }
+            if (changedWell.Status != null)
+            {
+                values += "Status = @Status, ";
+                sqlCommand.Parameters.AddWithValue("@Status", changedWell.Status);
+            }
+            values = values.Remove(values.Length - 2);
+            sb.Append($"SET {values} ");
             sb.Append("WHERE Id = @Id;");
             sqlCommand.Parameters.AddWithValue("@Id", changedWell.Id);
             sqlCommand.CommandText = sb.ToString();
@@ -348,7 +410,7 @@ namespace WellApi
                 return null;
             StringBuilder sb = new StringBuilder();
             SqlCommand sqlCommand = new SqlCommand();
-            sb.Append("UPDATE [well].[dbo].[StatusHistory] ");
+            sb.Append("UPDATE [well].[dbo].[MaintenanceLog] ");
             string values = "";
             if (maintenanceLog.Description != null)
             {
@@ -358,12 +420,12 @@ namespace WellApi
             if (maintenanceLog.Works != null)
             {
                 values += "Works = @Works, ";
-                sqlCommand.Parameters.AddWithValue("@Works", maintenanceLog.Works); //Convert.ToInt32
+                sqlCommand.Parameters.Add("@Works", SqlDbType.Bit).Value = maintenanceLog.Works;
             }
-            if (maintenanceLog.Works != null)
+            if (maintenanceLog.Confirmed != null)
             {
                 values += "Confirmed = @Confirmed, ";
-                sqlCommand.Parameters.AddWithValue("@Confirmed", maintenanceLog.Confirmed); //Convert.ToInt32
+                sqlCommand.Parameters.Add("@Confirmed", SqlDbType.Bit).Value = maintenanceLog.Confirmed;
             }
             if (maintenanceLog.StatusChangedDate != null)
             {
@@ -375,7 +437,7 @@ namespace WellApi
                 values += "WellId = @WellId, ";
                 sqlCommand.Parameters.AddWithValue("@WellId", wellId);
             }
-            values = values.TrimEnd(',');
+            values = values.Remove(values.Length - 2);
             sb.Append($"SET {values} ");
             sb.Append($"WHERE Id = @Id;");
             sqlCommand.Parameters.AddWithValue("@Id", maintenanceLog.Id);
@@ -413,7 +475,7 @@ namespace WellApi
             if (updateIssue.Open != null)
             {
                 values += "[Open] = @Open, ";
-                sqlCommand.Parameters.AddWithValue("@Open", updateIssue.Open); //Convert.ToInt32
+                sqlCommand.Parameters.Add("@Open", SqlDbType.Bit).Value = updateIssue.Open;
             }
             if (updateIssue.ConfirmedBy != null)
             {
@@ -433,46 +495,53 @@ namespace WellApi
             if (updateIssue.Works != null)
             {
                 values += "Works = @Works, ";
-                sqlCommand.Parameters.AddWithValue("@Works", updateIssue.Works); //Convert.ToInt32
+                sqlCommand.Parameters.Add("@Works", SqlDbType.Bit).Value = updateIssue.Works;
             }
-            values = values.TrimEnd(',');
+            values = values.Remove(values.Length - 2);
             sb.Append($"SET {values} ");
             sb.Append($"WHERE Id = @Id;");
             sqlCommand.Parameters.AddWithValue("@Id", updateIssue.Id);
             sqlCommand.CommandText = sb.ToString();
             return sqlCommand;
         }
-        public static string UpdateWellStatus(int? wellId, string status)
+        public static SqlCommand UpdateWellStatus(int? wellId, string status)
         {
-            if (status == null || wellId == 0)
+            if (status == null || wellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Well] ");
-            sb.Append($"SET Status = '{status}' ");
-            sb.Append($"WHERE Id = {wellId};");
-            return sb.ToString();
+            sb.Append($"SET Status = @Status ");
+            sb.Append($"WHERE Id = @WellId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@Status", status);
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
         }
 
         // Delete
-        public static string DeleteWell(int? wellId)
+        public static SqlCommand DeleteWell(int? wellId)
         {
-            if (wellId == 0)
+            if (wellId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("DELETE ");
             sb.Append("FROM [well].[dbo].[Well] ");
-            sb.Append($"WHERE Id = {wellId};");
-            return sb.ToString();
+            sb.Append($"WHERE Id = @WellId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
         }
-        public static string DeleteIssue(int? issueId)
+        public static SqlCommand DeleteIssue(int? issueId)
         {
-            if (issueId == 0)
+            if (issueId == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("DELETE ");
             sb.Append("FROM [well].[dbo].[Issue] ");
-            sb.Append($"WHERE Id = {issueId};");
-            return sb.ToString();
+            sb.Append($"WHERE Id = @IssueId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
+            return sqlCommand;
         }
     }
 }

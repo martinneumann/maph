@@ -63,6 +63,29 @@ namespace WellApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get a specific well.
+        /// </summary>
+        /// <param name="wellId"></param> 
+        [HttpGet("{wellId}")]
+        [ActionName("GetWell")]
+        [ProducesResponseType(typeof(Well), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetWell(int wellId)
+        {
+            try
+            {
+                Well well = DB.GetCompleteWell(wellId);
+                if (well == null)
+                    return BadRequest("Well with Id not found");
+                return Ok(well);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
 
         /// <summary>
         /// Get all nearby wells. SearchRadius in meter.
@@ -89,30 +112,6 @@ namespace WellApi.Controllers
         }
 
         /// <summary>
-        /// Get a specific well.
-        /// </summary>
-        /// <param name="wellId"></param> 
-        [HttpGet("{wellId}")]
-        [ActionName("GetWell")]
-        [ProducesResponseType(typeof(Well), 200)]
-        [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(string), 409)]
-        public IActionResult GetWell(int wellId)
-        {
-            try
-            {
-                Well well = DB.GetCompleteWell(wellId);
-                if (well == null)
-                    return BadRequest("Well with Id not found");
-                return Ok(well);
-            }
-            catch (Exception e)
-            {
-                return Conflict("Server error! " + e.Message);
-            }
-        }
-
-        /// <summary>
         /// Creates a specific well.
         /// </summary>
         /// <param name="newWell"></param> 
@@ -125,8 +124,8 @@ namespace WellApi.Controllers
         {
             try
             {
-                int wellId = DB.AddCompleteWell(newWell);
-                if (wellId == 0)
+                int? wellId = DB.AddCompleteWell(newWell);
+                if (wellId == null)
                     return BadRequest("Well was not inserted!");
                 return Ok(wellId);
             }

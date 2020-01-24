@@ -60,36 +60,36 @@ namespace WellApi.Controllers
         }
 
         /// <summary>
-        /// ExecuteInsertParts.
+        /// ExecuteInsertPart.
         /// </summary>
-        /// <param name="parts"></param> 
+        /// <param name="newPart"></param> 
         [HttpPost]
-        [ActionName("ExecuteInsertParts")]
-        public IActionResult ExecuteInsertParts(Part[] parts)
+        [ActionName("ExecuteInsertPart")]
+        public IActionResult ExecuteInsertPart(NewPart newPart)
         {
-            return Ok(DB.ExecuteInsertParts(parts));
+            return Ok(DB.ExecuteInsertPart(newPart));
         }
         /// <summary>
         /// ExecuteInsertWellType.
         /// </summary>
-        /// <param name="wellType"></param> 
+        /// <param name="newWellType"></param> 
         [HttpPost]
         [ActionName("ExecuteInsertWellType")]
-        public IActionResult ExecuteInsertWellType(WellType wellType)
+        public IActionResult ExecuteInsertWellType(NewWellType newWellType)
         {
-            return Ok(DB.ExecuteInsertWellType(wellType));
+            return Ok(DB.ExecuteInsertWellType(newWellType));
         }
 
-        
+
         /// <summary>
-        /// ExecuteInsertWellParts.
+        /// ExecuteInsertWellPart.
         /// </summary>
-        /// <param name="insertWellParts"></param> 
+        /// <param name="insertWellPart"></param> 
         [HttpPost]
-        [ActionName("ExecuteInsertWellParts")]
-        public IActionResult ExecuteInsertWellParts(InsertWellParts insertWellParts)
+        [ActionName("ExecuteInsertWellPart")]
+        public IActionResult ExecuteInsertWellPart(InsertWellPart insertWellPart)
         {
-            DB.ExecuteInsertWellParts(insertWellParts.WellTypeId, insertWellParts.PartId);
+            DB.ExecuteInsertWellPart(insertWellPart.WellTypeId, insertWellPart.PartId);
             return Ok();
         }
         /// <summary>

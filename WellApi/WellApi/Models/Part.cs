@@ -11,10 +11,15 @@ namespace WellApi.Models
         public string Name { get; set; }
         public string Description { get; set; }
     }
+    public class NewPart
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+    }
 
-    public class InsertWellParts
+    public class InsertWellPart
     {
         public int? WellTypeId { get; set; }
-        public int?[] PartId { get; set; }
+        public int? PartId { get; set; }
     }
 }

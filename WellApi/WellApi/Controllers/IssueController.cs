@@ -95,16 +95,9 @@ namespace WellApi.Controllers
         [ProducesResponseType(typeof(string), 409)]
         public IActionResult CreateIssue(NewIssue newIssue)
         {
-            try
-            {
                 if (DB.AddCompleteNewIssue(newIssue))
                     return Ok("Created");
                 return BadRequest("something went wrong");
-            }
-            catch (Exception e)
-            {
-                return Conflict("Server error! " + e.Message);
-            }
         }
 
         /// <summary>
