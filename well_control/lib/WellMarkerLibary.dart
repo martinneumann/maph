@@ -15,6 +15,10 @@ List<WellMarker> wells = <WellMarker>[];
 /// This map is necessary to update UI of map.
 Map<String,Marker> wellMarkersMap = Map<String,Marker>();
 
+///Lists to store all current wellTypeNames and IDs from server
+List<String> wellTypeNames = List<String>();
+List<int> wellTypeIds = List<int>();
+
 /// Loads existing wells from external database.
 ///
 /// Loads wells async because data comes from webservice-api.
@@ -123,3 +127,4 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
     print(error.toString());
   });
 }
+

@@ -39,7 +39,6 @@ class _AddWellState extends State<AddWell> {
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
   String type;
-  List<String> _wellTypes = ['Type A', 'Type B', 'Type C'];
 
   @override
   void dispose() {
@@ -196,7 +195,8 @@ class _AddWellState extends State<AddWell> {
                                               type = value;
                                             });
                                           },
-                                          items: _wellTypes.map((type) {
+                                          items: wellList.wellTypeNames.map((
+                                              type) {
                                             return DropdownMenuItem(
                                               child: new Text(type),
                                               value: type,
@@ -305,7 +305,8 @@ class _AddWellState extends State<AddWell> {
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
-    data["wellTypeId"] = 10;
+    data["wellTypeId"] =
+    wellList.wellTypeIds[wellList.wellTypeNames.indexOf(type)];
 
     await postNewWell(json.encode(data)).then(
             (response) => print("Response: " + response.statusCode.toString()));

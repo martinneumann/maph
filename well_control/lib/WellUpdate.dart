@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
 import 'Settings.dart';
@@ -41,14 +42,6 @@ class _WellUpdateState extends State<WellUpdate> {
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
   String type;
-  List<String> _wellTypes = [
-    'Type A',
-    'Type B',
-    'Type C',
-    'Type X',
-    'Special Well',
-    'Power Well'
-  ];
 
   @override
   void dispose() {
@@ -218,7 +211,8 @@ class _WellUpdateState extends State<WellUpdate> {
                                               type = value;
                                             });
                                           },
-                                          items: _wellTypes.map((type) {
+                                          items: wellList.wellTypeNames.map((
+                                              type) {
                                             return DropdownMenuItem(
                                               child: new Text(type),
                                               value: type,
@@ -328,7 +322,8 @@ class _WellUpdateState extends State<WellUpdate> {
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
-    data["wellTypeId"] = 10;
+    data["wellTypeId"] =
+    wellList.wellTypeIds[wellList.wellTypeNames.indexOf(type)];
 
     widget.well.name = nameController.text;
     widget.well.location.longitude = double.parse(longitudeController.text);

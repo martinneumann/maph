@@ -1,14 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
-import 'package:map_controller/map_controller.dart';
 import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
+import 'package:map_controller/map_controller.dart';
 import 'package:well_control/AddWell.dart';
+import 'package:well_control/Functions.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
-import 'dart:async';
 
 import 'WellMarkerLibary.dart' as wellList;
 /// Class create view of map
@@ -19,6 +22,7 @@ import 'WellMarkerLibary.dart' as wellList;
 class WellMap extends StatefulWidget {
   /// Constructor initializes content of view.
   WellMap({Key key, this.title}) : super(key: key);
+
   /// Title of view.
   final String title;
 
@@ -31,24 +35,34 @@ class WellMap extends StatefulWidget {
 class _WellMapState extends State<WellMap> {
   /// Controller moves map position by given user location.
   MapController mapController;
+
   /// Gets user location from GPS.
   Location userLocation;
+
   /// Controller updates view of markers.
   StatefulMapController statefulMapController;
+
   /// Updates marker data.
   StreamSubscription<StatefulMapControllerStateChange> sub;
+
   /// Checks [statefulMapController] is ready for update.
   bool ready = false;
+
   /// Stores well markers and user location marker to show these on map.
   Future<Map<String,Marker>> markerMap = wellList.getMarkersMap();
+
   /// Stores menu item title for well list.
   static const listWells = "List of wells";
+
   /// Stores menu item title for adding well.
   static const addWell = "Add Well";
+
   /// Stores menu item title for settings.
   static const settings = "Settings";
+
   /// Stores menu item title for reporting malfunction.
   static const report = "Report Malfunction";
+
   /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     listWells,
@@ -64,6 +78,9 @@ class _WellMapState extends State<WellMap> {
     statefulMapController = StatefulMapController(mapController: mapController);
     statefulMapController.onReady.then((_) => setState(() => ready = true));
     sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
+
+    _getAllWellTypes();
+
     super.initState();
   }
 
@@ -99,8 +116,8 @@ class _WellMapState extends State<WellMap> {
                     child: Container(
                       child: FlutterMap(
                         options: MapOptions(
-                        center: LatLng(6.071891, 38.785878),
-                        zoom: 12.0,
+                            center: LatLng(6.071891, 38.785878),
+                            zoom: 12.0,
                             plugins: [
                               MarkerClusterPlugin(),
                             ]),
@@ -213,7 +230,7 @@ class _WellMapState extends State<WellMap> {
   void setUserLocation(Map<String, double> userLocation) {
     if (userLocation != null) {
       LatLng location =
-        LatLng(userLocation['latitude'], userLocation['longitude']);
+      LatLng(userLocation['latitude'], userLocation['longitude']);
 
       markerMap = wellList.getWellMarkersByRadius(userLocation['latitude'],
           userLocation['longitude'], 400);
@@ -222,4 +239,20 @@ class _WellMapState extends State<WellMap> {
       mapController.move(location, 14);
     }
   }
+
+
+  void _getAllWellTypes() {
+    getAllWellTypes().then((response) {
+      print("TypeResponse: " + response.statusCode.toString());
+
+      Iterable result = json.decode(response.body);
+      var resultList = result.toList();
+
+      for (int i = 0; i < resultList.length; i++) {
+        wellList.wellTypeIds.add(resultList[i]["id"]);
+        wellList.wellTypeNames.add(resultList[i]["name"]);
+      }
+    });
+  }
+
 }
