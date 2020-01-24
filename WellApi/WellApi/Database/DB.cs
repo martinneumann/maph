@@ -12,27 +12,16 @@ namespace WellApi
     {
         // Connection
 
-        static SqlConnection sqlConnection = null;
-        static string conn = "";
-        public static void ConnectToDb(string connectionString)
+        private static string connectionString_ = "";
+        public static void SetConnectionString(string connectionString)
         {
-            conn = connectionString;
-            sqlConnection = new SqlConnection(connectionString);
-            sqlConnection.Open();
+            connectionString_ = connectionString;
         }
-        public static void ReconnectToDb()
+        private static SqlConnection ConnectToDb()
         {
-            sqlConnection.Close();
-            sqlConnection = new SqlConnection(conn);
+            SqlConnection sqlConnection = new SqlConnection(connectionString_);
             sqlConnection.Open();
-        }
-        public static void DisconnectFromDb()
-        {
-            if( sqlConnection != null)
-            {
-                sqlConnection.Close();
-                sqlConnection = null;
-            }
+            return sqlConnection;
         }
 
         // Well
@@ -99,39 +88,40 @@ namespace WellApi
         }
         public static SmallWell[] ExecuteSelectSmallWells()
         {
-            using (SqlCommand sqlCommand = SqlQuerry.SelectSmallWells())
+            SqlCommand sqlCommand = SqlQuerry.SelectSmallWells();
+            if (sqlCommand == null)
+                return null;
+            SqlConnection sqlConnection = ConnectToDb();
+            sqlCommand.Connection = sqlConnection;
+            List<SmallWell> smallWells = new List<SmallWell>();
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {
-                if (sqlCommand == null)
-                    return null;
-                sqlCommand.Connection = sqlConnection;
-                List<SmallWell> smallWells = new List<SmallWell>();
-                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        SmallWell smallWell = new SmallWell();
-                        if (!reader.IsDBNull(0))
-                            smallWell.Id = reader.GetInt32(0);
-                        if (!reader.IsDBNull(1))
-                            smallWell.Name = reader.GetString(1);
-                        if (!reader.IsDBNull(2))
-                            smallWell.Status = reader.GetString(2);
-                        smallWell.Location = new Location();
-                        if (!reader.IsDBNull(3))
-                            smallWell.Location.Longitude = reader.GetDouble(3);
-                        if (!reader.IsDBNull(4))
-                            smallWell.Location.Latitude = reader.GetDouble(4);
-                        smallWells.Add(smallWell);
-                    }
+                    SmallWell smallWell = new SmallWell();
+                    if (!reader.IsDBNull(0))
+                        smallWell.Id = reader.GetInt32(0);
+                    if (!reader.IsDBNull(1))
+                        smallWell.Name = reader.GetString(1);
+                    if (!reader.IsDBNull(2))
+                        smallWell.Status = reader.GetString(2);
+                    smallWell.Location = new Location();
+                    if (!reader.IsDBNull(3))
+                        smallWell.Location.Longitude = reader.GetDouble(3);
+                    if (!reader.IsDBNull(4))
+                        smallWell.Location.Latitude = reader.GetDouble(4);
+                    smallWells.Add(smallWell);
                 }
-                return smallWells.ToArray();
             }
+            sqlConnection.Close();
+            return smallWells.ToArray();
         }
         public static WellTypeNoParts[] ExecuteSelectWellTypes()
         {
             SqlCommand sqlCommand = SqlQuerry.SelectWellTypes();
             if (sqlCommand == null)
                 return null;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
             List<WellTypeNoParts> wellTypes = new List<WellTypeNoParts>();
             using (SqlDataReader reader = sqlCommand.ExecuteReader())
@@ -146,6 +136,7 @@ namespace WellApi
                     wellTypes.Add(wellType);
                 }
             }
+            sqlConnection.Close();
             return wellTypes.ToArray();
         }
         public static Well ExecuteSelectWell(int wellId)
@@ -153,6 +144,7 @@ namespace WellApi
             string sqlSelectWell = SqlQuerry.SelectWell(wellId);
             if (sqlSelectWell == null)
                 return null;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlSelectWell, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -185,10 +177,12 @@ namespace WellApi
                             well.WellType.Name = reader.GetString(9);
                         if (!reader.IsDBNull(10))
                             well.WellType.Particularity = reader.GetString(10);
+                        sqlConnection.Close();
                         return well;
                     }
                 }
             }
+            sqlConnection.Close();
             return null;
         }     
         public static MaintenanceLog[] ExecuteSelectMaintenanceLogs(int wellId)
@@ -197,6 +191,7 @@ namespace WellApi
             if (sqlSelectMaintenanceLog == null)
                 return null;
             List<MaintenanceLog> maintenanceLogs = new List<MaintenanceLog>();
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlSelectMaintenanceLog, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -219,6 +214,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return maintenanceLogs.ToArray();
         }
         public static Part[] ExecuteSelectWellParts(int? wellTypeId)
@@ -227,6 +223,7 @@ namespace WellApi
             if (sqlSelectWellParts == null)
                 return null;
             List<Part> parts = new List<Part>();
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlSelectWellParts, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -243,6 +240,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return parts.ToArray();
         }
         public static int[] ExecuteInsertParts(Part[] parts)
@@ -251,6 +249,7 @@ namespace WellApi
             if (sqlParts == null)
                 return null;
             List<int> partsId = new List<int>();
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlParts, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -261,6 +260,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return partsId.ToArray();
         }
         public static int ExecuteInsertWellType(WellType wellType)
@@ -268,51 +268,71 @@ namespace WellApi
             SqlCommand sqlCommand = SqlQuerry.InsertWellType(wellType);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return (int)sqlCommand.ExecuteScalar();
+            int id = (int)sqlCommand.ExecuteScalar();
+            sqlConnection.Close();
+            return id;
         }
         public static void ExecuteInsertWellParts(int? wellTypeId, int?[] partId)
         {
             string sqlWellParts = SqlQuerry.InsertWellParts(wellTypeId, partId);
             if (sqlWellParts == null)
                 return;
+
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlWellParts, sqlConnection))
             {
                 command.ExecuteNonQuery();
             }
+            sqlConnection.Close();
         }
         public static int ExecuteInsertWell(NewWell newWell)
         {
             SqlCommand command = SqlQuerry.InsertWell(newWell);
             if (command == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             command.Connection = sqlConnection;
-            return (int)command.ExecuteScalar();
+            int id = (int)command.ExecuteScalar();
+            sqlConnection.Close();
+            return id;
         }
         public static int ExecuteInsertMaintenanceLog(MaintenanceLog maintenanceLog, int? wellId)
         {
             SqlCommand sqlCommand = SqlQuerry.InsertMaintenanceLog(maintenanceLog, wellId);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int id = (int)sqlCommand.ExecuteScalar();
+            sqlConnection.Close();
+            return id;
         }
         public static int ExecuteDeleteWell(int wellId)
         {
             string sqlDelete = SqlQuerry.DeleteWell(wellId);
             if (sqlDelete == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlDelete, sqlConnection))
-                return command.ExecuteNonQuery();
+            {
+                int affected = command.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affected;
+            }
         }
         public static int ExecuteUpdatePart(Part part)
         {
             string sqlPart = SqlQuerry.UpdatePart(part);
             if (sqlPart == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlPart, sqlConnection))
             {
-                return command.ExecuteNonQuery();
+                int affected = command.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affected;
             }
         }
         public static int ExecuteUpdateWellType(WellType wellType)
@@ -320,9 +340,12 @@ namespace WellApi
             string sqlWellType = SqlQuerry.UpdateWellType(wellType);
             if (sqlWellType == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlWellType, sqlConnection))
             {
-                return command.ExecuteNonQuery();
+                int affected = command.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affected;
             }
         }   
         public static int ExecuteUpdateFundingInfo(FundingInfo fundingInfo, int? wellId)
@@ -330,32 +353,44 @@ namespace WellApi
             SqlCommand sqlCommand = SqlQuerry.UpdateFundingInfo(fundingInfo, wellId);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return affected;
         }
         public static int ExecuteUpdateLocation(Location location, int? wellId)
         {
             SqlCommand sqlCommand = SqlQuerry.UpdateLocation(location, wellId);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return affected;
         }
         public static int ExecuteUpdateWell(ChangedWell changedWell)
         {
             SqlCommand sqlCommand = SqlQuerry.UpdateWell(changedWell);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return affected;
         }
         public static int ExecuteUpdateMaintenanceLog(MaintenanceLog maintenanceLog, int? wellId)
         {
             SqlCommand sqlCommand = SqlQuerry.UpdateMaintenanceLog(maintenanceLog, wellId);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return affected;
         }
         
         // Issue
@@ -475,6 +510,7 @@ namespace WellApi
             if (sqlSmallIssue == null)
                 return null;
             List<SmallIssue> smallIssues = new List<SmallIssue>();
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlSmallIssue, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -493,6 +529,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return smallIssues.ToArray();
         }
         public static Issue ExecuteSelectIssue(int? issueId)
@@ -501,6 +538,7 @@ namespace WellApi
             string sqlIssue = SqlQuerry.SelectIssue(issueId);
             if (sqlIssue == null)
                 return null;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlIssue, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -529,6 +567,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return issue;
         }
         public static Part[] ExecuteSelectBrokenParts(int? issueId)
@@ -537,6 +576,7 @@ namespace WellApi
             if (sqlBrokenParts == null)
                 return null;
             List<Part> parts = new List<Part>();
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlBrokenParts, sqlConnection))
             {
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -553,6 +593,7 @@ namespace WellApi
                     }
                 }
             }
+            sqlConnection.Close();
             return parts.ToArray();
         }      
         public static int ExecuteInsertIssue(NewIssue newIssue)
@@ -560,16 +601,12 @@ namespace WellApi
             string sqlInsertIssue = SqlQuerry.InsertIssue(newIssue);
             if (sqlInsertIssue == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlInsertIssue, sqlConnection))
             {
-                try
-                {
-                    return (int)command.ExecuteScalar();
-                }
-                catch
-                {
-                    return 0;
-                }
+                int id = (int)command.ExecuteScalar();
+                sqlConnection.Close();
+                return id;
             }
         }
         public static void ExecuteInsertBrokenParts(int?[] partIds, int? issueId)
@@ -577,9 +614,11 @@ namespace WellApi
             string sqlBrokenParts = SqlQuerry.InsertBrokenParts(partIds, issueId);
             if (sqlBrokenParts == null)
                 return;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlBrokenParts, sqlConnection))
             {
                 command.ExecuteNonQuery();
+                sqlConnection.Close();
             }
         }
         public static int ExecuteUpdateIssue(UpdateIssue updateIssue)
@@ -587,25 +626,36 @@ namespace WellApi
             SqlCommand sqlCommand = SqlQuerry.UpdateIssue(updateIssue);
             if (sqlCommand == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
-            return sqlCommand.ExecuteNonQuery();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return affected;
         }
         public static int ExecuteDeleteIssue(int? issueId)
         {
             string sqlDeleteIssue = SqlQuerry.DeleteIssue(issueId);
             if (sqlDeleteIssue == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlDeleteIssue, sqlConnection))
-                return command.ExecuteNonQuery();
+            {
+                int affected = command.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affected;
+            }
         }
         public static string ExecuteSelectWellStatus(int? wellId)
         {
             string sqlSelectWellStatus = SqlQuerry.SelectWellStatus(wellId);
             if (sqlSelectWellStatus == null)
                 return null;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlSelectWellStatus, sqlConnection))
             {
-                return (string)command.ExecuteScalar();
+                string status = (string)command.ExecuteScalar();
+                sqlConnection.Close();
+                return status;
             }
         }
         public static int ExecuteUpdateWellStatus(int? wellId, string status)
@@ -613,9 +663,12 @@ namespace WellApi
             string sqlUpdateWellStatus = SqlQuerry.UpdateWellStatus(wellId, status);
             if (sqlUpdateWellStatus == null)
                 return 0;
+            SqlConnection sqlConnection = ConnectToDb();
             using (SqlCommand command = new SqlCommand(sqlUpdateWellStatus, sqlConnection))
             {
-                return command.ExecuteNonQuery();
+                int affected = command.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affected;
             }
         }
         public static Issue[] ExecuteSelectIssuesFromWell(int? wellId)
@@ -623,6 +676,7 @@ namespace WellApi
             SqlCommand sqlCommand = SqlQuerry.SelectIssuesFromWell(wellId);
             if (sqlCommand == null)
                 return null;
+            SqlConnection sqlConnection = ConnectToDb();
             sqlCommand.Connection = sqlConnection;
             List<Issue> issues = new List<Issue>();
             using (SqlDataReader reader = sqlCommand.ExecuteReader())
@@ -652,6 +706,7 @@ namespace WellApi
                     issues.Add(issue);
                 }
             }
+            sqlConnection.Close();
             return issues.ToArray();
         }
     }

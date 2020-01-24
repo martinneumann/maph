@@ -43,14 +43,7 @@ namespace WellApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            try
-            {
-                DB.ConnectToDb(Configuration.GetConnectionString("WellDatabaseContext"));
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            DB.SetConnectionString(Configuration.GetConnectionString("WellDatabaseContext"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

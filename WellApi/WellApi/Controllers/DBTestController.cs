@@ -14,16 +14,6 @@ namespace WellApi.Controllers
     public class DBTestController : ControllerBase
     {
         /// <summary>
-        /// ReconnectToDb.
-        /// </summary>
-        [HttpGet]
-        [ActionName("ReconnectToDb")]
-        public IActionResult ReconnectToDb()
-        {
-            DB.ReconnectToDb();
-            return Ok("reconnect");
-        }
-        /// <summary>
         /// ExecuteSelectSmallWells.
         /// </summary>
         [HttpGet]
