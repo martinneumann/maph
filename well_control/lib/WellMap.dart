@@ -79,8 +79,6 @@ class _WellMapState extends State<WellMap> {
     statefulMapController.onReady.then((_) => setState(() => ready = true));
     sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
 
-    _getAllWellTypes();
-
     super.initState();
   }
 
@@ -117,7 +115,7 @@ class _WellMapState extends State<WellMap> {
                       child: FlutterMap(
                         options: MapOptions(
                             center: LatLng(6.071891, 38.785878),
-                            zoom: 12.0,
+                            zoom: 2.0,
                             plugins: [
                               MarkerClusterPlugin(),
                             ]),
@@ -238,21 +236,6 @@ class _WellMapState extends State<WellMap> {
       wellList.setUserPositionMarker(location);
       mapController.move(location, 14);
     }
-  }
-
-
-  void _getAllWellTypes() {
-    getAllWellTypes().then((response) {
-      print("TypeResponse: " + response.statusCode.toString());
-
-      Iterable result = json.decode(response.body);
-      var resultList = result.toList();
-
-      for (int i = 0; i < resultList.length; i++) {
-        wellList.wellTypeIds.add(resultList[i]["id"]);
-        wellList.wellTypeNames.add(resultList[i]["name"]);
-      }
-    });
   }
 
 }

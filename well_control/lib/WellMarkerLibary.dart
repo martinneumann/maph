@@ -14,10 +14,10 @@ List<WellMarker> wells = <WellMarker>[];
 /// Map stores wells as key value pair of name and marker.
 /// This map is necessary to update UI of map.
 Map<String,Marker> wellMarkersMap = Map<String,Marker>();
-
-///Lists to store all current wellTypeNames and IDs from server
+///Lists to store all current [wellTypeNames] and IDs from server.
 List<String> wellTypeNames = List<String>();
 List<int> wellTypeIds = List<int>();
+bool loadTypeOnce = false;
 
 /// Loads existing wells from external database.
 ///
@@ -48,8 +48,6 @@ Future<bool> loadWellList() async {
     print(error.toString());
     return false;
   });
-
-
 }
 
 /// Function loads well marker and updates well list.
@@ -59,6 +57,13 @@ Future<Map<String, Marker>> getMarkersMap() {
   return loadWellList().then((ready) {
 
     if(ready) {
+      if(!loadTypeOnce) {
+        loadAllWellTypes();
+        loadTypeOnce = true;
+      }
+
+      wellMarkersMap.clear();
+
       for(int i = 0 ; i < wells.length ;  i++) {
         wellMarkersMap[wells[i].getWellName()] = wells[i].marker;
       }
@@ -94,7 +99,6 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
 
   return getWellsByRadius(latitude, longitude, searchRadius).then((response) {
     if(response.statusCode == 200) {
-      wells.clear();
       wellMarkersMap.clear();
 
       Iterable result = json.decode(response.body);
@@ -125,6 +129,21 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
     return wellMarkersMap;
   }).catchError((error) {
     print(error.toString());
+  });
+}
+
+void loadAllWellTypes() {
+  getAllWellTypes().then((response) {
+    print("TypeResponse: " + response.statusCode.toString());
+    print("TypeResponse: " + response.body.toString());
+
+    Iterable result = json.decode(response.body);
+    var resultList = result.toList();
+
+    for (int i = 0; i < resultList.length; i++) {
+      wellTypeIds.add(resultList[i]["id"]);
+      wellTypeNames.add(resultList[i]["name"]);
+    }
   });
 }
 
