@@ -39,7 +39,6 @@ class _AddWellState extends State<AddWell> {
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
   String type;
-  List<String> _wellTypes = ['Type A', 'Type B', 'Type C'];
 
   @override
   void dispose() {
@@ -71,7 +70,8 @@ class _AddWellState extends State<AddWell> {
                 )
               ],
             ),
-            body: Center(
+            body: new Container(
+                margin: const EdgeInsets.all(18.0),
                 child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
@@ -80,8 +80,14 @@ class _AddWellState extends State<AddWell> {
                         children: <Widget>[
                           TextFormField(
                             controller: nameController,
-                            decoration:
-                            InputDecoration(labelText: "Name of well:"),
+                            decoration: InputDecoration(
+                              labelText: "Name of well:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.title),
+                              ),
+                            ),
                             validator: (value) {
                               if (value.isEmpty) {
                                 return 'Please enter some text';
@@ -89,13 +95,20 @@ class _AddWellState extends State<AddWell> {
                               return null;
                             },
                           ),
+                          Divider(color: Colors.black87),
                           Column(
                             children: <Widget>[
                               TextFormField(
                                 controller: latitudeController,
                                 keyboardType: TextInputType.number,
-                                decoration:
-                                InputDecoration(labelText: "Latitude:"),
+                                decoration: InputDecoration(
+                                  labelText: "Latitude:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.gps_fixed),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter latitude!';
@@ -106,11 +119,18 @@ class _AddWellState extends State<AddWell> {
                                   return null;
                                 },
                               ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: longitudeController,
                                 keyboardType: TextInputType.number,
-                                decoration:
-                                InputDecoration(labelText: "Longitude:"),
+                                decoration: InputDecoration(
+                                  labelText: "Longitude:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.gps_fixed),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter longitude';
@@ -121,40 +141,84 @@ class _AddWellState extends State<AddWell> {
                                   return null;
                                 },
                               ),
-                              DropdownButton<String>(
-                                value: status,
-                                hint: Text("Select a well status"),
-                                onChanged: (String value) {
-                                  setState(() {
-                                    status = value;
-                                  });
-                                },
-                                items: _wellStatus.map((stat) {
-                                  return DropdownMenuItem(
-                                    child: new Text(stat),
-                                    value: stat,
-                                  );
-                                }).toList(),
+                              Divider(color: Colors.black87),
+                              Row(children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 15.0),
+                                  child: Icon(
+                                    Icons.build,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Container(
+                                  child: Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: status,
+                                        hint: Text("Select a well status"),
+                                        onChanged: (String value) {
+                                          setState(() {
+                                            status = value;
+                                          });
+                                        },
+                                        items: _wellStatus.map((stat) {
+                                          return DropdownMenuItem(
+                                            child: new Text(stat),
+                                            value: stat,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                              Divider(color: Colors.black87),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 10.0, right: 15.0),
+                                    child: Icon(Icons.settings,
+                                        color: Colors.grey),
+                                  ),
+                                  Container(
+                                    child: Expanded(
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          value: type,
+                                          hint: Text("Select the well type"),
+                                          onChanged: (String value) {
+                                            setState(() {
+                                              type = value;
+                                            });
+                                          },
+                                          items: wellList.wellTypeNames.map((
+                                              type) {
+                                            return DropdownMenuItem(
+                                              child: new Text(type),
+                                              value: type,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              DropdownButton<String>(
-                                value: type,
-                                hint: Text("Select the well type"),
-                                onChanged: (String value) {
-                                  setState(() {
-                                    type = value;
-                                  });
-                                },
-                                items: _wellTypes.map((type) {
-                                  return DropdownMenuItem(
-                                    child: new Text(type),
-                                    value: type,
-                                  );
-                                }).toList(),
-                              ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: fundingController,
-                                decoration:
-                                InputDecoration(labelText: "Funded by:"),
+                                decoration: InputDecoration(
+                                  labelText: "Funded by:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.account_balance),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Please enter funding organisation.';
@@ -162,12 +226,17 @@ class _AddWellState extends State<AddWell> {
                                   return null;
                                 },
                               ),
+                              Divider(color: Colors.black87),
                               TextFormField(
                                 controller: costsController,
                                 keyboardType: TextInputType.number,
-                                decoration:
-                                InputDecoration(
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
                                   labelText: "Costs:",
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.monetization_on),
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value.isEmpty) {
@@ -176,9 +245,9 @@ class _AddWellState extends State<AddWell> {
                                   return null;
                                 },
                               ),
-                              Padding(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 16.0),
+                              Divider(color: Colors.black87),
+                              new Container(
+                                padding: const EdgeInsets.all(18.0),
                                 child: RaisedButton(
                                   onPressed: () {
                                     // Validate returns true if the form is valid, or false
@@ -224,26 +293,24 @@ class _AddWellState extends State<AddWell> {
     }
 
     var location = {};
-    location["longitude"] = double.parse(longitudeController.text);
     location["latitude"] = double.parse(latitudeController.text);
+    location["longitude"] = double.parse(longitudeController.text);
 
     var fundingInfo = {};
     fundingInfo["organisation"] = fundingController.text;
     fundingInfo["price"] = double.parse(costsController.text);
-
-    var wellType = {};
-    wellType["name"] = type;
 
     var data = {};
     data["name"] = nameController.text;
     data["status"] = color;
     data["location"] = location;
     data["fundingInfo"] = fundingInfo;
-    data["wellType"] = wellType;
+    data["wellTypeId"] =
+    wellList.wellTypeIds[wellList.wellTypeNames.indexOf(type)];
 
     await postNewWell(json.encode(data)).then(
             (response) => print("Response: " + response.statusCode.toString()));
-    await wellList.getMarkers();
+    await wellList.getMarkersMap();
     Navigator.pop(context);
   }
 }
