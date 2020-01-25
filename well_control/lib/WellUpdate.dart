@@ -332,8 +332,10 @@ class _WellUpdateState extends State<WellUpdate> {
     widget.well.setFundingOrganisation(fundingController.text);
     widget.well.setType(type);
 
-    await postUpdateWell(json.encode(data)).then(
-        (response) => print("Response: " + response.statusCode.toString()));
+    await postUpdateWell(json.encode(data)).then((response) {
+          print("Response: " + response.statusCode.toString());
+          wellList.getMarkersMap();
+        });
 
     Navigator.pop(context);
   }

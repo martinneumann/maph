@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -11,7 +9,6 @@ import 'package:well_control/AddWell.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
-
 import 'WellMarkerLibary.dart' as wellList;
 /// Class create view of map
 ///
@@ -60,6 +57,8 @@ class _WellMapState extends State<WellMap> {
   String locationMarkerName = wellList.UserLocationMarkerName;
 
   int searchRadius = 400000;
+
+  Color userLocationMarkerColor = Color.fromARGB(255, 200, 0, 0);
 
   /// Stores well markers and user location marker to show these on map.
   Future<Map<String,Marker>> markerMap = wellList.getMarkersMap();
@@ -186,7 +185,7 @@ class _WellMapState extends State<WellMap> {
             });
           },
           child: Icon(Icons.gps_fixed),
-          backgroundColor: Colors.blue,
+          backgroundColor: userLocationMarkerColor,
         ),
       ),
     );
@@ -243,6 +242,7 @@ class _WellMapState extends State<WellMap> {
         userLocated = true;
         LatLng location =
         LatLng(userLocation['latitude'], userLocation['longitude']);
+        userLocationMarkerColor = Color.fromARGB(255, 0, 175, 0);
 
         markerMap = wellList.getWellMarkersByRadius(userLocation['latitude'],
             userLocation['longitude'], searchRadius);
@@ -254,6 +254,7 @@ class _WellMapState extends State<WellMap> {
         userLocated = false;
         markerMap = wellList.getMarkersMap();
         userLocation = null;
+        userLocationMarkerColor = Color.fromARGB(255, 200, 0, 0);
         mapController.move(defaultLocation, defaultZoom);
       }
 
