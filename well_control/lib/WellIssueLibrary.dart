@@ -22,7 +22,9 @@ Future<List<WellIssue>> getIssues() {
           resultList[i]["description"],
           resultList[i]["creationDate"],
           resultList[i]["status"],
-          resultList[i]["open"]));
+          resultList[i]["open"],
+          resultList[i]["works"],
+          resultList[i]["confirmedBy"]));
     }
 
     return issues;
@@ -41,7 +43,9 @@ Future<List<WellIssue>> getIssuesOfWell(String wellId) {
           issue["description"],
           issue["creationDate"],
           issue["status"],
-          issue["open"]);
+          issue["open"],
+          issue["works"],
+          issue["confirmedBy"]);
       issueList.add(tempIssue);
     }
     return issueList;
@@ -65,7 +69,9 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
             issue["description"],
             issue["creationDate"],
             issue["status"],
-            issue["open"]);
+            issue["open"],
+            issue["works"],
+            issue["confirmedBy"]);
         issueList.add(tempIssue);
       }
     }
@@ -87,7 +93,10 @@ Future<WellIssue> getSpecificIssue(int id) {
         decodedResult.description,
         decodedResult.creationDate,
         decodedResult.status,
-        decodedResult.open);
+        decodedResult.open,
+        decodedResult.works,
+        decodedResult.confirmedBy
+    );
     return tempIssue;
   }).catchError((error) {
     return error;

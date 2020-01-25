@@ -41,11 +41,9 @@ class _WellInfoState extends State<WellInfo> {
   static const settings = "Settings";
   static const wellMap = "Map Overview";
   static const wellDelete = "Delete Well";
-  static const issueInfo = "Issue Information";
 
   static const List<String> menuChoices = <String>[
     wellUpdate,
-    issueInfo,
     report,
     settings,
     wellMap,
@@ -250,7 +248,7 @@ class _WellInfoState extends State<WellInfo> {
                                                                           .data[
                                                                       index]))),
                                                   title: Text(
-                                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}'),
+                                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate.toString()))}'),
                                                   subtitle: Text(
                                                       '${item.description}'),
                                                 ),
@@ -395,9 +393,6 @@ class _WellInfoState extends State<WellInfo> {
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else if (choice == settings) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
-    } else if (choice == issueInfo) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {

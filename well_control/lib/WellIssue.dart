@@ -49,19 +49,20 @@ class WellIssue {
   List<Part> brokenParts;
   WellType wellType;
   String confirmedBy;
-  FundingInfo fundingInfo;
   String solvedDate;
   String repairedBy;
   String bill;
 
   WellIssue(int id, int wellId, String description, String creationDate,
-      String status, bool open) {
+      String status, bool open, bool works, String confirmedBy) {
     this.id = id;
     this.wellId = wellId;
     this.description = description;
     this.creationDate = creationDate;
     this.status = status;
     this.open = open;
+    this.works = works;
+    this.confirmedBy = confirmedBy;
   }
 
   WellIssue.detailed(this.brokenParts, this.confirmedBy, this.solvedDate,

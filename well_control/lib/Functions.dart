@@ -57,7 +57,6 @@ Future<http.Response> updateIssue(WellIssue issue) {
   data["brokenParts"] = issue.brokenParts;
   data["wellType"] = issue.wellType;
   data["confirmedBy"] = issue.confirmedBy;
-  data["fundingInfo"] = issue.fundingInfo;
   data["solvedDate"] = issue.solvedDate;
   data["repairedBy"] = issue.repairedBy;
   data["bill"] = issue.bill;

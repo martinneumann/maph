@@ -26,17 +26,12 @@ class IssueDetails extends StatefulWidget {
   static const wellUpdate = "Change Well info";
 
   /// Stores menu item title for reporting malfunction.
-  static const report = "Report Malfunction";
   static const settings = "Settings";
   static const wellMap = "Map Overview";
-  static const wellDelete = "Delete Well";
 
   static const List<String> menuChoices = <String>[
-    wellUpdate,
-    report,
     settings,
     wellMap,
-    wellDelete
   ];
 
   @override
@@ -48,20 +43,11 @@ class _IssueDetailsState extends State<IssueDetails> {
 
   _IssueDetailsState(this.wellIssue);
 
-  static const wellUpdate = "Change Well info";
-
   /// Stores menu item title for reporting malfunction.
-  static const report = "Report Malfunction";
-  static const settings = "Settings";
-  static const wellMap = "Map Overview";
-  static const wellDelete = "Delete Well";
+  static const wellMap = "Back to Map";
 
   static const List<String> menuChoices = <String>[
-    wellUpdate,
-    report,
-    settings,
     wellMap,
-    wellDelete
   ];
 
   printSomething(String message) {
@@ -104,6 +90,11 @@ class _IssueDetailsState extends State<IssueDetails> {
                 child: Center(
               child: Column(
                 children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 90,
+                        ),
                   Card(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -121,7 +112,9 @@ class _IssueDetailsState extends State<IssueDetails> {
                       children: <Widget>[
                         ListTile(
                           title: Text('Created on'),
-                          subtitle: Text(wellIssue.creationDate.toString()),
+                          subtitle: Text(DateFormat('dd/MM/yyyy').format(
+                              DateTime.parse(
+                                  wellIssue.creationDate.toString()))),
                         ),
                       ],
                     ),
@@ -152,38 +145,30 @@ class _IssueDetailsState extends State<IssueDetails> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        ListTile(
+                        if (wellIssue.confirmedBy!= null)
+                          ListTile(
                           title: Text('Confirmed by'),
-                          subtitle: Text(wellIssue.confirmedBy.toString()),
+                          subtitle: Text(wellIssue.confirmedBy),
                         ),
+                        if (wellIssue.confirmedBy == null)
+                          ListTile(
+                            title: Text('Confirmed by'),
+                            subtitle: Text("Nobody has confirmed this issue."),
+                          ),
                       ],
                     ),
                   ),
-                  if (wellIssue.fundingInfo != null)
-                    Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            title: Text('Funding information:'),
-                            subtitle: Text("Funded by " +
-                                wellIssue.fundingInfo.organisation.toString() +
-                                " since " +
-                                DateFormat('dd/MM/yyyy').format(DateTime.parse(
-                                    wellIssue.fundingInfo.openingDate))),
-                          ),
-                        ],
-                      ),
-                    ),
                   Card(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           if (wellIssue.brokenParts != null)
-                          ListTile(
-                            title: Text('Broken part:'),
-                            subtitle: Text(wellIssue.brokenParts.first.name + "; condition: " + wellIssue.brokenParts.first.description),
-                          ),
+                            ListTile(
+                              title: Text('Broken part:'),
+                              subtitle: Text(wellIssue.brokenParts.first.name +
+                                  "; condition: " +
+                                  wellIssue.brokenParts.first.description),
+                            ),
                           if (wellIssue.brokenParts == null)
                             ListTile(
                               title: Text('Broken part'),
@@ -208,7 +193,7 @@ class _IssueDetailsState extends State<IssueDetails> {
                                 users.getActiveUser().toString();
                             print(wellIssue.confirmedBy);
                             updateIssue(wellIssue).then((response) {
-                              print(response.body.toString());
+                              print(response.statusCode.toString());
                             });
                             //add function to call
                           },
@@ -236,13 +221,13 @@ class _IssueDetailsState extends State<IssueDetails> {
   }
 
   void choiceAction(String choice) {
-    if (choice == wellUpdate) {
+    if (choice == wellMap) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  WellUpdate(title: "Change well information", well: null)));
-    } else if (choice == wellDelete) {
+                  WellUpdate(title: "Back to Map", well: null)));
+    } else {
       Navigator.pop(context);
     }
   }
