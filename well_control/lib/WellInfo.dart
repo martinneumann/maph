@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
@@ -336,13 +336,13 @@ class _WellInfoState extends State<WellInfo> {
     var result;
 
     return getWell(well.wellId).then((response) {
-      print("GetWell response:" + response.statusCode.toString());
-      print("GetWell response:" + response.body.toString());
-
       result = json.decode(response.body);
+
+      well.setMarker(result["status"],
+          double.parse(result["location"]["latitude"].toString()),
+          double.parse(result["location"]["longitude"].toString()));
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
-
       String price = result["fundingInfo"]["price"].toString();
       if (!price.contains('.')) {
         price += ".00";

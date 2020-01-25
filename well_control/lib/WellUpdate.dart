@@ -112,6 +112,28 @@ class _WellUpdateState extends State<WellUpdate> {
                             },
                           ),
                           Divider(color: Colors.black87),
+                          TextFormField(
+                            controller: longitudeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Longitude:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.gps_fixed),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter longitude';
+                              } else if (double.parse(value) < -180 ||
+                                  double.parse(value) > 180) {
+                                return 'Longitude has to be between -180 and 180 degrees!';
+                              }
+                              return null;
+                            },
+                          ),
+                          Divider(color: Colors.black87),
                           Column(
                             children: <Widget>[
                               TextFormField(
@@ -131,28 +153,6 @@ class _WellUpdateState extends State<WellUpdate> {
                                   } else if (double.parse(value) < -90 ||
                                       double.parse(value) > 90) {
                                     return 'Latitude has to be between -90 and 90 degrees!';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              Divider(color: Colors.black87),
-                              TextFormField(
-                                controller: longitudeController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  labelText: "Longitude:",
-                                  border: InputBorder.none,
-                                  prefixIcon: Padding(
-                                    padding: EdgeInsets.only(right: 10.0),
-                                    child: Icon(Icons.gps_fixed),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Please enter longitude';
-                                  } else if (double.parse(value) < -180 ||
-                                      double.parse(value) > 180) {
-                                    return 'Longitude has to be between -180 and 180 degrees!';
                                   }
                                   return null;
                                 },
@@ -326,9 +326,8 @@ class _WellUpdateState extends State<WellUpdate> {
     wellList.wellTypeIds[wellList.wellTypeNames.indexOf(type)];
 
     widget.well.name = nameController.text;
-    widget.well.location.longitude = double.parse(longitudeController.text);
-    widget.well.location.latitude = double.parse(latitudeController.text);
-    widget.well.setColor(color);
+    widget.well.setMarker(color, double.parse(latitudeController.text),
+        double.parse(longitudeController.text));
     widget.well.setWellCosts(costsController.text);
     widget.well.setFundingOrganisation(fundingController.text);
     widget.well.setType(type);

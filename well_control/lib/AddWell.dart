@@ -96,6 +96,28 @@ class _AddWellState extends State<AddWell> {
                             },
                           ),
                           Divider(color: Colors.black87),
+                          TextFormField(
+                            controller: longitudeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Longitude:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.gps_fixed),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter longitude';
+                              } else if (double.parse(value) < -180 ||
+                                  double.parse(value) > 180) {
+                                return 'Longitude has to be between -180 and 180 degrees!';
+                              }
+                              return null;
+                            },
+                          ),
+                          Divider(color: Colors.black87),
                           Column(
                             children: <Widget>[
                               TextFormField(
@@ -115,28 +137,6 @@ class _AddWellState extends State<AddWell> {
                                   } else if (double.parse(value) < -90 ||
                                       double.parse(value) > 90) {
                                     return 'Latitude has to be between -90 and 90 degrees!';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              Divider(color: Colors.black87),
-                              TextFormField(
-                                controller: longitudeController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  labelText: "Longitude:",
-                                  border: InputBorder.none,
-                                  prefixIcon: Padding(
-                                    padding: EdgeInsets.only(right: 10.0),
-                                    child: Icon(Icons.gps_fixed),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Please enter longitude';
-                                  } else if (double.parse(value) < -180 ||
-                                      double.parse(value) > 180) {
-                                    return 'Longitude has to be between -180 and 180 degrees!';
                                   }
                                   return null;
                                 },
