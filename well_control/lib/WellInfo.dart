@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'package:well_control/AddWell.dart';
+import 'package:intl/intl.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
@@ -34,18 +33,22 @@ class _WellInfoState extends State<WellInfo> {
 
   _WellInfoState(this.wellMarker);
 
-  static const wellUpdate = "Change Well";
-  static const wellDelete = "Delete Well";
+  static const wellUpdate = "Change Well info";
+
+  /// Stores menu item title for reporting malfunction.
+  static const report = "Report Malfunction";
   static const settings = "Settings";
   static const wellMap = "Map Overview";
-  static const addWell = "Add Well";
+  static const wellDelete = "Delete Well";
+
+
 
   static const List<String> menuChoices = <String>[
     wellUpdate,
-    wellDelete,
+    report,
     settings,
     wellMap,
-    addWell
+    wellDelete
   ];
 
   printSomething(String message) {
@@ -285,7 +288,8 @@ class _WellInfoState extends State<WellInfo> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ReportWell(
-                                          title: "Report malfunction")));
+                                          title: "Report malfunction",
+                                          well: widget.well)));
                             },
                           ),
                           IconButton(
@@ -358,7 +362,8 @@ class _WellInfoState extends State<WellInfo> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AddWell(title: "Add new well")));
+              builder: (context) =>
+                  ReportWell(title: "Report malfunction", well: widget.well)));
     }
   }
 
@@ -384,6 +389,11 @@ class _WellInfoState extends State<WellInfo> {
         price += ".00";
       }
       well.setWellCosts(price);
+      Iterable parts = result["wellType"]["parts"];
+      var partsList = parts.toList();
+      for (int i = 0; i < partsList.length; i++) {
+        well.wellParts[partsList[i]["name"]] = partsList[i]["id"];
+      }
 
       return 'OK';
     });
