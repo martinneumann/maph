@@ -159,6 +159,7 @@ class _ReportWellState extends State<ReportWell> {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               createIssue();
+              setState(() {});
               Navigator.pop(context);
             },
             child: Icon(Icons.send),

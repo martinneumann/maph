@@ -194,15 +194,12 @@ class _WellInfoState extends State<WellInfo> {
                                                   // Remove the item from the data source.
                                                   setState(() {
                                                     print(direction.toString());
-                                                    if (direction ==
-                                                        DismissDirection
-                                                            .startToEnd) {
+
                                                       closeIssue(snapshot.data[index].id).then((response) {
                                                         print("Closed issue: " + response.statusCode.toString());
                                                       });
                                                       snapshot.data
                                                           .removeAt(index);
-                                                    }
 
                                                     // @todo call function that marks as solved
                                                   });
