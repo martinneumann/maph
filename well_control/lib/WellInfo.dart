@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
@@ -325,9 +324,10 @@ class _WellInfoState extends State<WellInfo> {
                   title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
       print("wellId: " + widget.well.wellId.toString());
-      requestDelete(widget.well.wellId);
-      wellList.wells.remove(widget.well);
-      Navigator.pop(context);
+      requestDelete(widget.well.wellId).then((result) {
+        Navigator.pop(context);
+      });
+
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -353,12 +353,13 @@ class _WellInfoState extends State<WellInfo> {
     var result;
 
     return getWell(well.wellId).then((response) {
-      print("response:" + response.statusCode.toString());
-      print("response:" + response.body.toString());
       result = json.decode(response.body);
+
+      well.setMarker(result["status"],
+          double.parse(result["location"]["latitude"].toString()),
+          double.parse(result["location"]["longitude"].toString()));
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
-
       String price = result["fundingInfo"]["price"].toString();
       if (!price.contains('.')) {
         price += ".00";
@@ -373,6 +374,9 @@ class _WellInfoState extends State<WellInfo> {
     await deleteWell(wellId).then((response) {
       print("Delete Resposne: " + response.statusCode.toString());
     });
+
+    await wellList.getMarkersMap();
+
     return 'Deleted';
   }
 

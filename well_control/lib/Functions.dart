@@ -48,19 +48,11 @@ Future<http.Response> getAllWells() {
 /// Response returns wells filtered by radius in meter.
 ///
 /// Sends post-request to get wells in radius.
-/// Filtering wells by location [latitude], [longitude] and given radius
+/// Filtering wells by location latitude, longitude and given radius
 /// in meter.
-Future<http.Response> getWellsByRadius(double latitude , double longitude , 
-                                       int radius) {
-  var query = jsonEncode("{" +
-    "searchRadius:" + radius.toString() + "," +
-    "location:{" +
-      "latitude:" + latitude.toString() + "," +
-      "longitude:" + longitude.toString() +
-    "}}");
-
+Future<http.Response> getWellsByRadius(var body) {
   return http.post(wellApiUrl + 'Well/GetNearbyWells',
-      body: query);
+      headers: {"Content-Type": "application/json"}, body: body);
 }
 
 /// Response returns specific well by given [id].
