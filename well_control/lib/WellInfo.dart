@@ -200,8 +200,29 @@ class _WellInfoState extends State<WellInfo> {
                                                       });
                                                       snapshot.data
                                                           .removeAt(index);
+                                                      if (snapshot.data.length == 0) {
+                                                        /// set status to green
+                                                        var data = {};
 
-                                                    // @todo call function that marks as solved
+                                                        var location = {};
+                                                        location["latitude"] = widget.well.location.latitude;
+                                                        location["longitude"] = widget.well.location.longitude;
+
+                                                        var fundingInfo = {};
+                                                        fundingInfo["organisation"] = widget.well.fundingOrganisation;
+                                                        fundingInfo["price"] = widget.well.costs;
+
+                                                        data["id"] = widget.well.wellId;
+                                                        data["name"] = widget.well.name;
+                                                        data["status"] = "green";
+                                                        data["location"] = location;
+                                                        data["fundingInfo"] = fundingInfo;
+                                                        data["wellTypeId"] = widget.well.type;
+                                                        postUpdateWell(json.encode(data)).then((response) {
+                                                          print("Updated well status: " + response.body.toString());
+                                                        });
+
+                                                      }
                                                   });
 
                                                   Scaffold.of(context)
