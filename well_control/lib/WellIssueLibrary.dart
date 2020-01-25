@@ -35,14 +35,13 @@ Future<List<WellIssue>> getIssues() {
 /// Get issues of specific well
 Future <List<WellIssue>> getIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
-    print('Response with code ' + response.statusCode.toString() + ' in getIssuesOfWell ' + response.body);
-    List<WellIssue> testing;
-
-    testing = (json.decode(response.body) as List).map((i) =>
-        WellIssue.fromJson(i)).toList();
-
-    print("List: " + testing.toString());
-    return testing;
+    Iterable decodedResult = json.decode(response.body);
+    List<WellIssue> issueList = [];
+    for (var issue in decodedResult) {
+      var tempIssue = new WellIssue(issue["id"], issue["wellId"], issue["description"], issue["creationDate"], issue["status"], issue["open"]);
+      issueList.add(tempIssue);
+    }
+    return issueList;
   }).catchError((error) {
     print("An error happened while fetching issue data: " + error);
     return error;

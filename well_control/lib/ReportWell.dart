@@ -83,59 +83,117 @@ class _ReportWellState extends State<ReportWell> {
                 )
               ],
             ),
-            body: Center(
+          body: new Container(
+              margin: EdgeInsets.all(18.0),
               child: Form(
                 key: _formKey,
-                child: ListView(children: <Widget>[
-                  DropdownButton(
-                    isExpanded: true,
-                    hint: Text('Please choose a well'),
-                    value: _selectedWell,
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedWell = newValue;
-                      });
-                    },
-                    items: wellList.wells.map((well) {
-                      return DropdownMenuItem(
-                        child: new Text(well.getWellName()),
-                        value: well.getWellName(),
-                      );
-                    }).toList(),
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 10,
-                    controller: textController,
-                    decoration: InputDecoration(
-                        alignLabelWithHint: true,
-                        labelText: "Describe the Problem",
-                        border: new OutlineInputBorder(
-                            borderRadius: const BorderRadius.all(
-                              const Radius.circular(0.0),
+                child: SingleChildScrollView(
+                  child: Column(children: <Widget>[
+                    Row(children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.only(left: 10.0, right: 15.0),
+                        child: Icon(
+                          Icons.title,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Container(
+                          child: Expanded(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                isExpanded: true,
+                                hint: Text('Please choose a well'),
+                                value: _selectedWell,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedWell = newValue;
+                                  });
+                                },
+                                items: wellList.wells.map((well) {
+                                  return DropdownMenuItem(
+                                    child: new Text(well.getWellName()),
+                                    value: well.getWellName(),
+                                  );
+                                }).toList(),
+                              ),
                             ),
-                            borderSide: new BorderSide(
-                                color: Colors.black87, width: 1.0))),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
-                  ),
-                  showImage(),
-                  FlatButton.icon(
-                    onPressed: () {
-                      _displayOptionsDialog();
-                    },
-                    icon: Icon(Icons.add_a_photo),
-                    label: Text('Add a Photo'),
-                    color: Colors.blue,
-                  ),
-                  submitButton(),
-                ]),
-              ),
-            )));
+                          ))
+                    ]),
+                    Divider(color: Colors.black87),
+                    TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 10,
+                      controller: textController,
+                      decoration: InputDecoration(
+                          alignLabelWithHint: true,
+                          labelText: "Describe the Problem",
+                          border: new OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(
+                                const Radius.circular(0.0),
+                              ),
+                              borderSide: new BorderSide(
+                                  color: Colors.black87, width: 1.0))),
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    FlatButton.icon(
+                      onPressed: () {
+                        _displayOptionsDialog();
+                      },
+                      icon: Icon(Icons.add_a_photo),
+                      label: Text('Add a Photo'),
+                      color: Colors.blue,
+                    ),
+                  ]),
+                ),
+              )),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // see number of issues for this well and add one more to id
+              // @todo add API call for a well's issues (and add issue list to well type)
+              var numberOfIssues = 0;
+              wells.forEach((well) {
+                if (well.name == _selectedWell) {
+                  numberOfIssues++;
+                }
+              });
+              print("Controller text: " + textController.text);
+              print("Selceted well: " + _selectedWell);
+              print("Wells: " + wells[1].name.toString());
+              print("Search: " +
+                  wells
+                      .firstWhere((a) => a.name == _selectedWell)
+                      .wellId
+                      .toString());
+              var issue = new WellIssue(
+                  numberOfIssues,
+                  wells
+                      .firstWhere((a) => a.name == _selectedWell)
+                      .wellId,
+                  textController.text,
+                  new DateTime.now().toString(),
+                  "broken",
+                  true);
+              print("Created issue: " + issue.description.toString());
+              postNewIssue(issue).then((response) {
+                print("Creation response: " + response.body.toString());
+                choiceAction(wellMap);
+              }).catchError((error) {
+                print("Error on creating issue.");
+                print(error);
+              });
+              wellList.wells[wellNames.indexOf(_selectedWell)].setColor(
+                  "yellow");
+              Navigator.pop(context);
+            },
+            child: Icon(Icons.send),
+            backgroundColor: Colors.blue,
+          ),
+        ));
   }
 
   void _displayOptionsDialog() async {
@@ -202,10 +260,7 @@ class _ReportWellState extends State<ReportWell> {
             textAlign: TextAlign.center,
           );
         } else {
-          return const Text(
-            'No Image Selected',
-            textAlign: TextAlign.center,
-          );
+          return Text('');
         }
       },
     );
@@ -229,7 +284,7 @@ class _ReportWellState extends State<ReportWell> {
             }
           });
           print("Controller text: " + textController.text);
-          print("Selceted well: " + _selectedWell);
+          print("Selected well: " + _selectedWell);
           print("Wells: " + wells[1].name.toString());
           print("Search: " + wells
               .firstWhere((a) => a.name == _selectedWell)
@@ -245,11 +300,10 @@ class _ReportWellState extends State<ReportWell> {
               );
           print("Created issue: " + issue.description.toString());
           postNewIssue(issue).then((response) {
-            print("Creation response: " + response.body.toString());
+            print("Creation response: " + response.statusCode.toString());
             choiceAction(wellMap);
           }).catchError((error)  {
-            print("Error on creating issue.");
-            print(error);
+            print("Error on creating issue: " + error);
           });
           wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
           Navigator.pop(context);

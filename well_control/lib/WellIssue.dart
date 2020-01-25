@@ -52,23 +52,29 @@ class WellIssue {
   String repairedBy;
   String bill;
 
-  WellIssue(this.id, this.wellId, this.description, this.creationDate,
-      this.status, this.open);
+  WellIssue(int id, int wellId, String description, String creationDate,
+      String status, bool open) {
+    this.id = id;
+    this.wellId = wellId;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.status = status;
+    this.open = open;
+  }
 
   WellIssue.detailed(this.brokenParts, this.confirmedBy, this.solvedDate,
       this.repairedBy, this.works);
 
   WellIssue.fromJson(Map<String, dynamic> json)
       : this.id = json['id'],
-        this.name = json['name'],
         this.description = json['description'],
-        this.status = json['status'],
         this.creationDate = json['creationDate'],
+        this.status = json['status'],
         this.open = json['open'],
-        this.works = json['works'],
-        this.brokenParts = json['brokenParts'],
         this.confirmedBy = json['confirmedBy'],
         this.solvedDate = json['solvedDate'],
-        this.repairedBy = json['repairedBy'];
+        this.repairedBy = json['repairedBy'],
+        this.works = json['works'],
+        this.brokenParts = json['brokenParts'];
 }
 
