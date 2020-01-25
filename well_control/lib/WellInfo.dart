@@ -52,6 +52,8 @@ class _WellInfoState extends State<WellInfo> {
     print(message);
   }
 
+  ScrollController _controller = new ScrollController();
+
   @override
   void initState() {
     wellInfos = getWellInfos(widget.well);
@@ -115,7 +117,7 @@ class _WellInfoState extends State<WellInfo> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           ListTile(
-                            title: Text('Geolaction:'),
+                            title: Text('Geolocation:'),
                             subtitle: Text("Longitude: " +
                                 wellMarker.location.longitude.toString() +
                                 "\n" +
@@ -165,39 +167,56 @@ class _WellInfoState extends State<WellInfo> {
                                         size: 60,
                                       ),
                                     ];
-                                  }
-                                  children = <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16),
-                                      child: ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: snapshot.data.length,
-                                          itemBuilder: (context, index) {
-                                            final item = snapshot.data[index];
-                                            return Dismissible(
-                                              key: Key(item.id.toString()),
-                                              onDismissed: (direction) {
-                                                // Remove the item from the data source.
-                                                setState(() {
-                                                  print(direction.toString());
-                                                  snapshot.data.removeAt(index);
-                                                  // @todo call function that mars as solved
-                                                });
+                                  } else {
+                                    children = <Widget>[
+                                Text("Current issues"),
+                                Padding(
+                                        padding: const EdgeInsets.only(top: 16),
+                                        child: ListView.separated(
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            controller: _controller,
+                                            separatorBuilder:
+                                                (context, index) => Divider(
+                                                      color: Colors.black,
+                                                    ),
+                                            shrinkWrap: true,
+                                            itemCount: snapshot.data.length,
+                                            itemBuilder: (context, index) {
+                                              final item = snapshot.data[index];
+                                              return Dismissible(
+                                                key: Key(item.id.toString()),
+                                                onDismissed: (direction) {
+                                                  // Remove the item from the data source.
+                                                  setState(() {
+                                                    print(direction.toString());
+                                                    snapshot.data
+                                                        .removeAt(index);
+                                                    // @todo call function that marks as solved
+                                                  });
 
-                                                // Then show a snackbar.
-                                                Scaffold.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                        content: Text(
-                                                            "${item.description} marked as solved")));
-                                              },
-                                              background:
-                                                  Container(color: Colors.red),
-                                              child: ListTile(
-                                                  title: Text('${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}: ${item.description}')),
-                                            );
-                                          }),
-                                    )
-                                  ];
+                                                  Scaffold.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: Text(
+                                                              "${item.description} marked as solved.")));
+                                                },
+                                                background: Container(
+                                                  color: Colors.green,
+                                                  child: Icon(
+                                                    Icons.check_circle_outline,
+                                                    color: Colors.white,
+                                                    size: 30,
+                                                  ),
+                                                ),
+                                                child: ListTile(
+                                                    title: Text(
+                                                        '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}'),
+                                                    subtitle: Text('${item.description}')),
+                                              );
+                                            }),
+                                      )
+                                    ];
+                                  }
                                 } else if (snapshot.hasError) {
                                   print("Snapshot for issues (error): " +
                                       snapshot.toString());
@@ -327,7 +346,6 @@ class _WellInfoState extends State<WellInfo> {
       requestDelete(widget.well.wellId).then((result) {
         Navigator.pop(context);
       });
-
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -355,7 +373,8 @@ class _WellInfoState extends State<WellInfo> {
     return getWell(well.wellId).then((response) {
       result = json.decode(response.body);
 
-      well.setMarker(result["status"],
+      well.setMarker(
+          result["status"],
           double.parse(result["location"]["latitude"].toString()),
           double.parse(result["location"]["longitude"].toString()));
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
