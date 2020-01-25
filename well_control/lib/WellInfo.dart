@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:well_control/IssueDetails.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
@@ -40,11 +41,11 @@ class _WellInfoState extends State<WellInfo> {
   static const settings = "Settings";
   static const wellMap = "Map Overview";
   static const wellDelete = "Delete Well";
-
-
+  static const issueInfo = "Issue Information";
 
   static const List<String> menuChoices = <String>[
     wellUpdate,
+    issueInfo,
     report,
     settings,
     wellMap,
@@ -60,7 +61,7 @@ class _WellInfoState extends State<WellInfo> {
   @override
   void initState() {
     wellInfos = getWellInfos(widget.well);
-    wellIssues = getIssuesOfWell(widget.well.wellId.toString());
+    wellIssues = getOpenIssuesOfWell(widget.well.wellId.toString());
     super.initState();
   }
 
@@ -172,8 +173,8 @@ class _WellInfoState extends State<WellInfo> {
                                     ];
                                   } else {
                                     children = <Widget>[
-                                Text("Current issues"),
-                                Padding(
+                                      Text("Current issues"),
+                                      Padding(
                                         padding: const EdgeInsets.only(top: 16),
                                         child: ListView.separated(
                                             physics:
@@ -193,8 +194,16 @@ class _WellInfoState extends State<WellInfo> {
                                                   // Remove the item from the data source.
                                                   setState(() {
                                                     print(direction.toString());
-                                                    snapshot.data
-                                                        .removeAt(index);
+                                                    if (direction ==
+                                                        DismissDirection
+                                                            .startToEnd) {
+                                                      closeIssue(snapshot.data[index].id).then((response) {
+                                                        print("Closed issue: " + response.statusCode.toString());
+                                                      });
+                                                      snapshot.data
+                                                          .removeAt(index);
+                                                    }
+
                                                     // @todo call function that marks as solved
                                                   });
 
@@ -212,9 +221,21 @@ class _WellInfoState extends State<WellInfo> {
                                                   ),
                                                 ),
                                                 child: ListTile(
-                                                    title: Text(
-                                                        '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}'),
-                                                    subtitle: Text('${item.description}')),
+                                                  onTap: () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              IssueDetails(
+                                                                  title:
+                                                                      "Issue details",
+                                                                  issue: snapshot
+                                                                          .data[
+                                                                      index]))),
+                                                  title: Text(
+                                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}'),
+                                                  subtitle: Text(
+                                                      '${item.description}'),
+                                                ),
                                               );
                                             }),
                                       )
@@ -356,6 +377,9 @@ class _WellInfoState extends State<WellInfo> {
           MaterialPageRoute(
               builder: (context) => WellMap(title: "Map Overview")));
     } else if (choice == settings) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else if (choice == issueInfo) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {

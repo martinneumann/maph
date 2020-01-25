@@ -20,11 +20,23 @@ Future<http.Response> getAllIssues() {
   return http.get(wellApiUrl + 'Issue/GetAll');
 }
 
+/// Get one specific issue by Id.
+Future<http.Response> getIssueById(int id) {
+  return http.get(wellApiUrl + 'Issue/GetIssue/$id');
+}
 
 /// Gets one well's issues
 Future<http.Response> getWellIssues(String wellId) {
   print("Getting issue with: "  + wellId.toString());
   return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
+}
+
+/// Set issue to closed
+Future<http.Response> closeIssue(int id) {
+  var body = ' { "id": $id, "open": false }';
+  return http.post(wellApiUrl + 'Issue/UpdateIssue',
+      headers: {"Content-Type": "application/json"},
+      body: body);
 }
 
 /// Gets all wells
