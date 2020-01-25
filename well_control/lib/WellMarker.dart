@@ -24,8 +24,13 @@ class WellMarker {
   String status;
   /// Stores organisation, that donates the well.
   String fundingOrganisation;
-  /// Stores costs of drinking water from that well.
+
+  /// Stores building costs of the well.
   String costs;
+
+  ///Stores all parts of a well.
+  Map<String, int> wellParts = Map<String, int>();
+
 
   /// Constructor initializes minimum of variables to define it by [wellName],
   /// [wellId], [color], which defines the status on map, and the location
@@ -127,3 +132,5 @@ class WellMarker {
     }
   }
 }
+
+

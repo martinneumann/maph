@@ -1,3 +1,5 @@
+import 'package:well_control/Functions.dart';
+
 class Location {
   int id;
   double longitude;

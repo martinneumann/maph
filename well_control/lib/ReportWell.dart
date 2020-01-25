@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -8,17 +9,13 @@ import 'package:well_control/WellMap.dart';
 import 'Functions.dart';
 import 'RepairInformation.dart';
 import 'Settings.dart';
-import 'WellIssue.dart';
-import 'WellMarkerLibary.dart' as wellList;
-import 'WellMarkerLibary.dart';
+import 'WellMarker.dart';
 import 'WellOverview.dart';
 
-
-
 class ReportWell extends StatefulWidget {
-  ReportWell({Key key, this.title}) : super(key: key);
+  ReportWell({Key key, this.title, this.well}) : super(key: key);
 
-
+  final WellMarker well;
   final String title;
 
   @override
@@ -39,18 +36,15 @@ class _ReportWellState extends State<ReportWell> {
     repairInformation,
   ];
 
-  String _selectedWell;
-  List<String> wellNames = new List<String>();
+  String _selectedPart;
+  List<String> parts = new List<String>();
 
   Future<File> _imageFile;
 
   @override
   void initState() {
     super.initState();
-
-    for (int i = 0; i < wellList.wells.length; i++) {
-      wellNames.add(wellList.wells[i].getWellName());
-    }
+    widget.well.wellParts.forEach((key, value) => parts.add(key));
   }
 
   final textController = TextEditingController();
@@ -66,23 +60,23 @@ class _ReportWellState extends State<ReportWell> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            resizeToAvoidBottomPadding: true,
-            appBar: AppBar(
-              title: Text(widget.title),
-              actions: <Widget>[
-                PopupMenuButton<String>(
-                  onSelected: choiceAction,
-                  itemBuilder: (BuildContext context) {
-                    return menuChoices.map((String choice) {
-                      return PopupMenuItem<String>(
-                        value: choice,
-                        child: Text(choice),
-                      );
-                    }).toList();
-                  },
-                )
-              ],
-            ),
+          resizeToAvoidBottomPadding: true,
+          appBar: AppBar(
+            title: Text(widget.title),
+            actions: <Widget>[
+              PopupMenuButton<String>(
+                onSelected: choiceAction,
+                itemBuilder: (BuildContext context) {
+                  return menuChoices.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              )
+            ],
+          ),
           body: new Container(
               margin: EdgeInsets.all(18.0),
               child: Form(
@@ -97,22 +91,33 @@ class _ReportWellState extends State<ReportWell> {
                           color: Colors.grey,
                         ),
                       ),
+                      Container(child: Text(widget.well.name))
+                    ]),
+                    Divider(color: Colors.black87),
+                    Row(children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.only(left: 10.0, right: 15.0),
+                        child: Icon(
+                          Icons.build,
+                          color: Colors.grey,
+                        ),
+                      ),
                       Container(
                           child: Expanded(
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
                                 isExpanded: true,
-                                hint: Text('Please choose a well'),
-                                value: _selectedWell,
+                                hint: Text('Please choose a well part.'),
+                                value: _selectedPart,
                                 onChanged: (newValue) {
                                   setState(() {
-                                    _selectedWell = newValue;
+                                    _selectedPart = newValue;
                                   });
                                 },
-                                items: wellList.wells.map((well) {
+                                items: parts.map((part) {
                                   return DropdownMenuItem(
-                                    child: new Text(well.getWellName()),
-                                    value: well.getWellName(),
+                                    child: new Text(part),
+                                    value: part,
                                   );
                                 }).toList(),
                               ),
@@ -153,41 +158,8 @@ class _ReportWellState extends State<ReportWell> {
               )),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // see number of issues for this well and add one more to id
-              // @todo add API call for a well's issues (and add issue list to well type)
-              var numberOfIssues = 0;
-              wells.forEach((well) {
-                if (well.name == _selectedWell) {
-                  numberOfIssues++;
-                }
-              });
-              print("Controller text: " + textController.text);
-              print("Selceted well: " + _selectedWell);
-              print("Wells: " + wells[1].name.toString());
-              print("Search: " +
-                  wells
-                      .firstWhere((a) => a.name == _selectedWell)
-                      .wellId
-                      .toString());
-              var issue = new WellIssue(
-                  numberOfIssues,
-                  wells
-                      .firstWhere((a) => a.name == _selectedWell)
-                      .wellId,
-                  textController.text,
-                  new DateTime.now().toString(),
-                  "broken",
-                  true);
-              print("Created issue: " + issue.description.toString());
-              postNewIssue(issue).then((response) {
-                print("Creation response: " + response.body.toString());
-                choiceAction(wellMap);
-              }).catchError((error) {
-                print("Error on creating issue.");
-                print(error);
-              });
-              wellList.wells[wellNames.indexOf(_selectedWell)].setColor(
-                  "yellow");
+              createIssue();
+              setState(() {});
               Navigator.pop(context);
             },
             child: Icon(Icons.send),
@@ -266,52 +238,6 @@ class _ReportWellState extends State<ReportWell> {
     );
   }
 
-  Widget submitButton() {
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: FlatButton.icon(
-        color: Colors.blue,
-        textColor: Colors.white,
-        icon: Icon(Icons.send),
-        label: Text('Submit'),
-        onPressed: () {
-          // see number of issues for this well and add one more to id
-          // @todo add API call for a well's issues (and add issue list to well type)
-          var numberOfIssues = 0;
-          wells.forEach((well) {
-            if (well.name == _selectedWell) {
-              numberOfIssues++;
-            }
-          });
-          print("Controller text: " + textController.text);
-          print("Selected well: " + _selectedWell);
-          print("Wells: " + wells[1].name.toString());
-          print("Search: " + wells
-              .firstWhere((a) => a.name == _selectedWell)
-              .wellId
-              .toString());
-          var issue = new WellIssue(
-            numberOfIssues,
-              wells.firstWhere((a) => a.name == _selectedWell).wellId,
-              textController.text,
-              new DateTime.now().toString(),
-              "broken",
-              true
-              );
-          print("Created issue: " + issue.description.toString());
-          postNewIssue(issue).then((response) {
-            print("Creation response: " + response.statusCode.toString());
-            choiceAction(wellMap);
-          }).catchError((error)  {
-            print("Error on creating issue: " + error);
-          });
-          wellList.wells[wellNames.indexOf(_selectedWell)].setColor("yellow");
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
@@ -331,4 +257,21 @@ class _ReportWellState extends State<ReportWell> {
               builder: (context) => RepairInformation(title: "Repair Help")));
     }
   }
+
+  void createIssue() async {
+    var data = {};
+
+    data["description"] = textController.text;
+    data["works"] = false;
+    List<int> brokenParts = new List<int>();
+    brokenParts.add(widget.well.wellParts[_selectedPart]);
+    data["brokenPartIds"] = brokenParts;
+    data["wellId"] = widget.well.wellId;
+
+    await postNewIssue(json.encode(data)).then((response) {
+      print("Response: " + response.statusCode.toString());
+    });
+  }
 }
+
+

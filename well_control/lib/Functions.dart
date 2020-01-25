@@ -1,8 +1,4 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-
-import 'WellIssue.dart';
 
 /// Defines the api url as const variable [wellApiUrl].
 const wellApiUrl = "https://wellapi.azurewebsites.net/api/";
@@ -10,16 +6,11 @@ const wellApiUrl = "https://wellapi.azurewebsites.net/api/";
 /// Post request for new well issue
 ///
 /// Makes a POST request to save a new [issue] to the database.
-Future<http.Response> postNewIssue(WellIssue issue) {
-  print("Param issue description: " + issue.description.toString());
-  var query = json.encode(
-      "{ id: ${issue.id.toString()}, description: ${issue.description
-          .toString()},"
-      "creationDate: ${issue.creationDate.toString()}, status: ${issue.status.toString()}, open: ${issue.open.toString()}, "
-      ")");
-  print(query);
+Future<http.Response> postNewIssue(var body) {
+
   return http.post(wellApiUrl + 'Issue/CreateIssue',
-      body: query);
+      headers: {"Content-Type": "application/json"},
+      body: body);
 }
 
 /// Response returns all well issues as [http.Response]
@@ -29,11 +20,23 @@ Future<http.Response> getAllIssues() {
   return http.get(wellApiUrl + 'Issue/GetAll');
 }
 
+/// Get one specific issue by Id.
+Future<http.Response> getIssueById(int id) {
+  return http.get(wellApiUrl + 'Issue/GetIssue/$id');
+}
 
 /// Gets one well's issues
 Future<http.Response> getWellIssues(String wellId) {
   print("Getting issue with: "  + wellId.toString());
   return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
+}
+
+/// Set issue to closed
+Future<http.Response> closeIssue(int id) {
+  var body = ' { "id": $id, "open": false }';
+  return http.post(wellApiUrl + 'Issue/UpdateIssue',
+      headers: {"Content-Type": "application/json"},
+      body: body);
 }
 
 /// Gets all wells

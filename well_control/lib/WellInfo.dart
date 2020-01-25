@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'package:well_control/AddWell.dart';
+import 'package:intl/intl.dart';
+import 'package:well_control/IssueDetails.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
@@ -34,28 +34,34 @@ class _WellInfoState extends State<WellInfo> {
 
   _WellInfoState(this.wellMarker);
 
-  static const wellUpdate = "Change Well";
-  static const wellDelete = "Delete Well";
+  static const wellUpdate = "Change Well info";
+
+  /// Stores menu item title for reporting malfunction.
+  static const report = "Report Malfunction";
   static const settings = "Settings";
   static const wellMap = "Map Overview";
-  static const addWell = "Add Well";
+  static const wellDelete = "Delete Well";
+  static const issueInfo = "Issue Information";
 
   static const List<String> menuChoices = <String>[
     wellUpdate,
-    wellDelete,
+    issueInfo,
+    report,
     settings,
     wellMap,
-    addWell
+    wellDelete
   ];
 
   printSomething(String message) {
     print(message);
   }
 
+  ScrollController _controller = new ScrollController();
+
   @override
   void initState() {
     wellInfos = getWellInfos(widget.well);
-    wellIssues = getIssuesOfWell(widget.well.wellId.toString());
+    wellIssues = getOpenIssuesOfWell(widget.well.wellId.toString());
     super.initState();
   }
 
@@ -115,7 +121,7 @@ class _WellInfoState extends State<WellInfo> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           ListTile(
-                            title: Text('Geolaction:'),
+                            title: Text('Geolocation:'),
                             subtitle: Text("Longitude: " +
                                 wellMarker.location.longitude.toString() +
                                 "\n" +
@@ -165,39 +171,94 @@ class _WellInfoState extends State<WellInfo> {
                                         size: 60,
                                       ),
                                     ];
-                                  }
-                                  children = <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 16),
-                                      child: ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: snapshot.data.length,
-                                          itemBuilder: (context, index) {
-                                            final item = snapshot.data[index];
-                                            return Dismissible(
-                                              key: Key(item.id.toString()),
-                                              onDismissed: (direction) {
-                                                // Remove the item from the data source.
-                                                setState(() {
-                                                  print(direction.toString());
-                                                  snapshot.data.removeAt(index);
-                                                  // @todo call function that mars as solved
-                                                });
+                                  } else {
+                                    children = <Widget>[
+                                      Text("Current issues"),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 16),
+                                        child: ListView.separated(
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            controller: _controller,
+                                            separatorBuilder:
+                                                (context, index) => Divider(
+                                                      color: Colors.black,
+                                                    ),
+                                            shrinkWrap: true,
+                                            itemCount: snapshot.data.length,
+                                            itemBuilder: (context, index) {
+                                              final item = snapshot.data[index];
+                                              return Dismissible(
+                                                key: Key(item.id.toString()),
+                                                onDismissed: (direction) {
+                                                  // Remove the item from the data source.
+                                                  setState(() {
+                                                    print(direction.toString());
 
-                                                // Then show a snackbar.
-                                                Scaffold.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                        content: Text(
-                                                            "${item.description} marked as solved")));
-                                              },
-                                              background:
-                                                  Container(color: Colors.red),
-                                              child: ListTile(
-                                                  title: Text('${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}: ${item.description}')),
-                                            );
-                                          }),
-                                    )
-                                  ];
+                                                      closeIssue(snapshot.data[index].id).then((response) {
+                                                        print("Closed issue: " + response.statusCode.toString());
+                                                      });
+                                                      snapshot.data
+                                                          .removeAt(index);
+                                                      if (snapshot.data.length == 0) {
+                                                        /// set status to green
+                                                        var data = {};
+
+                                                        var location = {};
+                                                        location["latitude"] = widget.well.location.latitude;
+                                                        location["longitude"] = widget.well.location.longitude;
+
+                                                        var fundingInfo = {};
+                                                        fundingInfo["organisation"] = widget.well.fundingOrganisation;
+                                                        fundingInfo["price"] = widget.well.costs;
+
+                                                        data["id"] = widget.well.wellId;
+                                                        data["name"] = widget.well.name;
+                                                        data["status"] = "green";
+                                                        data["location"] = location;
+                                                        data["fundingInfo"] = fundingInfo;
+                                                        data["wellTypeId"] = widget.well.type;
+                                                        postUpdateWell(json.encode(data)).then((response) {
+                                                          print("Updated well status: " + response.body.toString());
+                                                        });
+
+                                                      }
+                                                  });
+
+                                                  Scaffold.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: Text(
+                                                              "${item.description} marked as solved.")));
+                                                },
+                                                background: Container(
+                                                  color: Colors.green,
+                                                  child: Icon(
+                                                    Icons.check_circle_outline,
+                                                    color: Colors.white,
+                                                    size: 30,
+                                                  ),
+                                                ),
+                                                child: ListTile(
+                                                  onTap: () => Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              IssueDetails(
+                                                                  title:
+                                                                      "Issue details",
+                                                                  issue: snapshot
+                                                                          .data[
+                                                                      index]))),
+                                                  title: Text(
+                                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}'),
+                                                  subtitle: Text(
+                                                      '${item.description}'),
+                                                ),
+                                              );
+                                            }),
+                                      )
+                                    ];
+                                  }
                                 } else if (snapshot.hasError) {
                                   print("Snapshot for issues (error): " +
                                       snapshot.toString());
@@ -266,7 +327,8 @@ class _WellInfoState extends State<WellInfo> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ReportWell(
-                                          title: "Report malfunction")));
+                                          title: "Report malfunction",
+                                          well: widget.well)));
                             },
                           ),
                           IconButton(
@@ -327,7 +389,6 @@ class _WellInfoState extends State<WellInfo> {
       requestDelete(widget.well.wellId).then((result) {
         Navigator.pop(context);
       });
-
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -336,11 +397,15 @@ class _WellInfoState extends State<WellInfo> {
     } else if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else if (choice == issueInfo) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
     } else {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => AddWell(title: "Add new well")));
+              builder: (context) =>
+                  ReportWell(title: "Report malfunction", well: widget.well)));
     }
   }
 
@@ -355,7 +420,8 @@ class _WellInfoState extends State<WellInfo> {
     return getWell(well.wellId).then((response) {
       result = json.decode(response.body);
 
-      well.setMarker(result["status"],
+      well.setMarker(
+          result["status"],
           double.parse(result["location"]["latitude"].toString()),
           double.parse(result["location"]["longitude"].toString()));
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
@@ -365,6 +431,11 @@ class _WellInfoState extends State<WellInfo> {
         price += ".00";
       }
       well.setWellCosts(price);
+      Iterable parts = result["wellType"]["parts"];
+      var partsList = parts.toList();
+      for (int i = 0; i < partsList.length; i++) {
+        well.wellParts[partsList[i]["name"]] = partsList[i]["id"];
+      }
 
       return 'OK';
     });

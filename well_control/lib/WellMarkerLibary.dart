@@ -15,9 +15,11 @@ List<WellMarker> wells = <WellMarker>[];
 /// Map stores wells as key value pair of name and marker.
 /// This map is necessary to update UI of map.
 Map<String,Marker> wellMarkersMap = Map<String,Marker>();
-///Lists to store all current [wellTypeNames] and IDs from server.
+
+///Lists to store all current [wellTypeNames] and [wellTypeIds] from server.
 List<String> wellTypeNames = List<String>();
 List<int> wellTypeIds = List<int>();
+
 bool loadTypeOnce = false;
 
 /// Loads existing wells from external database.
