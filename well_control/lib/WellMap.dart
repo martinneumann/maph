@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -6,9 +7,9 @@ import 'package:latlong/latlong.dart';
 import 'package:location/location.dart';
 import 'package:map_controller/map_controller.dart';
 import 'package:well_control/AddWell.dart';
-import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
+
 import 'WellMarkerLibary.dart' as wellList;
 /// Class create view of map
 ///
@@ -72,14 +73,11 @@ class _WellMapState extends State<WellMap> {
   /// Stores menu item title for settings.
   static const settings = "Settings";
 
-  /// Stores menu item title for reporting malfunction.
-  static const report = "Report Malfunction";
 
   /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     listWells,
     addWell,
-    report,
     settings
   ];
 
@@ -201,16 +199,11 @@ class _WellMapState extends State<WellMap> {
     } else if (choice == addWell) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => AddWell(title: "Add Well")));
-    } else if (choice == listWells) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WellOverview(title: "List of Wells")));
     } else {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ReportWell(title: "Report Malfunction")));
+              builder: (context) => WellOverview(title: "List of Wells")));
     }
   }
 
@@ -263,10 +256,6 @@ class _WellMapState extends State<WellMap> {
 
   void updateMarkers(StatefulMapController markerController ,
                      Map<String, Marker> markerMap) async {
-
-    print("Starting updateMarkers");
-    print("current markers = " + markerController.markers.length.toString() +
-          " | new markers = " + markerMap.length.toString());
 
     if(markerController.markers.length == 0) {
       markerController.addMarkers(markers: markerMap);
