@@ -6,20 +6,32 @@ import 'package:well_control/WellMap.dart';
 
 import 'WellMarkerLibary.dart' as wellList;
 
+/// Class provides overview of all existing wells.
+///
+/// View shows all well in a [DisplayWells] list.
 class WellOverview extends StatefulWidget {
   WellOverview({Key key, this.title}) : super(key: key);
 
+  /// Title of view.
   final String title;
 
   @override
   _WellOverviewState createState() => _WellOverviewState();
 }
 
+/// State provides view of [WellOverview].
 class _WellOverviewState extends State<WellOverview> {
+
+  /// Stores menu item title for settings.
   static const settings = "Settings";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for adding well.
   static const addWell = "Add Well";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[settings, wellMap, addWell];
 
   @override
@@ -44,6 +56,9 @@ class _WellOverviewState extends State<WellOverview> {
         body: Center(child: Container(child: DisplayWells())));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == wellMap) {
       Navigator.push(
@@ -62,11 +77,13 @@ class _WellOverviewState extends State<WellOverview> {
   }
 }
 
+/// Class provides view of well as list item.
 class DisplayWells extends StatefulWidget {
   @override
   DisplayWellsState createState() => DisplayWellsState();
 }
 
+/// State create view of well item list.
 class DisplayWellsState extends State<DisplayWells> {
   @override
   Widget build(BuildContext context) {

@@ -9,35 +9,63 @@ import 'Settings.dart';
 import 'WellMap.dart';
 import 'WellOverview.dart';
 
+/// Class provides view to create new well by user.
+///
+/// View consists of several input field for well description.
 class AddWell extends StatefulWidget {
   AddWell({Key key, this.title}) : super(key: key);
 
+  /// Title of view.
   final String title;
 
   @override
   _AddWellState createState() => _AddWellState();
 }
 
+/// State provides view of [AddWell].
 class _AddWellState extends State<AddWell> {
+
+  /// Key identifies form for validation.
   final _formKey = GlobalKey<FormState>();
+
+  /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for settings.
   static const settings = "Settings";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
     settings
   ];
 
+  /// Stores user input for name of well.
   final nameController = TextEditingController();
+
+  /// Stores user input of funding organisation.
   final fundingController = TextEditingController();
+
+  /// Stores user input for costs of creating well.
   final costsController = TextEditingController();
+
+  /// Stores latitude of well.
   final latitudeController = TextEditingController();
+
+  /// Stores longitude of well.
   final longitudeController = TextEditingController();
+
+  /// Stores user input of current status from well.
   String status;
+
+  /// Stores available status options.
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
+  /// Stores user input for type of well.
   String type;
 
   @override
@@ -250,10 +278,7 @@ class _AddWellState extends State<AddWell> {
                                 padding: const EdgeInsets.all(18.0),
                                 child: RaisedButton(
                                   onPressed: () {
-                                    // Validate returns true if the form is valid, or false
-                                    // otherwise.
                                     if (_formKey.currentState.validate()) {
-                                      // If the form is valid, display a Snackbar.
                                       addWell();
                                     }
                                   },
@@ -267,6 +292,9 @@ class _AddWellState extends State<AddWell> {
                     )))));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
@@ -282,6 +310,9 @@ class _AddWellState extends State<AddWell> {
     }
   }
 
+  /// Save new well.
+  ///
+  /// Adds new well by sending user input data to database.
   void addWell() async {
     String color;
     if (status == "Working") {

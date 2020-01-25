@@ -48,16 +48,22 @@ class _WellMapState extends State<WellMap> {
   /// with unique hero tag name.
   int floatingButtonNumber = 0;
 
+  /// Stores status of located user location by gps.
   bool userLocated = false;
 
+  /// Stores [defaultLocation] for map at beginning.
   LatLng defaultLocation = LatLng(6.071891, 38.785878);
 
+  /// Stores [defaultZoom] for map at beginning.
   double defaultZoom = 2.0;
 
-  String locationMarkerName = wellList.UserLocationMarkerName;
+  /// Stores name of user location marker.
+  String locationMarkerName = wellList.userLocationMarkerName;
 
+  /// Stores [searchRadius] of nearby wells referred to user's position.
   int searchRadius = 400000;
 
+  /// Stores color of gps icon at beginning.
   Color userLocationMarkerColor = Color.fromARGB(255, 200, 0, 0);
 
   /// Stores well markers and user location marker to show these on map.
@@ -236,6 +242,8 @@ class _WellMapState extends State<WellMap> {
   /// Sets user location on map.
   ///
   /// Sets location data and add marker for user position on map.
+  /// Changes color of gps-button referred to use the user location.
+  /// If user deactivates gps location and zoom is changed to default.
   void setUserLocation(Map<String, double> userLocation) {
     if (userLocation != null) {
       if(!userLocated) {
@@ -261,14 +269,14 @@ class _WellMapState extends State<WellMap> {
     }
   }
 
+  /// Updates visible markers on map.
+  ///
+  /// Adds new well markers or updates position of existing well on map.
+  /// Deletes well marker if well was deleted.
   void updateMarkers(StatefulMapController markerController ,
                      Map<String, Marker> markerMap) async {
 
-    print("Starting updateMarkers");
-    print("current markers = " + markerController.markers.length.toString() +
-          " | new markers = " + markerMap.length.toString());
-
-    if(markerController.markers.length == 0) {
+    if(markerController.markers.length < markerMap.length) {
       markerController.addMarkers(markers: markerMap);
     }
     else if(markerController.markers.length > markerMap.length) {
@@ -285,9 +293,6 @@ class _WellMapState extends State<WellMap> {
       });
 
       markerController.removeMarkers(names: removeMarkerList);
-    }
-    else if(markerController.markers.length < markerMap.length) {
-      markerController.addMarkers(markers: markerMap);
     }
     else {
       markerController.addMarkers(markers: markerMap);

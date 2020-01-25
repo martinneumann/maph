@@ -10,37 +10,63 @@ import 'WellMap.dart';
 import 'WellMarker.dart';
 import 'WellOverview.dart';
 
+/// Class provides view to update existing well.
 class WellUpdate extends StatefulWidget {
   WellUpdate({Key key, this.title, this.well}) : super(key: key);
 
+  /// Gets [WellMarker] object from other view to update this.
   final WellMarker well;
+  /// Title of view.
   final String title;
 
   @override
   _WellUpdateState createState() => _WellUpdateState();
 }
 
+/// State provides view of [WellUpdate].
 class _WellUpdateState extends State<WellUpdate> {
+
+  /// Key identifies form for validation.
   final _formKey = GlobalKey<FormState>();
+
+  /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for settings.
   static const settings = "Settings";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
     settings
   ];
 
+  /// Stores user input for name of well.
   final nameController = TextEditingController();
+
+  /// Stores user input of funding organisation.
   final fundingController = TextEditingController();
+
+  /// Stores user input for costs of creating well.
   final costsController = TextEditingController();
+
+  /// Stores latitude of well.
   final latitudeController = TextEditingController();
+
+  /// Stores longitude of well.
   final longitudeController = TextEditingController();
+
+  /// Stores user input of current status from well.
   String status;
 
+  /// Stores available status options.
   List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
 
+  /// Stores user input for type of well.
   String type;
 
   @override
@@ -266,10 +292,7 @@ class _WellUpdateState extends State<WellUpdate> {
                                 padding: const EdgeInsets.all(18.0),
                                 child: RaisedButton(
                                   onPressed: () {
-                                    // Validate returns true if the form is valid, or false
-                                    // otherwise.
                                     if (_formKey.currentState.validate()) {
-                                      // If the form is valid, display a Snackbar.
                                       updateWell();
                                     }
                                   },
@@ -283,6 +306,9 @@ class _WellUpdateState extends State<WellUpdate> {
                     )))));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
@@ -298,6 +324,9 @@ class _WellUpdateState extends State<WellUpdate> {
     }
   }
 
+  /// Update existing well.
+  ///
+  /// Updates existing well by sending user input to database for exchange.
   void updateWell() async {
     String color;
     if (status == "Working") {

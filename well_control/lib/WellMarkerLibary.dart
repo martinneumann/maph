@@ -8,9 +8,8 @@ import 'package:latlong/latlong.dart';
 import 'package:well_control/WellMarker.dart';
 
 import 'Functions.dart';
-
-final String UserLocationMarkerName = "user";
-
+/// Defines name of marker, that shows user location on map.
+final String userLocationMarkerName = "user";
 /// Stores list of all existing wells as [WellMarker] object.
 List<WellMarker> wells = <WellMarker>[];
 /// Map stores wells as key value pair of name and marker.
@@ -90,7 +89,7 @@ void setUserPositionMarker(LatLng location) {
           )
   );
 
-  wellMarkersMap[UserLocationMarkerName] = userMarker;
+  wellMarkersMap[userLocationMarkerName] = userMarker;
 }
 
 /// Function loads well marker and updates well list by radius search.
@@ -130,6 +129,10 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
   });
 }
 
+/// Loads well types from database.
+///
+/// Stores all existing well types in two lists [wellTypeIds]
+/// and [wellTypeNames].
 void loadAllWellTypes() {
   getAllWellTypes().then((response) {
     Iterable result = json.decode(response.body);
@@ -141,4 +144,3 @@ void loadAllWellTypes() {
     }
   });
 }
-

@@ -5,9 +5,7 @@ import 'Settings.dart';
 import 'WellMap.dart';
 import 'WellOverview.dart';
 
-///
 /// Class that represents a single repair information step in a DIY action.
-///
 class RepairInformationStep {
   var title = "";
   var subtitle = "";
@@ -15,26 +13,34 @@ class RepairInformationStep {
   var status = false;
 }
 
-///
 /// Repair Information widget.
 ///
+/// Widget provides simple repair manual of well.
 class RepairInformation extends StatefulWidget {
   RepairInformation({Key key, this.title}) : super(key: key);
 
+  /// Title of view.
   final String title;
-
-  var wellId = ""; // the well Id this information refers to
+  /// the well Id this information refers to
+  var wellId = "";
 
   @override
   _RepairInformationState createState() => _RepairInformationState();
 }
 
-/// Repair information stateful widget.
+/// State includes view of repair manual.
 class _RepairInformationState extends State<RepairInformation> {
+
+  /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for settings.
   static const settings = "Settings";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
@@ -166,6 +172,9 @@ class _RepairInformationState extends State<RepairInformation> {
         ));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,

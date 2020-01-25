@@ -88,9 +88,9 @@ Future<http.Response> deleteWell(int id) {
       wellApiUrl + 'Well/DeleteWell/$id');
 }
 
-/// Response returns all wellTypes [http.Response]
+/// Response returns all wellTypes by [http.Response] message.
 ///
-/// Sends get-request to get all wellTypes.
+/// Sends get-request to get all well types.
 Future<http.Response> getAllWellTypes() {
   return http.get(wellApiUrl + 'Well/GetAllWellTypes');
 }

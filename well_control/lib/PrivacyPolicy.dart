@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellMap.dart';
 import 'package:well_control/WellOverview.dart';
-
+/// Class shows app definition of [PrivacyPolicy].
+///
+/// Class create an view with description of privacy policy.
 class PrivacyPolicy extends StatefulWidget {
   PrivacyPolicy({Key key, this.title}) : super(key: key);
 
@@ -14,6 +16,7 @@ class PrivacyPolicy extends StatefulWidget {
   _PrivacyPolicyState createState() => _PrivacyPolicyState();
 }
 
+/// State defines constants for menu.
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
   static const settings = "Settings";
   static const wellOverview = "List of Wells";
@@ -56,11 +59,15 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
     );
   }
 
+  /// Loads privacy policy text from asset folder.
   Future<String> loadAsset(BuildContext context) async {
     return await DefaultAssetBundle.of(context)
         .loadString('assets/privacypolicy.txt');
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,

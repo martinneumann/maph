@@ -106,7 +106,7 @@ class WellMarker {
             )
     );
   }
-  /// Method sets color and status by new [color].
+  /// Method sets color and status by given [color] name.
   void setColor(String color) {
     switch (color) {
       case "red":
