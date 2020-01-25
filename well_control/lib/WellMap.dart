@@ -11,6 +11,8 @@ import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
 
 import 'WellMarkerLibary.dart' as wellList;
+import 'UserLibrary.dart' as users;
+
 /// Class create view of map
 ///
 /// Map shows wells as markers with different colors.
@@ -89,6 +91,7 @@ class _WellMapState extends State<WellMap> {
 
   @override
   void initState() {
+    users.basicUser = true;
     mapController = MapController();
     userLocation = Location();
     statefulMapController = StatefulMapController(mapController: mapController);
