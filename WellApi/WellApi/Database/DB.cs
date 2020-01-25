@@ -514,6 +514,15 @@ namespace WellApi
             return affected;
         }
 
+        public static RepairHelpForPart GetRepairHelpForPart(int? partId)
+        {
+            if (partId == null)
+                return null;
+            RepairHelpForPart repairHelpForPart = new RepairHelpForPart();
+            repairHelpForPart.RepairHelps = ExecuteSelectRepairHelps(partId);
+            repairHelpForPart.PartToRepair = ExecuteSelectPart(partId);
+            return repairHelpForPart;
+        }
         // Single SQL Querry
 
         public static SmallIssue[] ExecuteSelectSmallIssues()
@@ -574,6 +583,54 @@ namespace WellApi
             }
             sqlCommand.Connection.Close();
             return issue;
+        }
+        public static RepairHelp[] ExecuteSelectRepairHelps(int? partId)
+        {
+            SqlCommand sqlCommand = SqlQuerry.SelectRepairHelp(partId);
+            if (sqlCommand == null)
+                return null;
+            List<RepairHelp> repairHelps = new List<RepairHelp>();
+            sqlCommand.Connection = ConnectToDb();
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    RepairHelp repairHelp = new RepairHelp();
+                    if (!reader.IsDBNull(0))
+                        repairHelp.Description = reader.GetString(0);
+                    if (!reader.IsDBNull(1))
+                        repairHelp.Title = reader.GetString(1);
+                    if (!reader.IsDBNull(2))
+                        repairHelp.Number = reader.GetInt32(2);
+                    repairHelps.Add(repairHelp);
+                }
+            }
+            sqlCommand.Connection.Close();
+            return repairHelps.ToArray();
+        }
+        public static Part ExecuteSelectPart(int? partId)
+        {
+            SqlCommand sqlCommand = SqlQuerry.SelectPart(partId);
+            if (sqlCommand == null)
+                return null;
+            sqlCommand.Connection = ConnectToDb();
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    Part part = new Part();
+                    if (!reader.IsDBNull(0))
+                        part.Id = reader.GetInt32(0);
+                    if (!reader.IsDBNull(1))
+                        part.Name = reader.GetString(1);
+                    if (!reader.IsDBNull(2))
+                        part.Description = reader.GetString(2);
+                    sqlCommand.Connection.Close();
+                    return part;
+                }
+            }
+            sqlCommand.Connection.Close();
+            return null;
         }
         public static Part[] ExecuteSelectBrokenParts(int? issueId)
         {

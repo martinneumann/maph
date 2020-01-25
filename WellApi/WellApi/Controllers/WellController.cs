@@ -86,7 +86,29 @@ namespace WellApi.Controllers
                 return Conflict("Server error! " + e.Message);
             }
         }
-
+        /// <summary>
+        /// Gets the Repair Help for a Part of a Well.
+        /// </summary>
+        /// <param name="partId"></param> 
+        [HttpGet("{partId}")]
+        [ActionName("GetRepairHelp")]
+        [ProducesResponseType(typeof(RepairHelpForPart), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetRepairHelp(int partId)
+        {
+            try
+            {
+                RepairHelpForPart repairHelpForPart = DB.GetRepairHelpForPart(partId);
+                if (repairHelpForPart == null || repairHelpForPart.PartToRepair == null || repairHelpForPart.RepairHelps == null)
+                    return BadRequest("Repair Help not found");
+                return Ok(repairHelpForPart);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
         /// <summary>
         /// Get all nearby wells. SearchRadius in meter.
         /// </summary>

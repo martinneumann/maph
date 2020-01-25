@@ -35,6 +35,19 @@ namespace WellApi
             sqlCommand.Parameters.AddWithValue("@WellId", wellId);
             return sqlCommand;
         }
+        public static SqlCommand SelectRepairHelp(int? partId)
+        {
+            if (partId == null)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Description, Title, Number ");
+            sb.Append("FROM [well].[dbo].[RepairHelp] ");
+            sb.Append($"WHERE PartId = @PartId ");
+            sb.Append($"ORDER BY Number ASC;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@PartId", partId);
+            return sqlCommand;
+        }
         public static SqlCommand SelectMaintenanceLog(int? wellId)
         {
             if (wellId == null)
@@ -45,6 +58,18 @@ namespace WellApi
             sb.Append($"WHERE WellId = @WellId;");
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
             sqlCommand.Parameters.AddWithValue("@WellId", wellId);
+            return sqlCommand;
+        }
+        public static SqlCommand SelectPart(int? partId)
+        {
+            if (partId == null)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("SELECT Id, Name, Description ");
+            sb.Append("FROM [well].[dbo].[Part] ");
+            sb.Append($"WHERE Id = @PartId;");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@PartId", partId);
             return sqlCommand;
         }
         public static SqlCommand SelectWellParts(int? wellTypeId)
