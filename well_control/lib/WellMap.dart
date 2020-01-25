@@ -51,6 +51,16 @@ class _WellMapState extends State<WellMap> {
   /// with unique hero tag name.
   int floatingButtonNumber = 0;
 
+  bool userLocated = false;
+
+  LatLng defaultLocation = LatLng(6.071891, 38.785878);
+
+  double defaultZoom = 2.0;
+
+  String locationMarkerName = wellList.UserLocationMarkerName;
+
+  int searchRadius = 400000;
+
   /// Stores well markers and user location marker to show these on map.
   Future<Map<String,Marker>> markerMap = wellList.getMarkersMap();
 
@@ -81,7 +91,6 @@ class _WellMapState extends State<WellMap> {
     statefulMapController = StatefulMapController(mapController: mapController);
     statefulMapController.onReady.then((_) => setState(() => ready = true));
     sub = statefulMapController.changeFeed.listen((change) => setState(() {}));
-
     super.initState();
   }
 
@@ -110,13 +119,14 @@ class _WellMapState extends State<WellMap> {
             future: markerMap,
             builder: (BuildContext context, AsyncSnapshot<Map<String,Marker>> snapshot) {
               if (snapshot.hasData) {
-                statefulMapController.addMarkers(markers: snapshot.data);
+                 updateMarkers(statefulMapController, snapshot.data);
+
                 return Center(
                     child: Container(
                       child: FlutterMap(
                         options: MapOptions(
-                            center: LatLng(6.071891, 38.785878),
-                            zoom: 2.0,
+                            center: defaultLocation,
+                            zoom: defaultZoom,
                             plugins: [
                               MarkerClusterPlugin(),
                             ]),
@@ -229,15 +239,57 @@ class _WellMapState extends State<WellMap> {
   /// Sets location data and add marker for user position on map.
   void setUserLocation(Map<String, double> userLocation) {
     if (userLocation != null) {
-      LatLng location =
-      LatLng(userLocation['latitude'], userLocation['longitude']);
+      if(!userLocated) {
+        userLocated = true;
+        LatLng location =
+        LatLng(userLocation['latitude'], userLocation['longitude']);
 
-      markerMap = wellList.getWellMarkersByRadius(userLocation['latitude'],
-          userLocation['longitude'], 400);
+        markerMap = wellList.getWellMarkersByRadius(userLocation['latitude'],
+            userLocation['longitude'], searchRadius);
 
-      wellList.setUserPositionMarker(location);
-      mapController.move(location, 14);
+        wellList.setUserPositionMarker(location);
+        mapController.move(location, 5);
+      }
+      else {
+        userLocated = false;
+        markerMap = wellList.getMarkersMap();
+        userLocation = null;
+        mapController.move(defaultLocation, defaultZoom);
+      }
+
     }
   }
 
+  void updateMarkers(StatefulMapController markerController ,
+                     Map<String, Marker> markerMap) async {
+
+    print("Starting updateMarkers");
+    print("current markers = " + markerController.markers.length.toString() +
+          " | new markers = " + markerMap.length.toString());
+
+    if(markerController.markers.length == 0) {
+      markerController.addMarkers(markers: markerMap);
+    }
+    else if(markerController.markers.length > markerMap.length) {
+      List<String> removeMarkerList = List<String>();
+
+      if(userLocated) {
+        markerMap[locationMarkerName] = markerController.namedMarkers[locationMarkerName];
+      }
+
+      markerController.namedMarkers.forEach((name , _) {
+        if(!markerMap.containsKey(name)) {
+          removeMarkerList.add(name);
+        }
+      });
+
+      markerController.removeMarkers(names: removeMarkerList);
+    }
+    else if(markerController.markers.length < markerMap.length) {
+      markerController.addMarkers(markers: markerMap);
+    }
+    else {
+      markerController.addMarkers(markers: markerMap);
+    }
+  }
 }

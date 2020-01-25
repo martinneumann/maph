@@ -278,9 +278,10 @@ class _WellInfoState extends State<WellInfo> {
                   title: "Change well information", well: widget.well)));
     } else if (choice == wellDelete) {
       print("wellId: " + widget.well.wellId.toString());
-      requestDelete(widget.well.wellId);
-      wellList.wells.remove(widget.well);
-      Navigator.pop(context);
+      requestDelete(widget.well.wellId).then((result) {
+        Navigator.pop(context);
+      });
+
     } else if (choice == wellMap) {
       Navigator.push(
           context,
@@ -306,8 +307,9 @@ class _WellInfoState extends State<WellInfo> {
     var result;
 
     return getWell(well.wellId).then((response) {
-      print("response:" + response.statusCode.toString());
-      print("response:" + response.body.toString());
+      print("GetWell response:" + response.statusCode.toString());
+      print("GetWell response:" + response.body.toString());
+
       result = json.decode(response.body);
       well.setFundingOrganisation(result["fundingInfo"]["organisation"]);
       well.setType(result["wellType"]["name"]);
@@ -326,6 +328,9 @@ class _WellInfoState extends State<WellInfo> {
     await deleteWell(wellId).then((response) {
       print("Delete Resposne: " + response.statusCode.toString());
     });
+
+    await wellList.getMarkersMap();
+
     return 'Deleted';
   }
 

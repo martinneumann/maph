@@ -9,6 +9,8 @@ import 'package:well_control/WellMarker.dart';
 
 import 'Functions.dart';
 
+final String UserLocationMarkerName = "user";
+
 /// Stores list of all existing wells as [WellMarker] object.
 List<WellMarker> wells = <WellMarker>[];
 /// Map stores wells as key value pair of name and marker.
@@ -88,7 +90,7 @@ void setUserPositionMarker(LatLng location) {
           )
   );
 
-  wellMarkersMap["user"] = userMarker;
+  wellMarkersMap[UserLocationMarkerName] = userMarker;
 }
 
 /// Function loads well marker and updates well list by radius search.
@@ -97,34 +99,30 @@ void setUserPositionMarker(LatLng location) {
 Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
     double longitude , int searchRadius) {
 
-  return getWellsByRadius(latitude, longitude, searchRadius).then((response) {
+  var data = {};
+  data["searchRadius"] = searchRadius;
+  data["location"] = {};
+  data["location"]["latitude"] = latitude;
+  data["location"]["longitude"] = longitude;
+
+
+  return getWellsByRadius(json.encode(data)).then((response) {
     if(response.statusCode == 200) {
       wellMarkersMap.clear();
 
       Iterable result = json.decode(response.body);
       var resultList = result.toList();
-      bool receivedCheck = false;
 
       for (var i = 0; i < resultList.length; i++) {
         for (int j = 0; j < wells.length; j++) {
           if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
-            receivedCheck = true;
+            wellMarkersMap[resultList[i]["name"].toString()] = wells[i].marker;
             break;
-          } else {
-            receivedCheck = false;
           }
         }
-        if (!receivedCheck) {
-          wells.add(WellMarker(
-              resultList[i]["name"].toString(),
-              resultList[i]["id"],
-              resultList[i]["status"].toString(),
-              resultList[i]["location"]["latitude"].toDouble(),
-              resultList[i]["location"]["longitude"].toDouble()));
-
-          wellMarkersMap[resultList[i]["name"].toString()] = wells[i].marker;
-        }
       }
+
+      print("WellRadius - found: " + wellMarkersMap.toString());
     }
     return wellMarkersMap;
   }).catchError((error) {
@@ -134,9 +132,6 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
 
 void loadAllWellTypes() {
   getAllWellTypes().then((response) {
-    print("TypeResponse: " + response.statusCode.toString());
-    print("TypeResponse: " + response.body.toString());
-
     Iterable result = json.decode(response.body);
     var resultList = result.toList();
 
