@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
@@ -46,6 +48,10 @@ class _WellInfoState extends State<WellInfo> {
     wellMap,
     addWell
   ];
+
+  printSomething(String message) {
+    print(message);
+  }
 
   @override
   void initState() {
@@ -162,24 +168,36 @@ class _WellInfoState extends State<WellInfo> {
                                     ];
                                   }
                                   children = <Widget>[
-                                    Icon(
-                                      Icons.check_circle_outline,
-                                      color: Colors.green,
-                                      size: 60,
-                                    ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 16),
-                                child: Card(
-                                child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                            for (var item in snapshot.data) Card(
-                                                child: Text((DateFormat("dd/MM/yyyy").format(DateTime.parse(item.creationDate)) + ": " + item.description.toString() + ". Open: " + item.open.toString()))
-                                            ),
-                                            ],
-                                ),
-                                ),
-                                        ),
+                                      child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: snapshot.data.length,
+                                          itemBuilder: (context, index) {
+                                            final item = snapshot.data[index];
+                                            return Dismissible(
+                                              key: Key(item.id.toString()),
+                                              onDismissed: (direction) {
+                                                // Remove the item from the data source.
+                                                setState(() {
+                                                  print(direction.toString());
+                                                  snapshot.data.removeAt(index);
+                                                  // @todo call function that mars as solved
+                                                });
+
+                                                // Then show a snackbar.
+                                                Scaffold.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                        content: Text(
+                                                            "${item.description} marked as solved")));
+                                              },
+                                              background:
+                                                  Container(color: Colors.red),
+                                              child: ListTile(
+                                                  title: Text('${DateFormat('dd/MM/yyyy').format(DateTime.parse(item.creationDate))}: ${item.description}')),
+                                            );
+                                          }),
+                                    )
                                   ];
                                 } else if (snapshot.hasError) {
                                   print("Snapshot for issues (error): " +
