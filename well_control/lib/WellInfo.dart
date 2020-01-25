@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:well_control/AddWell.dart';
@@ -151,33 +152,34 @@ class _WellInfoState extends State<WellInfo> {
                                   AsyncSnapshot<List<WellIssue>> snapshot) {
                                 List<Widget> children;
                                 if (snapshot.hasData) {
-                                  print("Snapshot for issues: " +
-                                      snapshot.toString());
                                   if (snapshot.data.length == 0) {
                                     children = <Widget>[
-                                Icon(
-                                Icons.check_circle_outline,
-                                color: Colors.green,
-                                size: 60,
-                                ),
-                                ];
+                                      Icon(
+                                        Icons.check_circle_outline,
+                                        color: Colors.green,
+                                        size: 60,
+                                      ),
+                                    ];
                                   }
                                   children = <Widget>[
-                                  Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.green,
-                                  size: 60,
-                                  ),
+                                    Icon(
+                                      Icons.check_circle_outline,
+                                      color: Colors.green,
+                                      size: 60,
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.only(top: 16),
-                                      child: Card (
-                                        child: Column(
-                                      children: <Widget>[
-                                        for (var item in snapshot.data) Text(item.description.toString())
-                                ],
+                                child: Card(
+                                child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                            for (var item in snapshot.data) Card(
+                                                child: Text((DateFormat("dd/MM/yyyy").format(DateTime.parse(item.creationDate)) + ": " + item.description.toString() + ". Open: " + item.open.toString()))
+                                            ),
+                                            ],
                                 ),
                                 ),
-                                    ),
+                                        ),
                                   ];
                                 } else if (snapshot.hasError) {
                                   print("Snapshot for issues (error): " +
@@ -267,7 +269,7 @@ class _WellInfoState extends State<WellInfo> {
                   ],
                 ),
               ));
-            } else if(snapshot.hasError) {
+            } else if (snapshot.hasError) {
               print("Error when getting data!");
               return Center(
                 child: Column(
@@ -275,11 +277,11 @@ class _WellInfoState extends State<WellInfo> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(height: 50),
-                  Text("Error: " + snapshot.error.toString()),
+                    Text("Error: " + snapshot.error.toString()),
                   ],
                 ),
               );
-          } else  {
+            } else {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
