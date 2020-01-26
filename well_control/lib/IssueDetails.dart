@@ -1,19 +1,14 @@
 import 'package:well_control/WellIssue.dart';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:well_control/RepairInformation.dart';
-import 'package:well_control/ReportWell.dart';
-import 'package:well_control/Settings.dart';
 import 'package:well_control/WellIssueLibrary.dart';
-import 'package:well_control/WellMap.dart';
 import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
 import 'WellIssue.dart';
-import 'WellMarker.dart';
 import 'WellUpdate.dart';
 import 'UserLibrary.dart' as users;
 
@@ -41,6 +36,8 @@ class IssueDetails extends StatefulWidget {
 class _IssueDetailsState extends State<IssueDetails> {
   WellIssue wellIssue;
 
+  Future<WellIssue> issueFuture;
+
   _IssueDetailsState(this.wellIssue);
 
   /// Stores menu item title for reporting malfunction.
@@ -54,11 +51,10 @@ class _IssueDetailsState extends State<IssueDetails> {
     print(message);
   }
 
-  ScrollController _controller = new ScrollController();
-
   @override
   void initState() {
     super.initState();
+    issueFuture = getSpecificIssue(wellIssue.id);
   }
 
   @override
@@ -84,17 +80,19 @@ class _IssueDetailsState extends State<IssueDetails> {
             )
           ],
         ),
-        body: Center(child: FutureBuilder(
+        body: Center(
+            child: FutureBuilder(
+          future: issueFuture,
           builder: (BuildContext context, AsyncSnapshot<WellIssue> snapshot) {
-            return SingleChildScrollView(
-                child: Center(
-              child: Column(
+            if (snapshot.hasData) {
+              return SingleChildScrollView(
+                  child: Column(
                 children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 90,
-                        ),
+                  Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 90,
+                  ),
                   Card(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -145,11 +143,11 @@ class _IssueDetailsState extends State<IssueDetails> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        if (wellIssue.confirmedBy!= null)
+                        if (wellIssue.confirmedBy != null)
                           ListTile(
-                          title: Text('Confirmed by'),
-                          subtitle: Text(wellIssue.confirmedBy),
-                        ),
+                            title: Text('Confirmed by'),
+                            subtitle: Text(wellIssue.confirmedBy),
+                          ),
                         if (wellIssue.confirmedBy == null)
                           ListTile(
                             title: Text('Confirmed by'),
@@ -162,14 +160,15 @@ class _IssueDetailsState extends State<IssueDetails> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          if (wellIssue.brokenParts != null)
+                          if (snapshot.data.brokenParts != null)
                             ListTile(
                               title: Text('Broken part:'),
-                              subtitle: Text(wellIssue.brokenParts.first.name +
+                              subtitle: Text(snapshot
+                                      .data.brokenParts.first.name +
                                   "; condition: " +
-                                  wellIssue.brokenParts.first.description),
+                                  snapshot.data.brokenParts.first.description),
                             ),
-                          if (wellIssue.brokenParts == null)
+                          if (snapshot.data.brokenParts == null)
                             ListTile(
                               title: Text('Broken part'),
                               subtitle: Text("No part was specified."),
@@ -214,8 +213,22 @@ class _IssueDetailsState extends State<IssueDetails> {
                     ),
                   ),
                 ],
-              ),
-            ));
+              ));
+            } else if (snapshot.hasError) {
+              return Text("Error while loading data.");
+            } else {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    SizedBox(height: 50),
+                    Text("Loading..."),
+                  ],
+                ),
+              );
+            }
           },
         )));
   }
