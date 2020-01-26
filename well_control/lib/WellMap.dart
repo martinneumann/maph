@@ -64,7 +64,7 @@ class _WellMapState extends State<WellMap> {
   String locationMarkerName = wellList.userLocationMarkerName;
 
   /// Stores [searchRadius] of nearby wells referred to user's position.
-  int searchRadius = 400000;
+  int searchRadius = 40000;
 
   /// Stores color of gps icon at beginning.
   Color userLocationMarkerColor = Color.fromARGB(255, 200, 0, 0);
@@ -295,7 +295,7 @@ class _WellMapState extends State<WellMap> {
             userLocation['longitude'], searchRadius);
 
         wellList.setUserPositionMarker(location);
-        mapController.move(location, 5);
+        mapController.move(location, 10);
       }
       else {
         userLocated = false;
