@@ -1,9 +1,15 @@
+/// Simulates account of technician.
 bool technician = false;
-bool admin = false;
+
+/// Simulates account of admin.
+bool admin = true;
+
+/// Simulates account of user.
 bool basicUser = false;
 
 /// Returns the currently active user as a string.
-/// At startup on the map scree, user is set to "BasicUser".
+///
+/// At startup, user is set to "Admin".
 getActiveUser() {
   if (technician) return "Technician";
   if (admin) return "Admin";

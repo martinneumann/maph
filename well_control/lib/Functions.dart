@@ -23,12 +23,16 @@ Future<http.Response> getAllIssues() {
   return http.get(wellApiUrl + 'Issue/GetAll');
 }
 
-/// Get one specific issue by Id.
+/// Response returns well issue by given [id] as [http.Response]
+///
+/// Sends get-request to get specific issue by given id.
 Future<http.Response> getIssueById(int id) {
   return http.get(wellApiUrl + 'Issue/GetIssue/$id');
 }
 
-/// Gets one well's issues
+/// Response returns all issues of one well as [http.Response]
+///
+/// Sends get-request to get all issues of one well by given [wellId].
 Future<http.Response> getWellIssues(String wellId) {
   print("Getting issue with: "  + wellId.toString());
   return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
@@ -70,7 +74,6 @@ Future<http.Response> updateIssue(WellIssue issue) {
       body: body);
 }
 
-/// Gets all wells
 /// Response returns all wells as [http.Response]
 ///
 /// Sends get-request to get all wells.

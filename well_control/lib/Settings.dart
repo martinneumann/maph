@@ -5,19 +5,26 @@ import 'package:well_control/WellOverview.dart';
 
 import 'UserLibrary.dart' as users;
 
+/// Class provides view for app settings.
 class Settings extends StatefulWidget {
   Settings({Key key, this.title}) : super(key: key);
 
+  /// Title of view.
   final String title;
 
   @override
   _SettingsState createState() => _SettingsState();
 }
-
+/// State includes all elements for this view
 class _SettingsState extends State<Settings> {
+
+  /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[wellOverview, wellMap];
 
   @override
@@ -182,9 +189,15 @@ class _SettingsState extends State<Settings> {
             )));
   }
 
+  /// Stores radio button value.
   int radioValue = 0;
+
+  /// Check if sound or vibration [Switch] is switched.
   bool isSwitched = true;
 
+  /// Change role of current user
+  ///
+  /// Method change role to admin, technician or normal user.
   void _handleRadioChange(int val) {
     setState(() {
       radioValue = val;
@@ -209,6 +222,9 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == wellMap) {
       Navigator.push(
@@ -223,12 +239,3 @@ class _SettingsState extends State<Settings> {
     }
   }
 }
-
-/*
-
-
-
-
-                      ]).toList()),
-
- */
