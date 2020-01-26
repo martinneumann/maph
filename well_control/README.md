@@ -1,19 +1,13 @@
 # well_control
 
-A application, that is created with programming language Flutter/Dart.
+An application, that is created with programming language Flutter/Dart.
 
 ## Installation
 
-If you want to install this application on Android, you can find the executable here:
+If you want to install this application on Android, you will find the executable here:
 ```
-
+maph/app.apk
 ```
-
-otherwise the executable file for IOS is here:
-```
-
-```
-
 
 If you want to program some new ideas for that application, downloading this repository and open
 the well_control directory with an IDE.
@@ -28,4 +22,4 @@ You can find the documentation of source code here:
 well_control/doc/api
 ```
 
-The documentation was created with dardoc and provides the documentation as local html-files.
+The documentation was created with dardoc and provides the documentation as local html-website.
