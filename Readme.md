@@ -12,7 +12,7 @@ A mobile application that helps disadvantaged communities take care of their wat
 
 For a complete feature tour, see [the feature page on the wiki.](https://github.com/martinneumann/maph/wiki/Features)
 
-![](https://i.imgur.com/wI7PJc9.jpg)
+![](https://i.imgur.com/wI7PJc9.jpg=250x)
 
 # Collaborators (Gruppe 2)
 
