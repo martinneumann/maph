@@ -187,7 +187,6 @@ class _IssueDetailsState extends State<IssueDetails> {
                           color: Theme.of(context).primaryColor,
                           icon: Icon(Icons.thumb_up),
                           onPressed: () {
-                            print("Confirmed Issue!");
                             wellIssue.confirmedBy =
                                 users.getActiveUser().toString();
                             print(wellIssue.confirmedBy);

@@ -91,21 +91,15 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
 /// Get one specific issue by Id. Returns a Future that resolves to one specific issue.
 /// [id] The issue's id.
 Future<WellIssue> getSpecificIssue(int id) {
-  print("Getting specific issue");
   return getIssueById(id).then((response) {
     var decodedResult = json.decode(response.body);
     Part tempPart = new Part();
     List<Part> partList = [];
-    print(decodedResult.toString());
     if (decodedResult["brokenParts"].length != 0) {
-      print("Parts " + decodedResult["brokenParts"].toString());
       tempPart.name = decodedResult["brokenParts"][0]["name"];
       tempPart.description = decodedResult["brokenParts"][0]["description"];
       tempPart.id = decodedResult["brokenParts"][0]["id"];
       partList.add(tempPart);
-    } else {
-      print("Broken parts is null");
-
     }
     WellIssue tempIssue = new WellIssue(
         decodedResult["id"],
