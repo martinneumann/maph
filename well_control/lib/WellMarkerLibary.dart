@@ -123,7 +123,7 @@ Future<Map<String, Marker>> getWellMarkersByRadius(double latitude,
       for (var i = 0; i < resultList.length; i++) {
         for (int j = 0; j < wells.length; j++) {
           if (wells[j].wellId.compareTo(resultList[i]["id"]) == 0) {
-            wellMarkersMap[resultList[i]["name"].toString()] = wells[i].marker;
+            wellMarkersMap[resultList[i]["name"].toString()] = wells[j].marker;
             break;
           }
         }
