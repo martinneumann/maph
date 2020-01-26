@@ -16,6 +16,7 @@ class WellUpdate extends StatefulWidget {
 
   /// Gets [WellMarker] object from other view to update this.
   final WellMarker well;
+
   /// Title of view.
   final String title;
 

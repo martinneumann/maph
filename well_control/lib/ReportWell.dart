@@ -12,23 +12,39 @@ import 'Settings.dart';
 import 'WellMarker.dart';
 import 'WellOverview.dart';
 
+/// Class provides view to report a issue for one well.
 class ReportWell extends StatefulWidget {
   ReportWell({Key key, this.title, this.well}) : super(key: key);
 
+  /// Gets [WellMarker] object from other view to update this.
   final WellMarker well;
+
+  /// Title of view.
   final String title;
 
   @override
   _ReportWellState createState() => _ReportWellState();
 }
 
+/// State includes all elements for view of [ReportWell].
 class _ReportWellState extends State<ReportWell> {
+
+  /// Key identifies form for validation.
   final _formKey = GlobalKey<FormState>();
+
+  /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for settings.
   static const settings = "Settings";
+
+  /// Stores menu item title for repair information.
   static const repairInformation = "Repair Help";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellOverview,
     wellMap,
@@ -36,18 +52,23 @@ class _ReportWellState extends State<ReportWell> {
     repairInformation,
   ];
 
+  /// Stores name of selected well part.
   String _selectedPart;
+
+  /// Stores available well parts.
   List<String> parts = new List<String>();
 
+  /// Stores selected image, that was included by user.
   Future<File> _imageFile;
+
+  /// Stores user description of issue.
+  final textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     widget.well.wellParts.forEach((key, value) => parts.add(key));
   }
-
-  final textController = TextEditingController();
 
   @override
   void dispose() {
@@ -168,10 +189,15 @@ class _ReportWellState extends State<ReportWell> {
         ));
   }
 
+  /// Display dialog to select an image.
   void _displayOptionsDialog() async {
     await _optionsDialogBox();
   }
 
+  /// Dialog box shows two options to upload an image.
+  ///
+  /// Option one: take a image from camera.
+  /// Option two: select image from gallery.
   Future<void> _optionsDialogBox() {
     return showDialog(
         context: context,
@@ -199,6 +225,7 @@ class _ReportWellState extends State<ReportWell> {
         });
   }
 
+  /// Stores image from camera.
   void imageSelectorCamera() async {
     Navigator.pop(context);
 
@@ -207,6 +234,7 @@ class _ReportWellState extends State<ReportWell> {
     });
   }
 
+  /// Stores image from gallery.
   void imageSelectorGallery() async {
     Navigator.pop(context);
 
@@ -215,6 +243,7 @@ class _ReportWellState extends State<ReportWell> {
     });
   }
 
+  /// Widget shows selected image on this view.
   Widget showImage() {
     return FutureBuilder<File>(
       future: _imageFile,
@@ -238,6 +267,9 @@ class _ReportWellState extends State<ReportWell> {
     );
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
@@ -258,6 +290,9 @@ class _ReportWellState extends State<ReportWell> {
     }
   }
 
+  /// Create issue of selected [WellMarker].
+  ///
+  /// Posts user input to create a new issue for this well at database.
   void createIssue() async {
     var data = {};
 

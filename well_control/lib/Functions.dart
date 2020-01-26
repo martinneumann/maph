@@ -23,18 +23,24 @@ Future<http.Response> getAllIssues() {
   return http.get(wellApiUrl + 'Issue/GetAll');
 }
 
-/// Get one specific issue by Id.
+/// Response returns well issue by given [id] as [http.Response]
+///
+/// Sends get-request to get specific issue by given id.
 Future<http.Response> getIssueById(int id) {
   return http.get(wellApiUrl + 'Issue/GetIssue/$id');
 }
 
-/// Gets one well's issues
+/// Response returns all issues of one well as [http.Response]
+///
+/// Sends get-request to get all issues of one well by given [wellId].
 Future<http.Response> getWellIssues(String wellId) {
   print("Getting issue with: "  + wellId.toString());
   return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
 }
 
-/// Set issue to closed
+/// Post [id] to close that issue.
+///
+/// Sends post-request to set status of issue to close by given issue [id].
 Future<http.Response> closeIssue(int id) {
   var body = ' { "id": $id, "open": false }';
   return http.post(wellApiUrl + 'Issue/UpdateIssue',
@@ -42,7 +48,9 @@ Future<http.Response> closeIssue(int id) {
       body: body);
 }
 
-/// Update issue data
+/// Post new data of issue for update.
+///
+/// Sends post-request to update one issue.
 Future<http.Response> updateIssue(WellIssue issue) {
   var data = {};
   data["id"] = issue.id;
@@ -66,7 +74,6 @@ Future<http.Response> updateIssue(WellIssue issue) {
       body: body);
 }
 
-/// Gets all wells
 /// Response returns all wells as [http.Response]
 ///
 /// Sends get-request to get all wells.

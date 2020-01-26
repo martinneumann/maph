@@ -12,18 +12,26 @@ import 'WellIssue.dart';
 import 'WellUpdate.dart';
 import 'UserLibrary.dart' as users;
 
+/// Class provides view of issue in details.
 class IssueDetails extends StatefulWidget {
   IssueDetails({Key key, this.title, this.issue}) : super(key: key);
 
+  /// Title of view.
   final String title;
+
+  /// Gets clicked [WellIssue] form other view.
   final WellIssue issue;
 
+  /// Stores menu item title for update well.
   static const wellUpdate = "Change Well info";
 
-  /// Stores menu item title for reporting malfunction.
+  /// Stores menu item title for settings.
   static const settings = "Settings";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     settings,
     wellMap,
@@ -34,22 +42,21 @@ class IssueDetails extends StatefulWidget {
 }
 
 class _IssueDetailsState extends State<IssueDetails> {
+  /// Stores current [WellIssue].
   WellIssue wellIssue;
 
+  /// Stores downloaded issue.
   Future<WellIssue> issueFuture;
 
   _IssueDetailsState(this.wellIssue);
 
-  /// Stores menu item title for reporting malfunction.
+  /// Stores menu item title for map.
   static const wellMap = "Back to Map";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellMap,
   ];
-
-  printSomething(String message) {
-    print(message);
-  }
 
   @override
   void initState() {
@@ -233,6 +240,9 @@ class _IssueDetailsState extends State<IssueDetails> {
         )));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == wellMap) {
       Navigator.push(

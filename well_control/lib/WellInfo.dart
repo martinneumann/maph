@@ -16,32 +16,53 @@ import 'WellIssue.dart';
 import 'WellMarker.dart';
 import 'WellUpdate.dart';
 
+
+/// Class provides view of selected well.
+///
+/// View shows all well data and actions
 class WellInfo extends StatefulWidget {
   WellInfo({Key key, this.title, this.well}) : super(key: key);
 
+  /// Gets [WellMarker] object from other view to show well data.
   final WellMarker well;
+  /// Title of view.
   final String title;
 
   @override
   _WellInfoState createState() => _WellInfoState(well);
 }
 
+/// State includes all elements to show well data and menu items.
 class _WellInfoState extends State<WellInfo> {
+
+  /// Stores response message after downloaded well data.
   Future<String> wellInfos;
+
+  /// Stores list of [WellIssue] objects from well onject.
   Future<List<WellIssue>> wellIssues;
 
+  /// Stores wells as [WellMarker] object.
   WellMarker wellMarker;
 
-  _WellInfoState(this.wellMarker);
+  /// Handle scrollable content.
+  ScrollController _controller = new ScrollController();
 
+  /// Stores menu item title for well update.
   static const wellUpdate = "Change Well info";
 
   /// Stores menu item title for reporting malfunction.
   static const report = "Report Malfunction";
+
+  /// Stores menu item title for ap settings.
   static const settings = "Settings";
+
+  /// Stores menu item title for map.
   static const wellMap = "Map Overview";
+
+  /// Stores menu item title for delete this well.
   static const wellDelete = "Delete Well";
 
+  /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
     wellUpdate,
     report,
@@ -50,11 +71,7 @@ class _WellInfoState extends State<WellInfo> {
     wellDelete
   ];
 
-  printSomething(String message) {
-    print(message);
-  }
-
-  ScrollController _controller = new ScrollController();
+  _WellInfoState(this.wellMarker);
 
   @override
   void initState() {
@@ -375,6 +392,9 @@ class _WellInfoState extends State<WellInfo> {
         )));
   }
 
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
   void choiceAction(String choice) {
     if (choice == wellUpdate) {
       Navigator.push(
@@ -404,11 +424,10 @@ class _WellInfoState extends State<WellInfo> {
     }
   }
 
+  /// Download and store well data from server.
   ///
-  /// Future for well issue list.
-  ///
-
-  /// Future for well infos.
+  /// Downloads well data by given well id from database.
+  /// Data are stored is [WellMarker] object.
   Future<String> getWellInfos(WellMarker well) async {
     var result;
 
@@ -436,6 +455,9 @@ class _WellInfoState extends State<WellInfo> {
     });
   }
 
+  /// Delete well
+  ///
+  /// Deletes current well und updates [wellMarkersMap].
   Future<String> requestDelete(int wellId) async {
     await deleteWell(wellId).then((response) {
       print("Delete Resposne: " + response.statusCode.toString());
@@ -446,6 +468,7 @@ class _WellInfoState extends State<WellInfo> {
     return 'Deleted';
   }
 
+  /// Shows picture of well.
   Widget image = Card(
     child: Column(
       mainAxisSize: MainAxisSize.min,
