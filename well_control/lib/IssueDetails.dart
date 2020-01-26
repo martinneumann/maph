@@ -160,7 +160,7 @@ class _IssueDetailsState extends State<IssueDetails> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          if (snapshot.data.brokenParts != null)
+                          if (snapshot.data.brokenParts.length != 0)
                             ListTile(
                               title: Text('Broken part:'),
                               subtitle: Text(snapshot
@@ -168,7 +168,7 @@ class _IssueDetailsState extends State<IssueDetails> {
                                   "; condition: " +
                                   snapshot.data.brokenParts.first.description),
                             ),
-                          if (snapshot.data.brokenParts == null)
+                          if (snapshot.data.brokenParts.length == 0)
                             ListTile(
                               title: Text('Broken part'),
                               subtitle: Text("No part was specified."),

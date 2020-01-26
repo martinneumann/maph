@@ -16,6 +16,7 @@ import 'WellIssue.dart';
 import 'WellMarker.dart';
 import 'WellUpdate.dart';
 
+/// Shows information about one specific well.
 class WellInfo extends StatefulWidget {
   WellInfo({Key key, this.title, this.well}) : super(key: key);
 
@@ -62,6 +63,7 @@ class _WellInfoState extends State<WellInfo> {
     wellIssues = getOpenIssuesOfWell(widget.well.wellId.toString());
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {

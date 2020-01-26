@@ -5,14 +5,13 @@ import 'dart:convert';
 import 'package:well_control/Functions.dart';
 import 'package:well_control/WellIssue.dart';
 
-/// Issue list
-List<WellIssue> issues = <WellIssue>[];
 
-/// Get all global issues
+/// Get all global issues. Returns a Future that resolves to an issue list.
 Future<List<WellIssue>> getIssues() {
   return getAllIssues().then((response) {
     // fill list
     Iterable result = json.decode(response.body);
+    List<WellIssue> issues = <WellIssue>[];
     var resultList = result.toList();
     print('Result ' + resultList.toString());
     for (var i = 0; i < resultList.length; i++) {
@@ -32,7 +31,8 @@ Future<List<WellIssue>> getIssues() {
   });
 }
 
-/// Get issues of specific well
+/// Get issues of specific well. Returns a Future that resolves to an issue list for one specific well.
+/// [wellId] The well the issues should be returned for.
 Future<List<WellIssue>> getIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
     Iterable decodedResult = json.decode(response.body);
@@ -58,7 +58,9 @@ Future<List<WellIssue>> getIssuesOfWell(String wellId) {
 }
 
 
-/// Get issues of specific well
+/// Get open issues of specific well. Returns a Future that resolves to an issue list
+/// of only open issues of that specific well.
+/// [wellId] The well's Id.
 Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
     Iterable decodedResult = json.decode(response.body);
@@ -86,17 +88,25 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
 }
 
 
-/// Get one specific issue by Id
+/// Get one specific issue by Id. Returns a Future that resolves to one specific issue.
+/// [id] The issue's id.
 Future<WellIssue> getSpecificIssue(int id) {
   print("Getting specific issue");
   return getIssueById(id).then((response) {
     var decodedResult = json.decode(response.body);
     Part tempPart = new Part();
-    tempPart.name = decodedResult["brokenParts"][0]["name"];
-    tempPart.description = decodedResult["brokenParts"][0]["description"];
-    tempPart.id = decodedResult["brokenParts"][0]["id"];
     List<Part> partList = [];
-    partList.add(tempPart);
+    print(decodedResult.toString());
+    if (decodedResult["brokenParts"].length != 0) {
+      print("Parts " + decodedResult["brokenParts"].toString());
+      tempPart.name = decodedResult["brokenParts"][0]["name"];
+      tempPart.description = decodedResult["brokenParts"][0]["description"];
+      tempPart.id = decodedResult["brokenParts"][0]["id"];
+      partList.add(tempPart);
+    } else {
+      print("Broken parts is null");
+
+    }
     WellIssue tempIssue = new WellIssue(
         decodedResult["id"],
         decodedResult["wellId"],
