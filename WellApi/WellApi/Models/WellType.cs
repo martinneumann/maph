@@ -12,7 +12,13 @@ namespace WellApi.Models
         public Part[] Parts { get; set; }
         public string Particularity { get; set; }
     }
-
+    public class WellTypeWithPrediction
+    {
+        public int? Id { get; set; }
+        public string Name { get; set; }
+        public PartWithPrediction[] Parts { get; set; }
+        public string Particularity { get; set; }
+    }
     public class NewWellType
     {
         public string Name { get; set; }

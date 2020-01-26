@@ -137,7 +137,7 @@ namespace WellApi.Controllers
         {
             try
             {
-                int affected = DB.ExecuteDeleteIssue(id);
+                int affected = DB.DeleteIssue(id);
                 if (affected > 0)
                     return Ok(id);
                 return BadRequest("Nothing Deleted!");

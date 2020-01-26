@@ -194,7 +194,7 @@ namespace WellApi.Controllers
         {
             try
             {
-                int affected = DB.ExecuteDeleteWell(id);
+                int affected = DB.DeleteWell(id);
                 if (affected > 0)
                     return Ok(id);
                 return BadRequest("Nothing Deleted!");

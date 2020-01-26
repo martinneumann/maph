@@ -11,16 +11,15 @@ namespace WellApi.Models
         {
             Location = new Location();
             FundingInfo = new FundingInfo();
-            WellType = new WellType();
+            WellType = new WellTypeWithPrediction();
         }
         public int? Id { get; set; }
         public string Name { get; set; }
         public string Status { get; set; }
-        public DateTime? PredictedMaintenance { get; set; }
         public MaintenanceLog[] MaintenanceLogs { get; set; }
         public Location Location { get; set; }
         public FundingInfo FundingInfo { get; set; }
-        public WellType WellType { get; set; }
+        public WellTypeWithPrediction WellType { get; set; }
     }
 
     public class NewWell

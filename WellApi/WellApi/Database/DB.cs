@@ -61,7 +61,19 @@ namespace WellApi
             int affected = ExecuteUpdateWell(changedWell);
             return affected;
         }
-
+        public static int DeleteWell(int? wellId)
+        {
+            Issue[] issues = DB.ExecuteSelectIssuesFromWell(wellId);
+            if (issues == null)
+                return 0;
+            int affected = 0;
+            foreach (Issue issue in issues)
+            {
+                affected += DB.ExecuteDeleteBrokenParts(issue.Id);
+            }
+            affected += DB.ExecuteDeleteWell(wellId);
+            return affected;
+        }
         // Single SQL Querry
 
         public static SmallWell[] ExecuteSelectNearbySmallWells(LocationForSearch locationForSearch)
@@ -107,9 +119,9 @@ namespace WellApi
                         smallWell.Status = reader.GetString(2);
                     smallWell.Location = new Location();
                     if (!reader.IsDBNull(3))
-                        smallWell.Location.Longitude = reader.GetDouble(3);
+                        smallWell.Location.Latitude = reader.GetDouble(3);
                     if (!reader.IsDBNull(4))
-                        smallWell.Location.Latitude = reader.GetDouble(4);
+                        smallWell.Location.Longitude = reader.GetDouble(4);
                     smallWells.Add(smallWell);
                 }
             }
@@ -207,18 +219,18 @@ namespace WellApi
             sqlCommand.Connection.Close();
             return maintenanceLogs.ToArray();
         }
-        public static Part[] ExecuteSelectWellParts(int? wellTypeId)
+        public static PartWithPrediction[] ExecuteSelectWellParts(int? wellTypeId)
         {
             SqlCommand sqlCommand = SqlQuerry.SelectWellParts(wellTypeId);
             if (sqlCommand == null)
                 return null;
-            List<Part> parts = new List<Part>();
+            List<PartWithPrediction> parts = new List<PartWithPrediction>();
             sqlCommand.Connection = ConnectToDb();
             using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    Part part = new Part();
+                    PartWithPrediction part = new PartWithPrediction();
                     if (!reader.IsDBNull(0))
                         part.Id = reader.GetInt32(0);
                     if (!reader.IsDBNull(1))
@@ -283,7 +295,7 @@ namespace WellApi
             sqlCommand.Connection.Close();
             return id;
         }
-        public static int ExecuteDeleteWell(int wellId)
+        public static int ExecuteDeleteWell(int? wellId)
         {
             SqlCommand sqlCommand = SqlQuerry.DeleteWell(wellId);
             if (sqlCommand == null)
@@ -392,16 +404,7 @@ namespace WellApi
                     ExecuteInsertBrokenPart(brokenPartId, issueId);
                 }
             }
-            string status = ExecuteSelectWellStatus(newIssue.WellId);
-            if (status != null && status == "green")
-            {
-                if (newIssue.ConfirmedBy == null || newIssue.ConfirmedBy == "")
-                    ExecuteUpdateWellStatus(newIssue.WellId, "yellow");
-                else if (newIssue.Works == false && status != "red")
-                {
-                    ExecuteUpdateWellStatus(newIssue.WellId, "red");
-                }
-            }
+            UpdateWellStatusfromIssues(newIssue.WellId);
             MaintenanceLog maintenanceLog = new MaintenanceLog
             {
                 Description = $"Issue #{issueId} created",
@@ -464,42 +467,7 @@ namespace WellApi
             // Get complete Issue
             Issue issue = ExecuteSelectIssue(updateIssue.Id);
             //Update well
-            if (issue.Open == false)
-            {
-                SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
-                bool allClosed = true;
-                foreach (SmallIssue smallIssue in smallIssues)
-                {
-                    Issue otherIssue = ExecuteSelectIssue(smallIssue.Id);
-                    if (otherIssue.Open == true)
-                    {
-                        allClosed = false;
-                        break;
-                    }
-                }
-                if (allClosed)
-                    ExecuteUpdateWellStatus(issue.WellId, "green");
-            }
-            else if (issue.ConfirmedBy == null || issue.ConfirmedBy == "")
-            {
-                SmallIssue[] smallIssues = ExecuteSelectSmallIssues();
-                bool NoConfirmedIssues = true;
-                foreach (SmallIssue smallIssue in smallIssues)
-                {
-                    Issue otherIssue = ExecuteSelectIssue(smallIssue.Id);
-                    if (otherIssue.Works == false && otherIssue.ConfirmedBy != null && otherIssue.ConfirmedBy.Length > 0)
-                    { 
-                        NoConfirmedIssues = false;
-                        break;
-                    }
-                }
-                if (NoConfirmedIssues)
-                    ExecuteUpdateWellStatus(issue.WellId, "yellow");
-            }
-            else if (issue.Works == false)
-            {
-                ExecuteUpdateWellStatus(issue.WellId, "red");
-            }
+            UpdateWellStatusfromIssues(issue.WellId);
 
             MaintenanceLog maintenanceLog = new MaintenanceLog
             {
@@ -511,9 +479,9 @@ namespace WellApi
                 issue.ConfirmedBy.Length > 0)
                 maintenanceLog.Confirmed = true;
             ExecuteInsertMaintenanceLog(maintenanceLog, issue.WellId);
+
             return affected;
         }
-
         public static RepairHelpForPart GetRepairHelpForPart(int? partId)
         {
             if (partId == null)
@@ -522,6 +490,40 @@ namespace WellApi
             repairHelpForPart.RepairHelps = ExecuteSelectRepairHelps(partId);
             repairHelpForPart.PartToRepair = ExecuteSelectPart(partId);
             return repairHelpForPart;
+        }
+        public static void UpdateWellStatusfromIssues(int? wellId)
+        {
+            Issue[] issues = ExecuteSelectIssuesFromWell(wellId);
+            if (issues == null)
+                return;
+            bool IssuesOpen = false;
+            foreach (Issue issue in issues)
+            {
+                if (issue.Open == true)
+                {
+                    IssuesOpen = true;
+                    if (issue.ConfirmedBy != null && issue.ConfirmedBy != "" && issue.Works == false)
+                    {
+                        ExecuteUpdateWellStatus(issue.WellId, "red");
+                        return;
+                    }
+                }
+            }
+            if (IssuesOpen)
+                ExecuteUpdateWellStatus(wellId, "yellow");
+            else
+                ExecuteUpdateWellStatus(wellId, "green");
+        }
+        public static int DeleteIssue(int issueId)
+        {
+            int affected = ExecuteDeleteIssue(issueId);
+            if (affected == 0)
+                return 0;
+            // Get complete Issue
+            Issue issue = ExecuteSelectIssue(issueId);
+            //Update well
+            UpdateWellStatusfromIssues(issue.WellId);
+            return affected;
         }
         // Single SQL Querry
 
@@ -679,6 +681,16 @@ namespace WellApi
         public static int ExecuteDeleteBrokenPart(int? partId, int? issueId)
         {
             SqlCommand sqlCommand = SqlQuerry.DeleteBrokenPart(partId, issueId);
+            if (sqlCommand == null)
+                return 0;
+            sqlCommand.Connection = ConnectToDb();
+            int affected = sqlCommand.ExecuteNonQuery();
+            sqlCommand.Connection.Close();
+            return affected;
+        }
+        public static int ExecuteDeleteBrokenParts(int? issueId)
+        {
+            SqlCommand sqlCommand = SqlQuerry.DeleteBrokenParts(issueId);
             if (sqlCommand == null)
                 return 0;
             sqlCommand.Connection = ConnectToDb();

@@ -54,7 +54,7 @@ namespace WellApi.Controllers
         /// <param name="wellTypeId"></param> 
         [HttpGet("{wellTypeId}")]
         [ActionName("ExecuteSelectWellParts")]
-        public Part[] ExecuteSelectWellParts(int wellTypeId)
+        public PartWithPrediction[] ExecuteSelectWellParts(int wellTypeId)
         {
             return DB.ExecuteSelectWellParts(wellTypeId);
         }

@@ -265,7 +265,7 @@ namespace WellApi
 
         public static SqlCommand UpdatePart(Part part)
         {
-            if (part == null || part.Id == 0 || part.Name == null && part.Description == null)
+            if (part == null || part.Id == null || part.Name == null && part.Description == null)
                 return null;
             StringBuilder sb = new StringBuilder();
             sb.Append("UPDATE [well].[dbo].[Part] ");
@@ -579,6 +579,18 @@ namespace WellApi
             SqlCommand sqlCommand = new SqlCommand(sb.ToString());
             sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
             sqlCommand.Parameters.AddWithValue("@PartId", partId);
+            return sqlCommand;
+        }
+        public static SqlCommand DeleteBrokenParts(int? issueId)
+        {
+            if (issueId == null)
+                return null;
+            StringBuilder sb = new StringBuilder();
+            sb.Append("DELETE ");
+            sb.Append("FROM [well].[dbo].[BrokenParts] ");
+            sb.Append($"WHERE (IssueId = @IssueId);");
+            SqlCommand sqlCommand = new SqlCommand(sb.ToString());
+            sqlCommand.Parameters.AddWithValue("@IssueId", issueId);
             return sqlCommand;
         }
     }
