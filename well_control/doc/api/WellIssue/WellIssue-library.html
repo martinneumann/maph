@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="WellIssue library API docs, for the Dart programming language.">
+  <title>WellIssue library - Dart API</title>
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="..">
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+  
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="index.html">well_control</a></li>
+    <li class="self-crumb">WellIssue library</li>
+  </ol>
+  <div class="self-name">WellIssue</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+      <form class="search-sidebar" role="search">
+        <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+      </form>
+    </header>
+    
+    <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+      <li><a href="index.html">well_control</a></li>
+      <li class="self-crumb">WellIssue library</li>
+    </ol>
+    
+    <h5><span class="package-name">well_control</span> <span class="package-kind">package</span></h5>
+    <ol>
+          <li class="section-title">Libraries</li>
+          <li><a href="AddWell/AddWell-library.html">AddWell</a></li>
+          <li><a href="Functions/Functions-library.html">Functions</a></li>
+          <li><a href="IssueDetails/IssueDetails-library.html">IssueDetails</a></li>
+          <li><a href="PrivacyPolicy/PrivacyPolicy-library.html">PrivacyPolicy</a></li>
+          <li><a href="RepairInformation/RepairInformation-library.html">RepairInformation</a></li>
+          <li><a href="ReportWell/ReportWell-library.html">ReportWell</a></li>
+          <li><a href="Settings/Settings-library.html">Settings</a></li>
+          <li><a href="UserLibrary/UserLibrary-library.html">UserLibrary</a></li>
+          <li><a href="WellInfo/WellInfo-library.html">WellInfo</a></li>
+          <li><a href="WellIssue/WellIssue-library.html">WellIssue</a></li>
+          <li><a href="WellMap/WellMap-library.html">WellMap</a></li>
+          <li><a href="WellMarker/WellMarker-library.html">WellMarker</a></li>
+          <li><a href="WellOverview/WellOverview-library.html">WellOverview</a></li>
+          <li><a href="WellUpdate/WellUpdate-library.html">WellUpdate</a></li>
+          <li><a href="main/main-library.html">main</a></li>
+          <li><a href="assets_water_icon/assets_water_icon-library.html">water_icon</a></li>
+          <li><a href="well_control.issue_list/well_control.issue_list-library.html">well_control.issue_list</a></li>
+          <li><a href="well_control.well_list/well_control.well_list-library.html">well_control.well_list</a></li>
+    </ol>
+  </div>
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
+      <div><h1><span class="kind-library">WellIssue</span> library </h1></div>
+
+    
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+
+      <dl>
+        <dt id="Part">
+          <span class="name "><a href="WellIssue/Part-class.html">Part</a></span>         
+        </dt>
+        <dd>
+          describes a well's parts
+<a href="WellIssue/Part/id.html">id</a> is the specific part id, <a href="WellIssue/Part/name.html">name</a> is a name that can be non unique and <a href="WellIssue/Part/description.html">description</a>
+describes the part in detail.
+        </dd>
+        <dt id="WellIssue">
+          <span class="name "><a href="WellIssue/WellIssue-class.html">WellIssue</a></span>         
+        </dt>
+        <dd>
+          Class that represents an issue. Each well can have multiple issues.
+<a href="WellIssue/WellIssue/id.html">id</a> This issue's id.
+<a href="WellIssue/WellIssue/wellId.html">wellId</a> This issue's well.
+<a href="WellIssue/WellIssue/name.html">name</a> Name of this issue.
+<a href="WellIssue/WellIssue/description.html">description</a> Description of this issue.
+<a href="WellIssue/WellIssue/status.html">status</a> The current issue status. Default at creation is "Issue created". Can be
+updated.
+<a href="WellIssue/WellIssue/creationDate.html">creationDate</a> When this issue has been created.
+<a href="WellIssue/WellIssue/image.html">image</a> An image users can upload to describe the problem.
+<a href="WellIssue/WellIssue/open.html">open</a> Whether the issue is already solved (false) or still open (true).
+<a href="WellIssue/WellIssue/works.html">works</a> Whether the well is still operational (true) or not (false).
+<a href="WellIssue/WellIssue/brokenParts.html">brokenParts</a> A list of all the broken parts. Right now, only one broken part per issue
+is allowed
+<a href="WellIssue/WellIssue/solvedDate.html">solvedDate</a> A date when the issue has been closed.
+<a href="WellIssue/WellIssue/repairedBy.html">repairedBy</a> The entity that closed this issue.
+<a href="WellIssue/WellIssue/bill.html">bill</a> The financial information referring to this repair.
+        </dd>
+      </dl>
+    </section>
+
+
+
+
+
+
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>WellIssue library</h5>
+    <ol>
+      <li class="section-title"><a href="WellIssue/WellIssue-library.html#classes">Classes</a></li>
+      <li><a href="WellIssue/Part-class.html">Part</a></li>
+      <li><a href="WellIssue/WellIssue-class.html">WellIssue</a></li>
+    
+    
+    
+    
+    
+    
+    
+    </ol>
+  </div><!--/sidebar-offcanvas-right-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    well_control 1.0.0+1
+  </span>
+
+  
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>

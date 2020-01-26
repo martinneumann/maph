@@ -182,7 +182,40 @@ prints green, as expected.</p>
       <h2><span>Implementation</span></h2>
       <pre class="language-dart"><code class="language-dart">@override
 Widget build(BuildContext context) {
-  return Scaffold(body: _buildRow());
+  return Scaffold(
+    body: ListView.separated(
+        itemCount: wellList.wells.length,
+        itemBuilder: (BuildContext context, int index) {
+          return new ListTile(
+            leading: ClipOval(
+              child: Container(
+                color: wellList.wells[index].getMarkerColor(),
+                height: 20.0,
+                width: 20.0,
+              ),
+            ),
+            title: Text(wellList.wells[index].getWellName()),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: &lt;Widget&gt;[
+                Icon(Icons.arrow_right),
+              ],
+            ),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =&gt;
+                          WellInfo(
+                              title: wellList.wells[index].getWellName(),
+                              well: wellList.wells[index])));
+            },
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Divider();
+        }),
+  );
 }</code></pre>
     </section>
 

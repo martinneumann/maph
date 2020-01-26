@@ -48,11 +48,23 @@
     <ol>
           <li class="section-title">Libraries</li>
           <li><a href="AddWell/AddWell-library.html">AddWell</a></li>
+          <li><a href="Functions/Functions-library.html">Functions</a></li>
+          <li><a href="IssueDetails/IssueDetails-library.html">IssueDetails</a></li>
           <li><a href="PrivacyPolicy/PrivacyPolicy-library.html">PrivacyPolicy</a></li>
+          <li><a href="RepairInformation/RepairInformation-library.html">RepairInformation</a></li>
+          <li><a href="ReportWell/ReportWell-library.html">ReportWell</a></li>
           <li><a href="Settings/Settings-library.html">Settings</a></li>
+          <li><a href="UserLibrary/UserLibrary-library.html">UserLibrary</a></li>
+          <li><a href="WellInfo/WellInfo-library.html">WellInfo</a></li>
+          <li><a href="WellIssue/WellIssue-library.html">WellIssue</a></li>
           <li><a href="WellMap/WellMap-library.html">WellMap</a></li>
+          <li><a href="WellMarker/WellMarker-library.html">WellMarker</a></li>
           <li><a href="WellOverview/WellOverview-library.html">WellOverview</a></li>
+          <li><a href="WellUpdate/WellUpdate-library.html">WellUpdate</a></li>
           <li><a href="main/main-library.html">main</a></li>
+          <li><a href="assets_water_icon/assets_water_icon-library.html">water_icon</a></li>
+          <li><a href="well_control.issue_list/well_control.issue_list-library.html">well_control.issue_list</a></li>
+          <li><a href="well_control.well_list/well_control.well_list-library.html">well_control.well_list</a></li>
     </ol>
   </div>
 
@@ -66,6 +78,46 @@
 <p>For help getting started with Flutter, view our
 <a href="https://flutter.dev/docs">online documentation</a>, which offers tutorials,
 samples, guidance on mobile development, and a full API reference.</p>
+<h2 id="technical-documentation-with-dartdoc">Technical Documentation with dartdoc</h2>
+<p>The <a href="https://pub.dev/packages/dartdoc">dartdoc</a> tool is a part of the Flutter SDK.
+It is located in the following directory.</p>
+<pre class="language-dart"><code>$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dartdoc (on macOS or Linux)
+%FLUTTER_ROOT%\bin\cache\dart-sdk\bin\dartdoc.bat (on Windows)
+
+FLUTTER_ROOT=PATH_TO_YOUR_FLUTTER_SDK
+</code></pre>
+<h3 id="generate-documentation">generate documentation</h3>
+<p>If you run dartdoc you get the api documentation for Dart.
+To generate the documentation for Flutter you have to activate dartdoc globally.</p>
+<pre class="language-dart"><code>$FLUTTER_ROOT/bin/cache/dart-sdk/bin/pub global activate dartdoc (on macOS or Linux)
+%FLUTTER_ROOT%\bin\cache\dart-sdk\bin\pub.bat global activate dartdoc (windows)
+</code></pre>
+<p>By default, the documentation is generated to the doc/api directory as static HTML files.</p>
+<p>To generate the documentation run dartdoc from the root directory of the package.</p>
+<pre class="language-dart"><code>$ cd well_control/
+$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dartdoc  --exclude 'dart:async,dart:collection,dart:convert,dart:core,dart:developer,dart:ffi,dart:html,dart:io,dart:isolate,dart:js,dart:js_util,dart:math,dart:typed_data,dart:ui'
+</code></pre>
+<p>To avoid that dartdoc generates documentation for the packages and the dart-sdk you have to
+exclude the dart-sdk with this option <strong>--exclude</strong></p>
+<pre class="language-dart"><code>'dart:async,dart:collection,dart:convert,dart:core,dart:developer,dart:ffi,dart:html,dart:io,dart:isolate,dart:js,dart:js_util,dart:math,dart:typed_data,dart:ui'
+</code></pre>
+<p>This is a bug in flutter:
+<a href="https://github.com/dart-lang/dartdoc/issues/1949">github.com/dart-lang/dartdoc/issues/1949</a></p>
+<h3 id="view-documentation">View documentation</h3>
+<pre class="language-dart"><code>$FLUTTER_ROOT/bin/cache/dart-sdk/bin/pub global activate dhttpd
+$FLUTTER_ROOT/bin/cache/dart-sdk/bin/pub global run dhttpddhttpd --path doc/api
+</code></pre>
+<p>Navigate to <a href="http://localhost:8080">http://localhost:8080</a> in your browser.
+Use this way to view the documentation for using the search function.</p>
+<h3 id="write-documentation">Write documentation</h3>
+<p>Using a doc comment instead of a regular comment enables dartdoc
+to find the comment and generate documentation for it.</p>
+<pre class="language-dart"><code>// Single-line comment
+/* Multi-line/In-line comment */
+/// Dartdoc comment
+</code></pre>
+<p>In the comments you able to use markdown formatting.
+A general <a href="https://dart.dev/guides/language/effective-dart/documentation">dartdoc convention</a> should be hold by writing documentation.</p>
       </section>
       
         <section class="summary">
@@ -76,8 +128,28 @@ samples, guidance on mobile development, and a full API reference.</p>
             </dt>
             <dd>
               
+            </dd>            <dt id="Functions">
+              <span class="name"><a href="Functions/Functions-library.html">Functions</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="IssueDetails">
+              <span class="name"><a href="IssueDetails/IssueDetails-library.html">IssueDetails</a></span>             
+            </dt>
+            <dd>
+              
             </dd>            <dt id="PrivacyPolicy">
               <span class="name"><a href="PrivacyPolicy/PrivacyPolicy-library.html">PrivacyPolicy</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="RepairInformation">
+              <span class="name"><a href="RepairInformation/RepairInformation-library.html">RepairInformation</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="ReportWell">
+              <span class="name"><a href="ReportWell/ReportWell-library.html">ReportWell</a></span>             
             </dt>
             <dd>
               
@@ -86,8 +158,28 @@ samples, guidance on mobile development, and a full API reference.</p>
             </dt>
             <dd>
               
+            </dd>            <dt id="UserLibrary">
+              <span class="name"><a href="UserLibrary/UserLibrary-library.html">UserLibrary</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="WellInfo">
+              <span class="name"><a href="WellInfo/WellInfo-library.html">WellInfo</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="WellIssue">
+              <span class="name"><a href="WellIssue/WellIssue-library.html">WellIssue</a></span>             
+            </dt>
+            <dd>
+              
             </dd>            <dt id="WellMap">
               <span class="name"><a href="WellMap/WellMap-library.html">WellMap</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="WellMarker">
+              <span class="name"><a href="WellMarker/WellMarker-library.html">WellMarker</a></span>             
             </dt>
             <dd>
               
@@ -96,8 +188,28 @@ samples, guidance on mobile development, and a full API reference.</p>
             </dt>
             <dd>
               
+            </dd>            <dt id="WellUpdate">
+              <span class="name"><a href="WellUpdate/WellUpdate-library.html">WellUpdate</a></span>             
+            </dt>
+            <dd>
+              
             </dd>            <dt id="main">
               <span class="name"><a href="main/main-library.html">main</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="water_icon">
+              <span class="name"><a href="assets_water_icon/assets_water_icon-library.html">water_icon</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="well_control.issue_list">
+              <span class="name"><a href="well_control.issue_list/well_control.issue_list-library.html">well_control.issue_list</a></span>             
+            </dt>
+            <dd>
+              
+            </dd>            <dt id="well_control.well_list">
+              <span class="name"><a href="well_control.well_list/well_control.well_list-library.html">well_control.well_list</a></span>             
             </dt>
             <dd>
               
