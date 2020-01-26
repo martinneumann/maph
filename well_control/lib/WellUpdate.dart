@@ -1,0 +1,372 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:well_control/WellMarkerLibary.dart' as wellList;
+
+import 'Functions.dart';
+import 'Settings.dart';
+import 'WellMap.dart';
+import 'WellMarker.dart';
+import 'WellOverview.dart';
+
+/// Class provides view to update existing well.
+class WellUpdate extends StatefulWidget {
+  WellUpdate({Key key, this.title, this.well}) : super(key: key);
+
+  /// Gets [WellMarker] object from other view to update this.
+  final WellMarker well;
+
+  /// Title of view.
+  final String title;
+
+  @override
+  _WellUpdateState createState() => _WellUpdateState();
+}
+
+/// State provides view of [WellUpdate].
+class _WellUpdateState extends State<WellUpdate> {
+
+  /// Key identifies form for validation.
+  final _formKey = GlobalKey<FormState>();
+
+  /// Stores menu item title for well list.
+  static const wellOverview = "List of Wells";
+
+  /// Stores menu item title for map.
+  static const wellMap = "Map Overview";
+
+  /// Stores menu item title for settings.
+  static const settings = "Settings";
+
+  /// Stores menu item titles.
+  static const List<String> menuChoices = <String>[
+    wellOverview,
+    wellMap,
+    settings
+  ];
+
+  /// Stores user input for name of well.
+  final nameController = TextEditingController();
+
+  /// Stores user input of funding organisation.
+  final fundingController = TextEditingController();
+
+  /// Stores user input for costs of creating well.
+  final costsController = TextEditingController();
+
+  /// Stores latitude of well.
+  final latitudeController = TextEditingController();
+
+  /// Stores longitude of well.
+  final longitudeController = TextEditingController();
+
+  /// Stores user input of current status from well.
+  String status;
+
+  /// Stores available status options.
+  List<String> _wellStatus = ['Working', 'Maintenance', 'Not Working'];
+
+  /// Stores user input for type of well.
+  String type;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
+    fundingController.dispose();
+    costsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    nameController.text = widget.well.getWellName();
+    latitudeController.text = widget.well.location.latitude.toString();
+    longitudeController.text = widget.well.location.longitude.toString();
+    fundingController.text = widget.well.fundingOrganisation;
+    costsController.text = widget.well.costs.toString();
+    status = widget.well.status;
+    type = widget.well.type;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+              actions: <Widget>[
+                PopupMenuButton<String>(
+                  onSelected: choiceAction,
+                  itemBuilder: (BuildContext context) {
+                    return menuChoices.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                )
+              ],
+            ),
+            body: new Container(
+                margin: const EdgeInsets.all(18.0),
+                child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          TextFormField(
+                            controller: nameController,
+                            decoration: InputDecoration(
+                              labelText: "Name of well:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.title),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter some text';
+                              }
+                              return null;
+                            },
+                          ),
+                          Divider(color: Colors.black87),
+                          TextFormField(
+                            controller: longitudeController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Longitude:",
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.gps_fixed),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter longitude';
+                              } else if (double.parse(value) < -180 ||
+                                  double.parse(value) > 180) {
+                                return 'Longitude has to be between -180 and 180 degrees!';
+                              }
+                              return null;
+                            },
+                          ),
+                          Divider(color: Colors.black87),
+                          Column(
+                            children: <Widget>[
+                              TextFormField(
+                                controller: latitudeController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Latitude:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.gps_fixed),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter latitude!';
+                                  } else if (double.parse(value) < -90 ||
+                                      double.parse(value) > 90) {
+                                    return 'Latitude has to be between -90 and 90 degrees!';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              Divider(color: Colors.black87),
+                              Row(children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 15.0),
+                                  child: Icon(
+                                    Icons.build,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Container(
+                                  child: Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: status,
+                                        hint: Text("Select a well status"),
+                                        onChanged: (String value) {
+                                          setState(() {
+                                            status = value;
+                                          });
+                                        },
+                                        items: _wellStatus.map((stat) {
+                                          return DropdownMenuItem(
+                                            child: new Text(stat),
+                                            value: stat,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                              Divider(color: Colors.black87),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 10.0, right: 15.0),
+                                    child: Icon(Icons.settings,
+                                        color: Colors.grey),
+                                  ),
+                                  Container(
+                                    child: Expanded(
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          value: type,
+                                          hint: Text("Select the well type"),
+                                          onChanged: (String value) {
+                                            setState(() {
+                                              type = value;
+                                            });
+                                          },
+                                          items: wellList.wellTypeNames.map((
+                                              type) {
+                                            return DropdownMenuItem(
+                                              child: new Text(type),
+                                              value: type,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(color: Colors.black87),
+                              TextFormField(
+                                controller: fundingController,
+                                decoration: InputDecoration(
+                                  labelText: "Funded by:",
+                                  border: InputBorder.none,
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.account_balance),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter funding organisation.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              Divider(color: Colors.black87),
+                              TextFormField(
+                                controller: costsController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: "Costs:",
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.only(right: 10.0),
+                                    child: Icon(Icons.monetization_on),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter the building costs of the well.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              Divider(color: Colors.black87),
+                              new Container(
+                                padding: const EdgeInsets.all(18.0),
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      updateWell();
+                                    }
+                                  },
+                                  child: Text('Submit'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )))));
+  }
+
+  /// Methods defines action of clicked menu item.
+  ///
+  /// Opens certain view by comparing clicked [choice] with menu list names.
+  void choiceAction(String choice) {
+    if (choice == settings) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
+    } else if (choice == wellOverview) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WellOverview(title: "List of Wells")));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
+    }
+  }
+
+  /// Update existing well.
+  ///
+  /// Updates existing well by sending user input to database for exchange.
+  void updateWell() async {
+    String color;
+    if (status == "Working") {
+      color = "green";
+    } else if (status == "Maintenance") {
+      color = "yellow";
+    } else {
+      color = "red";
+    }
+
+    var location = {};
+    location["latitude"] = double.parse(latitudeController.text);
+    location["longitude"] = double.parse(longitudeController.text);
+
+    var fundingInfo = {};
+    fundingInfo["organisation"] = fundingController.text;
+    fundingInfo["price"] = double.parse(costsController.text);
+
+    var data = {};
+    data["id"] = widget.well.wellId;
+    data["name"] = nameController.text;
+    data["status"] = color;
+    data["location"] = location;
+    data["fundingInfo"] = fundingInfo;
+    data["wellTypeId"] =
+    wellList.wellTypeIds[wellList.wellTypeNames.indexOf(type)];
+
+    widget.well.name = nameController.text;
+    widget.well.setMarker(color, double.parse(latitudeController.text),
+        double.parse(longitudeController.text));
+    widget.well.setWellCosts(costsController.text);
+    widget.well.setFundingOrganisation(fundingController.text);
+    widget.well.setType(type);
+
+    await postUpdateWell(json.encode(data)).then((response) {
+          print("Response: " + response.statusCode.toString());
+          wellList.getMarkersMap();
+        });
+
+    Navigator.pop(context);
+  }
+}
