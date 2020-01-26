@@ -38,9 +38,8 @@ Future<http.Response> getWellIssues(String wellId) {
   return http.get('https://wellapi.azurewebsites.net/api/Issue/GetIssuesFromWell/$wellId');
 }
 
-/// Post [id] to close that issue.
-///
-/// Sends post-request to set status of issue to close by given issue [id].
+/// Returns a Future that resolves to an [http.Response] that contains the status code
+/// after closing an issue in the database.
 Future<http.Response> closeIssue(int id) {
   var body = ' { "id": $id, "open": false }';
   return http.post(wellApiUrl + 'Issue/UpdateIssue',
@@ -48,9 +47,11 @@ Future<http.Response> closeIssue(int id) {
       body: body);
 }
 
-/// Post new data of issue for update.
+/// Update issue data
+/// Response as [http.Response] returns answer after POST request that updates an issue.
 ///
-/// Sends post-request to update one issue.
+/// Sends a POST request with an issue object.
+/// The object with the same Id gets updated.
 Future<http.Response> updateIssue(WellIssue issue) {
   var data = {};
   data["id"] = issue.id;
@@ -63,7 +64,6 @@ Future<http.Response> updateIssue(WellIssue issue) {
   data["open"] = issue.open;
   data["works"] = issue.works;
   data["brokenParts"] = issue.brokenParts;
-  data["wellType"] = issue.wellType;
   data["confirmedBy"] = issue.confirmedBy;
   data["solvedDate"] = issue.solvedDate;
   data["repairedBy"] = issue.repairedBy;

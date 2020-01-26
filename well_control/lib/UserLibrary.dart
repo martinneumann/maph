@@ -2,14 +2,16 @@
 bool technician = false;
 
 /// Simulates account of admin.
-bool admin = false;
+bool admin = true;
 
 /// Simulates account of user.
 bool basicUser = false;
 
-/// Gets role of current app user.
+/// Returns the currently active user as a string.
+///
+/// At startup, user is set to "Admin".
 getActiveUser() {
   if (technician) return "Technician";
   if (admin) return "Admin";
-  if (basicUser) return "Basic User";
+  if (basicUser) return "Standard User";
 }

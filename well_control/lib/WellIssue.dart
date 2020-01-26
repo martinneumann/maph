@@ -1,41 +1,28 @@
-import 'package:well_control/Functions.dart';
-
-class Location {
-  int id;
-  double longitude;
-  double latitude;
-}
-
-class FundingInfo {
-  int id;
-  String organisation;
-  String openingDate;
-  double price;
-}
-
-class StatusHistory {
-  int id;
-  String description;
-  bool works;
-  bool confirmed;
-  String statusChangedDate;
-}
-
+/// describes a well's parts
+/// [id] is the specific part id, [name] is a name that can be non unique and [description]
+/// describes the part in detail.
 class Part {
   int id;
   String name;
   String description;
 }
 
-class WellType {
-  int id;
-  String name;
-  String particularity;
-  double depth;
-
-}
-
 /// Class that represents an issue. Each well can have multiple issues.
+/// [id] This issue's id.
+/// [wellId] This issue's well.
+/// [name] Name of this issue.
+/// [description] Description of this issue.
+/// [status] The current issue status. Default at creation is "Issue created". Can be
+/// updated.
+/// [creationDate] When this issue has been created.
+/// [image] An image users can upload to describe the problem.
+/// [open] Whether the issue is already solved (false) or still open (true).
+/// [works] Whether the well is still operational (true) or not (false).
+/// [brokenParts] A list of all the broken parts. Right now, only one broken part per issue
+/// is allowed
+/// [solvedDate] A date when the issue has been closed.
+/// [repairedBy] The entity that closed this issue.
+/// [bill] The financial information referring to this repair.
 class WellIssue {
   int id;
   int wellId;
@@ -47,12 +34,22 @@ class WellIssue {
   bool open;
   bool works;
   List<Part> brokenParts;
-  WellType wellType;
   String confirmedBy;
   String solvedDate;
   String repairedBy;
   String bill;
 
+  /// Constructor for well issue.
+  /// As of 26/01/2020, not all fields are set @todo add missing fields
+  /// [id] id of the issue
+  /// [wellId] the specific well
+  /// [description] issue description
+  /// [creationDate] when the issue was created
+  /// [status] issue's status
+  /// [open] whether the issue is still open
+  /// [works] whether the well works or not
+  /// [confirmedBy] who confirmed this issue to be true
+  /// [brokenParts] List of the broken parts. Right now, only list with length of 1 is allowed.
   WellIssue(int id, int wellId, String description, String creationDate,
       String status, bool open, bool works, String confirmedBy, List<Part> brokenParts) {
     this.id = id;
@@ -65,20 +62,5 @@ class WellIssue {
     this.confirmedBy = confirmedBy;
     this.brokenParts = brokenParts;
   }
-
-  WellIssue.detailed(this.brokenParts, this.confirmedBy, this.solvedDate,
-      this.repairedBy, this.works);
-
-  WellIssue.fromJson(Map<String, dynamic> json)
-      : this.id = json['id'],
-        this.description = json['description'],
-        this.creationDate = json['creationDate'],
-        this.status = json['status'],
-        this.open = json['open'],
-        this.confirmedBy = json['confirmedBy'],
-        this.solvedDate = json['solvedDate'],
-        this.repairedBy = json['repairedBy'],
-        this.works = json['works'],
-        this.brokenParts = json['brokenParts'];
 }
 

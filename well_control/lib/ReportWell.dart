@@ -4,13 +4,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:well_control/WellMap.dart';
 
 import 'Functions.dart';
 import 'RepairInformation.dart';
 import 'Settings.dart';
 import 'WellMarker.dart';
-import 'WellOverview.dart';
 
 /// Class provides view to report a issue for one well.
 class ReportWell extends StatefulWidget {
@@ -32,6 +30,7 @@ class _ReportWellState extends State<ReportWell> {
   /// Key identifies form for validation.
   final _formKey = GlobalKey<FormState>();
 
+
   /// Stores menu item title for well list.
   static const wellOverview = "List of Wells";
 
@@ -46,10 +45,8 @@ class _ReportWellState extends State<ReportWell> {
 
   /// Stores menu item titles.
   static const List<String> menuChoices = <String>[
-    wellOverview,
-    wellMap,
-    settings,
     repairInformation,
+    settings,
   ];
 
   /// Stores name of selected well part.
@@ -180,8 +177,8 @@ class _ReportWellState extends State<ReportWell> {
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               createIssue();
-              setState(() {});
               Navigator.pop(context);
+              setState(() {});
             },
             child: Icon(Icons.send),
             backgroundColor: Colors.blue,
@@ -274,14 +271,6 @@ class _ReportWellState extends State<ReportWell> {
     if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
-    } else if (choice == wellOverview) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WellOverview(title: "List of Wells")));
-    } else if (choice == wellMap) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
     } else {
       Navigator.push(
           context,
