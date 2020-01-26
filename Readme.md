@@ -12,6 +12,13 @@ A mobile application that helps disadvantaged communities take care of their wat
 
 For a complete feature tour, see [the feature page on the wiki.](https://github.com/martinneumann/maph/wiki/Features)
 
+# Installation
+
+See installation info [here.](https://github.com/martinneumann/maph/tree/master/well_control)
+
+# Wiki
+
+More information about the project can be found in [the wiki.](https://github.com/martinneumann/maph/wiki)
 
 <img src="https://i.imgur.com/wI7PJc9.jpg=250x200"
      alt="Markdown Monster icon"
