@@ -5,16 +5,17 @@ import 'dart:convert';
 import 'package:well_control/Functions.dart';
 import 'package:well_control/WellIssue.dart';
 
-/// Issue list
+/// Stores issues of global wells in a [list].
 List<WellIssue> issues = <WellIssue>[];
 
-/// Get all global issues
+/// Get all global issues.
+///
+/// Gets all issues from database as [http.Response] object.
 Future<List<WellIssue>> getIssues() {
   return getAllIssues().then((response) {
-    // fill list
     Iterable result = json.decode(response.body);
     var resultList = result.toList();
-    print('Result ' + resultList.toString());
+
     for (var i = 0; i < resultList.length; i++) {
       issues.add(WellIssue(
           resultList[i]["id"],
@@ -29,7 +30,9 @@ Future<List<WellIssue>> getIssues() {
   });
 }
 
-/// Get issues of specific well
+/// Get issues of specific well.
+///
+/// Gets all issues of specific well as [http.Response] object.
 Future<List<WellIssue>> getIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
     Iterable decodedResult = json.decode(response.body);
@@ -52,11 +55,14 @@ Future<List<WellIssue>> getIssuesOfWell(String wellId) {
 }
 
 
-/// Get issues of specific well
+/// Get open issues of specific well.
+///
+/// Gets issues of well, which have status open.
 Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
   return getWellIssues(wellId).then((response) {
     Iterable decodedResult = json.decode(response.body);
     List<WellIssue> issueList = [];
+
     for (var issue in decodedResult) {
       if (issue["open"] == true) {
         var tempIssue = new WellIssue(
@@ -77,7 +83,9 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
 }
 
 
-/// Get one specific issue by Id
+/// Get one specific issue by Id.
+///
+/// Gets specific issue by given id.
 Future<WellIssue> getSpecificIssue(int id) {
   return getIssueById(id).then((response) {
     WellIssue decodedResult = json.decode(response.body);

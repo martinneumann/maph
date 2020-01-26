@@ -8,18 +8,24 @@ import 'package:latlong/latlong.dart';
 import 'package:well_control/WellMarker.dart';
 
 import 'Functions.dart';
+
 /// Defines name of marker, that shows user location on map.
 final String userLocationMarkerName = "user";
+
 /// Stores list of all existing wells as [WellMarker] object.
 List<WellMarker> wells = <WellMarker>[];
+
 /// Map stores wells as key value pair of name and marker.
 /// This map is necessary to update UI of map.
 Map<String,Marker> wellMarkersMap = Map<String,Marker>();
 
-///Lists to store all current [wellTypeNames] and [wellTypeIds] from server.
+///List to store all current [wellTypeNames] downloaded from server.
 List<String> wellTypeNames = List<String>();
+
+///List to store all current [wellTypeIds] downloaded from server.
 List<int> wellTypeIds = List<int>();
 
+/// Forces to download well types once.
 bool loadTypeOnce = false;
 
 /// Loads existing wells from external database.
