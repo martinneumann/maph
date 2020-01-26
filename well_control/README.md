@@ -19,7 +19,7 @@ You need to install [Flutter](https://flutter.dev/docs/get-started/install) and
 
 You can find the documentation of source code here:
 ```
-well_control/doc/api
+maph/well_control/doc/api
 ```
 
 The documentation was created with dardoc and provides the documentation as local html-website.
