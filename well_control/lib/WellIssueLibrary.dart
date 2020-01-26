@@ -23,7 +23,10 @@ Future<List<WellIssue>> getIssues() {
           resultList[i]["description"],
           resultList[i]["creationDate"],
           resultList[i]["status"],
-          resultList[i]["open"]));
+          resultList[i]["open"],
+          resultList[i]["works"],
+          resultList[i]["confirmedBy"],
+          resultList[i]["brokenParts"]));
     }
 
     return issues;
@@ -44,7 +47,10 @@ Future<List<WellIssue>> getIssuesOfWell(String wellId) {
           issue["description"],
           issue["creationDate"],
           issue["status"],
-          issue["open"]);
+          issue["open"],
+          issue["works"],
+          issue["confirmedBy"],
+          []);
       issueList.add(tempIssue);
     }
     return issueList;
@@ -71,7 +77,10 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
             issue["description"],
             issue["creationDate"],
             issue["status"],
-            issue["open"]);
+            issue["open"],
+            issue["works"],
+            issue["confirmedBy"],
+            []);
         issueList.add(tempIssue);
       }
     }
@@ -87,17 +96,29 @@ Future<List<WellIssue>> getOpenIssuesOfWell(String wellId) {
 ///
 /// Gets specific issue by given id.
 Future<WellIssue> getSpecificIssue(int id) {
+  print("Getting specific issue");
   return getIssueById(id).then((response) {
-    WellIssue decodedResult = json.decode(response.body);
+    var decodedResult = json.decode(response.body);
+    Part tempPart = new Part();
+    tempPart.name = decodedResult["brokenParts"][0]["name"];
+    tempPart.description = decodedResult["brokenParts"][0]["description"];
+    tempPart.id = decodedResult["brokenParts"][0]["id"];
+    List<Part> partList = [];
+    partList.add(tempPart);
     WellIssue tempIssue = new WellIssue(
-        decodedResult.id,
-        decodedResult.wellId,
-        decodedResult.description,
-        decodedResult.creationDate,
-        decodedResult.status,
-        decodedResult.open);
+        decodedResult["id"],
+        decodedResult["wellId"],
+        decodedResult["description"],
+        decodedResult["creationDate"],
+        decodedResult["status"],
+        decodedResult["open"],
+        decodedResult["works"],
+        decodedResult["confirmedBy"],
+        partList,
+    );
     return tempIssue;
   }).catchError((error) {
+    print("An error happend in specific issue: " + error.toString());
     return error;
   });
 }

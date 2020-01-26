@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+import 'package:well_control/WellIssue.dart';
 
 /// Defines the api url as const variable [wellApiUrl].
 const wellApiUrl = "https://wellapi.azurewebsites.net/api/";
@@ -35,6 +38,30 @@ Future<http.Response> getWellIssues(String wellId) {
 Future<http.Response> closeIssue(int id) {
   var body = ' { "id": $id, "open": false }';
   return http.post(wellApiUrl + 'Issue/UpdateIssue',
+      headers: {"Content-Type": "application/json"},
+      body: body);
+}
+
+/// Update issue data
+Future<http.Response> updateIssue(WellIssue issue) {
+  var data = {};
+  data["id"] = issue.id;
+  data["wellId"] = issue.wellId;
+  data["name"] = issue.name;
+  data["description"] = issue.description;
+  data["status"] = issue.status;
+  data["creationDate"] = issue.creationDate;
+  data["image"] = issue.image;
+  data["open"] = issue.open;
+  data["works"] = issue.works;
+  data["brokenParts"] = issue.brokenParts;
+  data["wellType"] = issue.wellType;
+  data["confirmedBy"] = issue.confirmedBy;
+  data["solvedDate"] = issue.solvedDate;
+  data["repairedBy"] = issue.repairedBy;
+  data["bill"] = issue.bill;
+  var body = json.encode(data);
+  return http.post(wellApiUrl + '/Issue/UpdateIssue',
       headers: {"Content-Type": "application/json"},
       body: body);
 }
