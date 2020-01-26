@@ -271,6 +271,7 @@ class _ReportWellState extends State<ReportWell> {
     await postNewIssue(json.encode(data)).then((response) {
       print("Response: " + response.statusCode.toString());
     });
+    Navigator.pop(context);
   }
 }
 
