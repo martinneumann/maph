@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,35 +13,51 @@ namespace WellApi.Controllers
     [ApiController]
     public class IssueController : ControllerBase
     {
-        private IEnumerable<SmallIssue> smallIssues;
-        private IEnumerable<Issue> issues;
-
-        public IssueController()
-        {
-            issues = Enumerable.Range(0,1).Select(index => new Issue
-            {
-                ID = 0,
-                Description = "First Issue",
-                CreationDate = new DateTime(2019,11,10),
-                CreatedBy = "abc",
-                WellID = 1
-            });
-            smallIssues = Enumerable.Range(0, 1).Select(index => new SmallIssue
-            {
-                ID = 0,
-                CreationDate = new DateTime(2019, 11, 10),
-                WellID = 1
-            });
-        }
-
         /// <summary>
         /// Get all issues.
         /// </summary>
         [HttpGet]
         [ActionName("GetAll")]
-        public SmallIssue[] GetAll()
+        [ProducesResponseType(typeof(SmallIssue[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetAll()
         {
-            return smallIssues.ToArray();
+            try
+            {
+                SmallIssue[] smallIssues = DB.ExecuteSelectSmallIssues();
+                if (smallIssues == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(smallIssues);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
+        
+        /// <summary>
+        /// Get all issues of a well.
+        /// </summary>
+        /// <param name="wellId"></param> 
+        [HttpGet("{wellId}")]
+        [ActionName("GetIssuesFromWell")]
+        [ProducesResponseType(typeof(Issue[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetIssuesFromWell(int wellId)
+        {
+            try
+            {
+                Issue[] issues = DB.GetIssuesFromWell(wellId);
+                if (issues == null)
+                    return BadRequest("Something went wrong");
+                return Ok(issues);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
@@ -49,34 +66,62 @@ namespace WellApi.Controllers
         /// <param name="id"></param> 
         [HttpGet("{id}")]
         [ActionName("GetIssue")]
-        public Issue GetIssue(int id)
+        [ProducesResponseType(typeof(Issue), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetIssue(int id)
         {
-            return issues.Single(i => i.ID == id);
+            try
+            {
+                Issue issue = DB.GetCompleteIssue(id);
+                if (issue == null || issue.Id == null)
+                    return BadRequest("Id not found!");
+                return Ok(issue);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
         /// Creates a specific Issue.
         /// </summary>
-        /// <param name="issue"></param> 
-        [HttpPost("{issue}")]
-        [ActionName("PostNewIssue")]
-        public IActionResult PostNewIssue(Issue issue)
+        /// <param name="newIssue"></param> 
+        [HttpPost]
+        [ActionName("CreateIssue")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult CreateIssue(NewIssue newIssue)
         {
-            issues.Append(issue);
-            return Ok();
+                if (DB.AddCompleteNewIssue(newIssue))
+                    return Ok("Created");
+                return BadRequest("something went wrong");
         }
 
         /// <summary>
         /// Updates a specific Issue.
         /// </summary>
-        /// <param name="issue"></param> 
-        [HttpPost("{issue}")]
-        [ActionName("PostUpdateIssue")]
-        public IActionResult PostUpdateIssue(Issue issue)
+        /// <param name="updateIssue"></param> 
+        [HttpPost]
+        [ActionName("UpdateIssue")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult UpdateIssue(UpdateIssue updateIssue)
         {
-            issues = issues.Where(w => w.ID != issue.ID).ToList();
-            issues.Append(issue);
-            return Ok();
+            try
+            {
+                int affected = DB.UpdateCompleteIssue(updateIssue);
+                if (affected > 0)
+                    return Ok(affected);
+                return BadRequest("Nothing Updated!");
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
@@ -85,10 +130,22 @@ namespace WellApi.Controllers
         /// <param name="id"></param> 
         [HttpDelete("{id}")]
         [ActionName("DeleteIssue")]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult DeleteIssue(int id)
         {
-            issues = issues.Where(w => w.ID != id).ToList();
-            return Ok();
+            try
+            {
+                int affected = DB.DeleteIssue(id);
+                if (affected > 0)
+                    return Ok(id);
+                return BadRequest("Nothing Deleted!");
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
     }
 }

@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.Swagger.Annotations;
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using WellApi.Models;
 
 namespace WellApi.Controllers
 {
@@ -12,102 +16,169 @@ namespace WellApi.Controllers
     [ApiController]
     public class WellController : ControllerBase
     {
-        private IEnumerable<SmallWell> smallWells;
-        private IEnumerable<Well> wells;
-        public WellController()
-        {
-            var rng = new Random();
-            wells = Enumerable.Range(0, 5).Select(index => new Well
-            {
-                ID = index,
-                Name = $"Well {index}",
-                Status = "green",
-                Location = new Location
-                {
-                    Longitude = rng.Next(-180,180) + rng.NextDouble(),
-                    Latitude = rng.Next(-90, 90) + rng.NextDouble()
-                },
-                FundingInfo = new FundingInfo
-                {
-                    Organisation = "ABC",
-                    Opening = new DateTime(2019, rng.Next(1, 12), 10),
-                    Price = 1000000 + rng.Next(-400000,400000)
-                },
-                WellType = new WellType
-                {
-                    Name = "Type X",
-                    Particularity = "None",
-                    Depth = 100 + rng.Next(-20,20)
-                }
-            });
-            Well[] wellArray = wells.ToArray();
-            smallWells = Enumerable.Range(0, 5).Select(index => new SmallWell
-            {
-                ID = index,
-                Name = $"Well {index}",
-                Status = "#00FF00",
-                Location = wellArray[index].Location
-            });
-        }
 
         /// <summary>
         /// Get all wells.
         /// </summary>
         [HttpGet]
         [ActionName("GetAll")]
-        public SmallWell[] GetAll()
+        [ProducesResponseType(typeof(SmallWell[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetAll()
         {
-            return smallWells.ToArray();
+            try
+            {
+                SmallWell[] smallWells = DB.ExecuteSelectSmallWells();
+                if (smallWells == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(smallWells);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
-        /// Get all nearby wells.
+        /// Get all WellTypes.
         /// </summary>
-        /// <param name="searchNearbyWells"></param> 
-        [HttpPost("{searchNearbyWells}")]
-        [ActionName("GetNearbyWells")]
-        public SmallWell[] GetNearbyWells(SearchNearbyWells searchNearbyWells)
+        [HttpGet]
+        [ActionName("GetAllWellTypes")]
+        [ProducesResponseType(typeof(WellTypeNoParts[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetAllWellTypes()
         {
-            //Berechnung fehlt
-            SmallWell[] smalls = new SmallWell[3];
-            Array.Copy(smallWells.ToArray(), 1, smalls, 0, 3);
-            return smalls;
+            try
+            {
+                WellTypeNoParts[] wellTypes = DB.ExecuteSelectWellTypes();
+                if (wellTypes == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(wellTypes);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
         /// Get a specific well.
         /// </summary>
-        /// <param name="id"></param> 
-        [HttpGet("{id}")]
+        /// <param name="wellId"></param> 
+        [HttpGet("{wellId}")]
         [ActionName("GetWell")]
-        public Well GetWell(int id)
+        [ProducesResponseType(typeof(Well), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetWell(int wellId)
         {
-            return wells.Single(well => well.ID == id);
+            try
+            {
+                Well well = DB.GetCompleteWell(wellId);
+                if (well == null)
+                    return BadRequest("Well with Id not found");
+                return Ok(well);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
+        /// <summary>
+        /// Gets the Repair Help for a Part of a Well.
+        /// </summary>
+        /// <param name="partId"></param> 
+        [HttpGet("{partId}")]
+        [ActionName("GetRepairHelp")]
+        [ProducesResponseType(typeof(RepairHelpForPart), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetRepairHelp(int partId)
+        {
+            try
+            {
+                RepairHelpForPart repairHelpForPart = DB.GetRepairHelpForPart(partId);
+                if (repairHelpForPart == null || repairHelpForPart.PartToRepair == null || repairHelpForPart.RepairHelps == null)
+                    return BadRequest("Repair Help not found");
+                return Ok(repairHelpForPart);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
+        }
+        /// <summary>
+        /// Get all nearby wells. SearchRadius in meter.
+        /// </summary>
+        /// <param name="locationForSearch"></param> 
+        [HttpPost]
+        [ActionName("GetNearbyWells")]
+        [ProducesResponseType(typeof(SmallWell[]), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult GetNearbyWells(LocationForSearch locationForSearch)
+        {
+            try
+            {
+                SmallWell[] smallWells = DB.ExecuteSelectNearbySmallWells(locationForSearch);
+                if (smallWells == null)
+                    return BadRequest("Something went wrong!");
+                return Ok(smallWells);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
         /// Creates a specific well.
         /// </summary>
-        /// <param name="well"></param> 
-        [HttpPost("{well}")]
-        [ActionName("PostNewWell")]
-        public IActionResult PostNewWell(Well well)
+        /// <param name="newWell"></param> 
+        [HttpPost]
+        [ActionName("CreateWell")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult CreateWell(NewWell newWell)
         {
-            wells.Append(well);
-            return Ok();
+            try
+            {
+                int? wellId = DB.AddCompleteWell(newWell);
+                if (wellId == null)
+                    return BadRequest("Well was not inserted!");
+                return Ok(wellId);
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
         /// Updates a specific well.
         /// </summary>
-        /// <param name="well"></param> 
-        [HttpPost("{well}")]
-        [ActionName("PostUpdateWell")]
-        public IActionResult PostUpdateWell(Well well)
+        /// <param name="changedWell"></param> 
+        [HttpPost]
+        [ActionName("UpdateWell")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
+        public IActionResult UpdateWell(ChangedWell changedWell)
         {
-            wells = wells.Where(w => w.ID != well.ID).ToList();
-            wells.Append(well);
-            return Ok();
+            try
+            {
+                int affected = DB.UpdateCompleteWell(changedWell);
+                if (affected > 0)
+                    return Ok(affected);
+                return BadRequest("Nothing Updated!");
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
 
         /// <summary>
@@ -116,10 +187,22 @@ namespace WellApi.Controllers
         /// <param name="id"></param> 
         [HttpDelete("{id}")]
         [ActionName("DeleteWell")]
+        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 409)]
         public IActionResult DeleteWell(int id)
         {
-            wells = wells.Where(w => w.ID != id).ToList();
-            return Ok();
+            try
+            {
+                int affected = DB.DeleteWell(id);
+                if (affected > 0)
+                    return Ok(id);
+                return BadRequest("Nothing Deleted!");
+            }
+            catch (Exception e)
+            {
+                return Conflict("Server error! " + e.Message);
+            }
         }
     }
 }

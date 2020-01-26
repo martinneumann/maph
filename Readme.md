@@ -23,3 +23,6 @@ A mobile application that helps disadvantaged communities take care of their wat
 * Maintenance DIY help
 * Community transparency features about funding, donations and water sales
 
+# WebAPI
+
+https://wellapi.azurewebsites.net/index.html
