@@ -10,8 +10,8 @@ import 'package:well_control/AddWell.dart';
 import 'package:well_control/Settings.dart';
 import 'package:well_control/WellOverview.dart';
 
-import 'WellMarkerLibary.dart' as wellList;
 import 'UserLibrary.dart' as users;
+import 'WellMarkerLibary.dart' as wellList;
 
 /// Class create view of map
 ///
@@ -81,14 +81,6 @@ class _WellMapState extends State<WellMap> {
   /// Stores menu item title for settings.
   static const settings = "Settings";
 
-
-  /// Stores menu item titles.
-  static const List<String> menuChoices = <String>[
-    listWells,
-    addWell,
-    settings
-  ];
-
   @override
   void initState() {
     users.basicUser = true;
@@ -106,20 +98,10 @@ class _WellMapState extends State<WellMap> {
       home: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
-          actions: <Widget>[
-            PopupMenuButton<String>(
-              onSelected: choiceAction,
-              itemBuilder: (BuildContext context) {
-                return menuChoices.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            )
-          ],
+          actions:
+          setActions(),
         ),
+
         body: Center(
           child: FutureBuilder<Map<String,Marker>>(
             future: markerMap,
@@ -196,6 +178,67 @@ class _WellMapState extends State<WellMap> {
         ),
       ),
     );
+  }
+
+  ///Method returns PopupMenu.
+  ///
+  /// Items inside menu depend on current ative user.
+  List<Widget> setActions() {
+    if (users.admin) {
+      return [PopupMenuButton(
+        onSelected: (value) {
+          choiceAction(value);
+        },
+        itemBuilder: (context) =>
+        [
+          PopupMenuItem(
+            child: Text(listWells),
+            value: listWells,
+          ),
+          PopupMenuItem(
+            child: Text(addWell),
+            value: addWell,
+          ),
+          PopupMenuItem(
+            child: Text(settings),
+            value: settings,
+          ),
+        ],
+      )
+      ];
+    } else if (users.technician) {
+      return [PopupMenuButton(
+        onSelected: (value) {
+          choiceAction(value);
+        },
+        itemBuilder: (context) =>
+        [
+          PopupMenuItem(
+            child: Text(listWells),
+            value: listWells,
+          ),
+          PopupMenuItem(
+            child: Text(settings),
+            value: settings,
+          ),
+        ],
+      )
+      ];
+    } else {
+      return [PopupMenuButton(
+        onSelected: (value) {
+          choiceAction(value);
+        },
+        itemBuilder: (context) =>
+        [
+          PopupMenuItem(
+            child: Text(settings),
+            value: settings,
+          ),
+        ],
+      )
+      ];
+    }
   }
 
   /// Methods defines action of clicked menu item.

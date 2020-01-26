@@ -7,6 +7,7 @@ import 'package:well_control/IssueDetails.dart';
 import 'package:well_control/RepairInformation.dart';
 import 'package:well_control/ReportWell.dart';
 import 'package:well_control/Settings.dart';
+import 'package:well_control/UserLibrary.dart' as users;
 import 'package:well_control/WellIssueLibrary.dart';
 import 'package:well_control/WellMap.dart';
 import 'package:well_control/WellMarkerLibary.dart' as wellList;
@@ -35,6 +36,7 @@ class WellInfo extends StatefulWidget {
   @override
   _WellInfoState createState() => _WellInfoState(well);
 }
+
 /// State class for well info.
 class _WellInfoState extends State<WellInfo> {
   /// Future that returns the well information as a string.
@@ -55,22 +57,12 @@ class _WellInfoState extends State<WellInfo> {
   static const wellMap = "Map Overview";
   static const wellDelete = "Delete Well";
 
-  /// Menu item list.
-  static const List<String> menuChoices = <String>[
-    wellUpdate,
-    report,
-    settings,
-    wellMap,
-    wellDelete
-  ];
-
   /// Scroll controller that should ensure scrolling on top of list items @fixme not working, scrolling gets stuck.
   ScrollController _controller = new ScrollController();
 
   /// Initializes the well infos with the getWellInfos Future, that returns a String.
   @override
   void initState() {
-
     /// well info future. Saves info to existing marker onject, does not return a new one. Returned string is status code ('OK').
     wellInfos = getWellInfos(widget.well);
 
@@ -79,28 +71,15 @@ class _WellInfoState extends State<WellInfo> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
-          actions: <Widget>[
-            /// Header bar with menu.
-            PopupMenuButton<String>(
-              onSelected: choiceAction,
-              itemBuilder: (BuildContext context) {
-                return menuChoices.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            )
-          ],
+          actions: setActions(),
         ),
         body: Center(
+
           /// Future builder for well infos.
             child: FutureBuilder(
           future: wellInfos,
@@ -111,6 +90,7 @@ class _WellInfoState extends State<WellInfo> {
                 child: Column(
                   children: [
                     image,
+
                     /// Info cards.
                     Card(
                       child: Column(
@@ -171,6 +151,7 @@ class _WellInfoState extends State<WellInfo> {
                         ],
                       ),
                     ),
+
                     /// Issue list card containing a list view with all open issues.
                     Card(
                       child: Column(
@@ -209,40 +190,63 @@ class _WellInfoState extends State<WellInfo> {
                                               final item = snapshot.data[index];
                                               return Dismissible(
                                                 key: Key(item.id.toString()),
+
                                                 /// On dismissal, update status of "open" to "false" and POST issue update.
                                                 onDismissed: (direction) {
                                                   // Remove the item from the data source.
                                                   setState(() {
                                                     print(direction.toString());
 
-                                                      closeIssue(snapshot.data[index].id).then((response) {
-                                                        print("Closed issue: " + response.statusCode.toString());
+                                                    closeIssue(snapshot
+                                                        .data[index].id)
+                                                        .then((response) {
+                                                      print("Closed issue: " +
+                                                          response.statusCode
+                                                              .toString());
+                                                    });
+                                                    snapshot.data
+                                                        .removeAt(index);
+                                                    if (snapshot.data.length ==
+                                                        0) {
+                                                      /// set status to green
+                                                      var data = {};
+
+                                                      var location = {};
+                                                      location["latitude"] =
+                                                          widget.well.location
+                                                              .latitude;
+                                                      location["longitude"] =
+                                                          widget.well.location
+                                                              .longitude;
+
+                                                      var fundingInfo = {};
+                                                      fundingInfo[
+                                                      "organisation"] =
+                                                          widget.well
+                                                              .fundingOrganisation;
+                                                      fundingInfo["price"] =
+                                                          widget.well.costs;
+
+                                                      data["id"] =
+                                                          widget.well.wellId;
+                                                      data["name"] =
+                                                          widget.well.name;
+                                                      data["status"] = "green";
+                                                      data["location"] =
+                                                          location;
+                                                      data["fundingInfo"] =
+                                                          fundingInfo;
+                                                      data["wellTypeId"] =
+                                                          widget.well.type;
+                                                      postUpdateWell(
+                                                          json.encode(data))
+                                                          .then((response) {
+                                                        print(
+                                                            "Updated well status: " +
+                                                                response.body
+                                                                    .toString());
                                                       });
-                                                      snapshot.data
-                                                          .removeAt(index);
-                                                      if (snapshot.data.length == 0) {
-                                                        /// set status to green
-                                                        var data = {};
-
-                                                        var location = {};
-                                                        location["latitude"] = widget.well.location.latitude;
-                                                        location["longitude"] = widget.well.location.longitude;
-
-                                                        var fundingInfo = {};
-                                                        fundingInfo["organisation"] = widget.well.fundingOrganisation;
-                                                        fundingInfo["price"] = widget.well.costs;
-
-                                                        data["id"] = widget.well.wellId;
-                                                        data["name"] = widget.well.name;
-                                                        data["status"] = "green";
-                                                        data["location"] = location;
-                                                        data["fundingInfo"] = fundingInfo;
-                                                        data["wellTypeId"] = widget.well.type;
-                                                        postUpdateWell(json.encode(data)).then((response) {
-                                                          print("Updated well status: " + response.body.toString());
-                                                        });
-
-                                                      }
+                                                    }
                                                   });
 
                                                   /// Show snack bar ('Toast') on dismissal.
@@ -259,6 +263,7 @@ class _WellInfoState extends State<WellInfo> {
                                                     size: 30,
                                                   ),
                                                 ),
+
                                                 /// Navigate to issue details page on tap.
                                                 child: ListTile(
                                                   onTap: () => Navigator.push(
@@ -400,6 +405,59 @@ class _WellInfoState extends State<WellInfo> {
             }
           },
         )));
+  }
+
+  ///Method returns PopupMenu.
+  ///
+  /// Items inside menu depend on current ative user.
+  List<Widget> setActions() {
+    if (users.admin) {
+      return [
+        PopupMenuButton(
+          onSelected: (value) {
+            choiceAction(value);
+          },
+          itemBuilder: (context) =>
+          [
+            PopupMenuItem(
+              child: Text(wellUpdate),
+              value: wellUpdate,
+            ),
+            PopupMenuItem(
+              child: Text(report),
+              value: report,
+            ),
+            PopupMenuItem(
+              child: Text(settings),
+              value: settings,
+            ),
+            PopupMenuItem(
+                child: Text(wellDelete),
+                value: wellDelete
+            )
+          ],
+        )
+      ];
+    } else {
+      return [
+        PopupMenuButton(
+          onSelected: (value) {
+            choiceAction(value);
+          },
+          itemBuilder: (context) =>
+          [
+            PopupMenuItem(
+              child: Text(report),
+              value: report,
+            ),
+            PopupMenuItem(
+              child: Text(settings),
+              value: settings,
+            ),
+          ],
+        )
+      ];
+    }
   }
 
   /// Menu choices for user in top menu

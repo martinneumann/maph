@@ -1,9 +1,9 @@
 bool technician = false;
-bool admin = false;
+bool admin = true;
 bool basicUser = false;
 
 /// Returns the currently active user as a string.
-/// At startup on the map scree, user is set to "BasicUser".
+/// At startup, user is set to "Admin".
 getActiveUser() {
   if (technician) return "Technician";
   if (admin) return "Admin";

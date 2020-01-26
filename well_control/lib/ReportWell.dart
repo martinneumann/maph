@@ -4,13 +4,11 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:well_control/WellMap.dart';
 
 import 'Functions.dart';
 import 'RepairInformation.dart';
 import 'Settings.dart';
 import 'WellMarker.dart';
-import 'WellOverview.dart';
 
 class ReportWell extends StatefulWidget {
   ReportWell({Key key, this.title, this.well}) : super(key: key);
@@ -24,16 +22,13 @@ class ReportWell extends StatefulWidget {
 
 class _ReportWellState extends State<ReportWell> {
   final _formKey = GlobalKey<FormState>();
-  static const wellOverview = "List of Wells";
-  static const wellMap = "Map Overview";
+
   static const settings = "Settings";
   static const repairInformation = "Repair Help";
 
   static const List<String> menuChoices = <String>[
-    wellOverview,
-    wellMap,
-    settings,
     repairInformation,
+    settings,
   ];
 
   String _selectedPart;
@@ -238,18 +233,11 @@ class _ReportWellState extends State<ReportWell> {
     );
   }
 
+
   void choiceAction(String choice) {
     if (choice == settings) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => Settings(title: "Settings")));
-    } else if (choice == wellOverview) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => WellOverview(title: "List of Wells")));
-    } else if (choice == wellMap) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => WellMap(title: "Well Map")));
     } else {
       Navigator.push(
           context,
