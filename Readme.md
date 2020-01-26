@@ -15,7 +15,7 @@ For a complete feature tour, see [the feature page on the wiki.](https://github.
 
 <img src="https://i.imgur.com/wI7PJc9.jpg=250x200"
      alt="Markdown Monster icon"
-     style="float: left; margin-right: 10px;" />
+     style="width: 100px" />
 
 # Collaborators (Gruppe 2)
 
