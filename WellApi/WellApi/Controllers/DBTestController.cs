@@ -11,6 +11,7 @@ namespace WellApi.Controllers
     [Produces("application/json")]
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class DBTestController : ControllerBase
     {
         /// <summary>
