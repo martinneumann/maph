@@ -20,9 +20,8 @@ See installation info [here.](https://github.com/martinneumann/maph/tree/master/
 
 More information about the project can be found in [the wiki.](https://github.com/martinneumann/maph/wiki)
 
-<img src="https://i.imgur.com/wI7PJc9.jpg=250x200"
-     alt="Markdown Monster icon"
-     style="width: 100px" />
+<img width="200" src="https://i.imgur.com/wI7PJc9.jpg=250x200"
+     alt="Markdown Monster icon"/>
 
 # Collaborators (Gruppe 2)
 
