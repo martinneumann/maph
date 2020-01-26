@@ -12,7 +12,10 @@ A mobile application that helps disadvantaged communities take care of their wat
 
 For a complete feature tour, see [the feature page on the wiki.](https://github.com/martinneumann/maph/wiki/Features)
 
-![Main page with well map.](https://i.imgur.com/wI7PJc9.jpg=250x200)
+
+<img src="https://i.imgur.com/wI7PJc9.jpg=250x200"
+     alt="Markdown Monster icon"
+     style="float: left; margin-right: 10px;" />
 
 # Collaborators (Gruppe 2)
 
