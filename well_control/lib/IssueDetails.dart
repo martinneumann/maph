@@ -9,7 +9,7 @@ import 'package:well_control/WellMarkerLibary.dart' as wellList;
 
 import 'Functions.dart';
 import 'WellIssue.dart';
-import 'WellUpdate.dart';
+import 'WellMap.dart';
 import 'UserLibrary.dart' as users;
 
 /// Class provides view of issue in details.
@@ -248,7 +248,7 @@ class _IssueDetailsState extends State<IssueDetails> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  WellUpdate(title: "Back to Map", well: null)));
+                  WellMap(title: "Back to Map")));
     } else {
       Navigator.pop(context);
     }
