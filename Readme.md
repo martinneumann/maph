@@ -1,4 +1,4 @@
-# WellisWell 
+# Well\<is\>Well 
 
 A mobile application that helps disadvantaged communities take care of their water wells.
 
