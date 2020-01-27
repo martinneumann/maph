@@ -10,6 +10,8 @@ import 'RepairInformation.dart';
 import 'Settings.dart';
 import 'WellMarker.dart';
 
+import 'package:well_control/WellMarkerLibary.dart' as wellList;
+
 /// Class provides view to report a issue for one well.
 class ReportWell extends StatefulWidget {
   ReportWell({Key key, this.title, this.well}) : super(key: key);
@@ -295,6 +297,9 @@ class _ReportWellState extends State<ReportWell> {
     await postNewIssue(json.encode(data)).then((response) {
       print("Response: " + response.statusCode.toString());
     });
+
+    await wellList.getMarkersMap();
+
     Navigator.pop(context);
   }
 }
